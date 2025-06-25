@@ -28,8 +28,8 @@ Clone the snf-monitor repository
 
 # Running the simulation
 
-1. Do source ```Geant4_Simulation/build/this_G4_Brems.sh```.
+1. Do ```source Geant4_Simulation/build/this_G4_Brems.sh```.
 
 2. If running the visualisation, copy vis.mac to your working directory.
 
-3. Do G4_Brems to run.
+3. Do ```G4_Brems``` to run.
