@@ -4,6 +4,8 @@ This is a simulation of a 3D-segmented neutrino detector composed of plastic sci
 
 # Dependencies
 
+CMake 3.16 to 3.21
+
 Latest stable versions of:
 
 Geant4
