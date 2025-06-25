@@ -80,6 +80,7 @@ foreach(_script ${G4_Brems-SCRIPTS})
   )
 endforeach()
 
+configure_file(cmake/this_G4_Brems.sh.in this_G4_Brems.sh)
 
 #----------------------------------------------------------------------------
 # For windows, copy the mac files into the release dir, just for convenience.

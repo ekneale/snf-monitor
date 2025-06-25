@@ -27,8 +27,7 @@ int main(int argc, char** argv)
 	runManager->SetUserInitialization(new PhysicsList());
 	runManager->SetUserInitialization(new DetectorConstruction());
 	runManager->SetUserInitialization(new ActionInit());
-
-
+        
 	G4VisManager* visManager = new G4VisExecutive;
 	visManager->Initialize();
 

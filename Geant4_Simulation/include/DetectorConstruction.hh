@@ -34,6 +34,8 @@ namespace G4_BREMS {
         G4VSensitiveDetector* fFiberCoreSD;
         G4VSensitiveDetector* fFiberCladSD;
         G4VSensitiveDetector* fSipmSD;
+
+	G4String data_dir="";
     };
 }
 
