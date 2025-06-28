@@ -1,5 +1,5 @@
-#ifndef IBDGen_h
-#define IBDGen_h
+#ifndef G4_BREMS_IBDGen_h
+#define G4_BREMS_IBDGen_h
 
 #include "DetectorConstruction.hh"
 #include <CLHEP/Units/PhysicalConstants.h>
@@ -7,6 +7,8 @@
 #include <G4String.hh>
 #include <G4ThreeVector.hh>
 #include "G4ParticleGun.hh"
+
+namespace G4_BREMS{
 
 class IBDGen {
 
@@ -101,6 +103,8 @@ class IBDGen {
         (pow(CLHEP::neutron_mass_c2, 2) - pow(CLHEP::proton_mass_c2, 2) - pow(CLHEP::electron_mass_c2, 2)) /
         (2 * CLHEP::proton_mass_c2);
 };
+
+}// namespace G4_BREMS
 
 #endif
 

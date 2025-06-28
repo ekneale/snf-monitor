@@ -1,3 +1,5 @@
+
+
 #include "IBDGen.hh"
 #include "DetectorConstruction.hh"
 
@@ -10,6 +12,8 @@
 
 // Set json to nlohmann::json
 using json = nlohmann::json;
+
+namespace G4_BREMS{
 
 IBDGen::IBDGen()
 {
@@ -415,3 +419,4 @@ double IBDGen::MaxXSecFlux() {
     return xs_flux_max;
 }
 
+} // namespace G4_BREMS
