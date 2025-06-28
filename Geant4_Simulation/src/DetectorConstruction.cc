@@ -35,7 +35,8 @@
 #include "G4Material.hh"
 #include "G4LogicalBorderSurface.hh"
 
-namespace G4_BREMS {
+namespace G4_BREMS 
+{
     class SensitiveDetector : public G4VSensitiveDetector {
     public:
         SensitiveDetector(G4String name) : G4VSensitiveDetector(name) {}
@@ -725,7 +726,7 @@ namespace G4_BREMS {
         SetSensitiveDetector(fSipmVolume, fSipmSD);
 
     }
-}
+}// namespace G4_BREMS
 
 
 
