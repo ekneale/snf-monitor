@@ -1,8 +1,8 @@
-# Sets necessary environment variables to use this installation of WCSim in ROOT
+# Sets necessary environment variables to use this installation of  in ROOT
 # Also set PATH and LD_LIBRARY_PATH for convenience
 
 export PATH=@CMAKE_INSTALL_PREFIX@/bin:$PATH
 #export LD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/include:$LD_LIBRARY_PATH
 export SNF_MONITOR_BUILDDIR=@CMAKE_INSTALL_PREFIX@/
-export SNF_MONITOR_DATADIR=@CMAKE_SOURCE_DIR@/data
-export SNF_MONITOR_DATADIR=@CMAKE_SOURCE_DIR@
+export SNF_MONITOR_DATADIR=@CMAKE_SOURCE_DIR@/data/
+export SNF_MONITOR_DIR=@CMAKE_SOURCE_DIR@
