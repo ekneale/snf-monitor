@@ -11,6 +11,12 @@ endif()
 
 project(G4_Brems)
 
+# Install nlohmann_json as a dependency at configure time
+include(FetchContent)
+FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz)
+FetchContent_MakeAvailable(json)
+#add_library(json)
+#target_include_directories(json PUBLIC "${CMAKE_CURRENT_LIST_DIR}/include")
 # TODO: Add tests and install targets if needed.
 
 #----------------------------------------------------------------------------
@@ -43,9 +49,7 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 #----------------------------------------------------------------------------
 # Add sources and headers to this project's executable.
 add_executable (G4_Brems "G4-Brems.cc" ${sources} ${headers})
-#add_executable (G4_Brems_terminal "G4-Brems-terminal.cc" ${sources} ${headers})
-target_link_libraries(G4_Brems ${Geant4_LIBRARIES})
-#target_link_libraries(G4_Brems_terminal ${Geant4_LIBRARIES})
+target_link_libraries(G4_Brems PUBLIC ${Geant4_LIBRARIES} PRIVATE nlohmann_json::nlohmann_json)
 
 #----------------------------------------------------------------------------
 # Set standard to C++20
@@ -63,7 +67,6 @@ set(CMAKE_CONFIGURATION_TYPES "Release" CACHE INTERNAL "")
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS G4_Brems DESTINATION bin)
-#install(TARGETS G4_Brems_terminal DESTINATION bin)
 
 #----------------------------------------------------------------------------
 # Copy all the mac files from "mac_files" directory into the
