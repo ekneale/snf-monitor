@@ -188,7 +188,8 @@ namespace G4_BREMS {
                     G4AutoLock lock(&sipmHitsMutex);
                     gSipmHits.push_back(hit);
                     lock.unlock();
-
+			
+		    if (debug_sipms) {
                     G4cout << "Hit SiPM with name: " << fullSipmName << " " << "Hit Time: " << hitTime << " "
                         << "Hit Local Time: " << hitTimeLocal << " " << "Hit Position: "
                         << hitPosition << " " << "Hit Wavelength: " << hitWavelength << " " << "Pre Volume: " << preVolumeName
@@ -201,9 +202,9 @@ namespace G4_BREMS {
                         //<< " Step Number in Sipm: " << stepNum << " SiPM ID: " << sipmID << G4endl;
 
                     //G4cout << "Adding SiPM hit to collection, current size: " << fSipmHits.size() << G4endl;
-                    fSipmHits.push_back(hit);
+                    //fSipmHits.push_back(hit);
                     //G4cout << "New collection size: " << fSipmHits.size() << G4endl;
-
+		    }
                     auto analysisManager = G4AnalysisManager::Instance();
                     analysisManager->FillH1(11, hitTime / ns);
                     analysisManager->FillH1(12, hitWavelength);
