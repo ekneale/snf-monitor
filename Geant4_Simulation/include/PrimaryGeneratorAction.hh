@@ -33,6 +33,16 @@ namespace G4_BREMS
 		G4bool 				useIBDGen;
 		G4String 			spectrum_database;
 		G4String 			spectrum_name;
+
+		// Variables for saving vertex information
+                G4double fNuEnergy;
+                G4ThreeVector fNuDir;
+                G4ThreeVector fVertex;
+                G4double fPositronEnergy;
+                G4ThreeVector fPositronDir;
+                G4double fNeutronEnergy;
+                G4ThreeVector fNeutronDir;
+
 	public: 
 		// Addition of IBD event generator
 		inline void SetIBDGenerator(G4bool choice) { useIBDGen = choice; }

@@ -1,5 +1,6 @@
 #include "PrimaryGeneratorAction.hh"
 #include "PrimaryGeneratorMessenger.hh"
+#include "G4AnalysisManager.hh"
 
 #include "G4Event.hh"
 #include "G4ParticleTable.hh"
@@ -29,6 +30,14 @@ namespace G4_BREMS
 	{
 		
 		if (useIBDGen){
+
+			fNuEnergy = 0.;
+			fNuDir = {0.,0.,0.};
+			fPositronEnergy = 0.;
+			fPositronDir = {0.,0.,0.};
+			fNeutronEnergy = 0.;
+			fNeutronDir = {0.,0.,0.};
+			fVertex={0.,0.,0.};
                 	
 			// populate event from IBDGen.cc
 			
@@ -55,14 +64,36 @@ namespace G4_BREMS
 			fIBDGen->GenerateEvent(neutrino,positron,neutron,event);
 
 			// Populate truth information to be written out
-			// vtx
-			// dir
-			// positron energy
-			// neutron energy
-			// positron pdg
-			// neutron pdg
-			// positron momentum/direction
-			// neutron momentum/direcion
+			fNuEnergy = neutrino.getT();
+			fNuDir = neutrino.getV();
+			fPositronEnergy = positron.getT();
+			fPositronDir = positron.getV();
+			fNeutronEnergy = neutron.getT();
+			fNeutronDir = neutron.getV();
+			fVertex = {neutrino.getX(),neutrino.getY(),neutrino.getZ()};
+
+			G4cout << "EventAction: [INFO] Writing primary vertex information to root file..." << G4endl;
+			// get analysis manager
+			auto analysisManager = G4AnalysisManager::Instance();
+
+			// fill ntuple
+			analysisManager->FillNtupleDColumn(0, fNuEnergy);
+			analysisManager->FillNtupleDColumn(1, fNuDir[0]);
+			analysisManager->FillNtupleDColumn(2, fNuDir[1]);
+			analysisManager->FillNtupleDColumn(3, fNuDir[2]);
+			analysisManager->FillNtupleDColumn(4, fVertex[0]);
+			analysisManager->FillNtupleDColumn(5, fVertex[1]);
+			analysisManager->FillNtupleDColumn(6, fVertex[2]);
+			analysisManager->FillNtupleDColumn(7, fPositronEnergy);
+			analysisManager->FillNtupleDColumn(8, fPositronDir[0]);
+			analysisManager->FillNtupleDColumn(9, fPositronDir[1]);
+			analysisManager->FillNtupleDColumn(10, fPositronDir[2]);
+			analysisManager->FillNtupleDColumn(11, fNeutronEnergy);
+			analysisManager->FillNtupleDColumn(12, fNeutronDir[0]);
+			analysisManager->FillNtupleDColumn(13, fNeutronDir[1]);
+			analysisManager->FillNtupleDColumn(14, fNeutronDir[2]);
+			analysisManager->AddNtupleRow();
+
 
 		} else {
 

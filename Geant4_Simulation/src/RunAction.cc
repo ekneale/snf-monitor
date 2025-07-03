@@ -231,6 +231,24 @@ namespace G4_BREMS {
         analysisManager->SetH2XAxisTitle(14, "x [mm]");
         analysisManager->SetH2YAxisTitle(14, "z [mm]");
         analysisManager->SetH2ZAxisTitle(14, "Time [ns]");
+
+	analysisManager->CreateNtuple("simdata","MC truth tree");
+	analysisManager->CreateNtupleDColumn("nu_energy");              // column ID = 0
+	analysisManager->CreateNtupleDColumn("nu_dir_x");               // column ID = 1
+	analysisManager->CreateNtupleDColumn("nu_dir_y");               // column ID = 2
+	analysisManager->CreateNtupleDColumn("nu_dir_z");               // column ID = 3
+	analysisManager->CreateNtupleDColumn("vtx_x");                  // column ID = 4
+	analysisManager->CreateNtupleDColumn("vtx_y");                  // column ID = 5
+	analysisManager->CreateNtupleDColumn("vtx_z");                  // column ID = 6
+	analysisManager->CreateNtupleDColumn("positron_energy");        // column ID = 7
+	analysisManager->CreateNtupleDColumn("positron_dir_x");         // column ID = 8
+	analysisManager->CreateNtupleDColumn("positron_dir_y");         // column ID = 9
+	analysisManager->CreateNtupleDColumn("positron_dir_z");         // column ID = 10
+	analysisManager->CreateNtupleDColumn("neutron_energy");         // column ID = 11
+	analysisManager->CreateNtupleDColumn("neutron_dir_x");          // column ID = 12
+	analysisManager->CreateNtupleDColumn("neutron_dir_y");          // column ID = 13
+	analysisManager->CreateNtupleDColumn("neutron_dir_z");          // column ID = 14
+	analysisManager->FinishNtuple();
     }
 
     G4_BREMS::RunAction::~RunAction() {

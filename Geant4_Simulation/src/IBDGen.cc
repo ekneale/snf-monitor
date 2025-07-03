@@ -129,6 +129,9 @@ void IBDGen::GenerateEvent(G4LorentzVector &neutrino, G4LorentzVector &positron,
 	// Compute neutrino 4-momentum
 	neutrino.setVect(nu_dir * e_nu);
 	neutrino.setE(e_nu);
+	neutrino.setX(vtx[0]);
+	neutrino.setY(vtx[1]);
+	neutrino.setZ(vtx[2]);
 
         // Calculate positron and neutron kinematics
 	
