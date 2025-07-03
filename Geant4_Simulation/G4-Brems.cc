@@ -63,7 +63,7 @@ int main(int argc, char** argv)
 
 	// clean up
 	delete visManager;
-	delete runManager;
+	//delete runManager;
 	return 0;
 }
 
