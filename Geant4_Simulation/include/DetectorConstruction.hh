@@ -22,6 +22,8 @@ namespace G4_BREMS {
         G4LogicalVolume* GetFiberVolume() const { return fFiberCoreVolume; }
         G4LogicalVolume* GetCladVolume() const { return fFiberCladVolume; }
         G4LogicalVolume* GetSipmVolume() const { return fSipmVolume; }
+        G4LogicalVolume* GetBNVolume() const { return fBNVolume; }
+        G4LogicalVolume* GetAlVolume() const { return fAlVolume; }
         
     private:
         
@@ -29,11 +31,15 @@ namespace G4_BREMS {
         G4LogicalVolume* fFiberCoreVolume;
         G4LogicalVolume* fFiberCladVolume;
         G4LogicalVolume* fSipmVolume;
+        G4LogicalVolume* fBNVolume;
+        G4LogicalVolume* fAlVolume;
 
         G4VSensitiveDetector* fTileSD;
         G4VSensitiveDetector* fFiberCoreSD;
         G4VSensitiveDetector* fFiberCladSD;
         G4VSensitiveDetector* fSipmSD;
+        G4VSensitiveDetector* fBNSD;
+        G4VSensitiveDetector* fAlSD;
     };
 }
 

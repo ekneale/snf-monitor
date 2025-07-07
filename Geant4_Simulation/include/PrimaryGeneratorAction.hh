@@ -16,9 +16,11 @@ namespace G4_BREMS
 		PrimaryGeneratorAction();
 		~PrimaryGeneratorAction();
 
-		virtual void GeneratePrimaries(G4Event*);
+		virtual void GeneratePrimaries(G4Event*) override;
+		//virtual void GeneratePrimaries2(G4Event*);
 
-		G4ParticleGun* fParticleGun;
+		G4ParticleGun* fParticleGun1;
+		G4ParticleGun* fParticleGun2;
 	};
 }
 
