@@ -23,10 +23,15 @@ namespace G4_BREMS
 		PrimaryGeneratorAction();
 		~PrimaryGeneratorAction();
 
-		virtual void GeneratePrimaries(G4Event*);
+
+		virtual void GeneratePrimaries(G4Event*) override;
+		//virtual void GeneratePrimaries2(G4Event*);
+
+		G4ParticleGun* fParticleGun1;
+		G4ParticleGun* fParticleGun2;
+
 	private:
-		G4ParticleGun*			fParticleGun;
-		IBDGen* 			fIBDGen;
+		IBDGen* 			              fIBDGen;
 		PrimaryGeneratorMessenger*	fGenMessenger;
 
 		// Variables set by the messenger
@@ -35,13 +40,13 @@ namespace G4_BREMS
 		G4String 			spectrum_name;
 
 		// Variables for saving vertex information
-                G4double fNuEnergy;
-                G4ThreeVector fNuDir;
-                G4ThreeVector fVertex;
-                G4double fPositronEnergy;
-                G4ThreeVector fPositronDir;
-                G4double fNeutronEnergy;
-                G4ThreeVector fNeutronDir;
+    G4double fNuEnergy;
+    G4ThreeVector fNuDir;
+    G4ThreeVector fVertex;
+    G4double fPositronEnergy;
+    G4ThreeVector fPositronDir;
+    G4double fNeutronEnergy;
+    G4ThreeVector fNeutronDir;
 
 	public: 
 		// Addition of IBD event generator
@@ -51,6 +56,7 @@ namespace G4_BREMS
 		inline G4String GetIBDDatabase()  { return spectrum_database; }
 		inline void SetIBDSpectrum(G4String choice) { spectrum_name = choice; }
 		inline G4String GetIBDSpectrum()  { return spectrum_name; }
+
 	};
 }// namespace G4_BREMS
 

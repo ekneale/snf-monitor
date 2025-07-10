@@ -1,3 +1,4 @@
+
 #include "PrimaryGeneratorAction.hh"
 #include "PrimaryGeneratorMessenger.hh"
 #include "G4AnalysisManager.hh"
@@ -11,8 +12,9 @@
 
 namespace G4_BREMS
 {
-	PrimaryGeneratorAction::PrimaryGeneratorAction() {
-		
+	
+  PrimaryGeneratorAction::PrimaryGeneratorAction() {
+
 		// Create a new messenger for this class
 		fGenMessenger = new PrimaryGeneratorMessenger(this);
 		useIBDGen = false;
@@ -21,7 +23,8 @@ namespace G4_BREMS
 
 	PrimaryGeneratorAction::~PrimaryGeneratorAction() {
 
-		if (fParticleGun) delete fParticleGun;
+		if (fParticleGun1) delete fParticleGun1;
+		if (fParticleGun2) delete fParticleGun2;
 		if (fIBDGen) delete fIBDGen;
 		if (fGenMessenger) delete fGenMessenger;
 	}
@@ -54,6 +57,7 @@ namespace G4_BREMS
 			G4LorentzVector neutrino;
 			G4LorentzVector positron;
 			G4LorentzVector neutron;
+
 
 			// Generate event
 			// Fills the Lorentz vectors with the 
@@ -95,38 +99,57 @@ namespace G4_BREMS
 			analysisManager->AddNtupleRow();
 
 
-		} else {
+	} else {
 
-			// set up particle gun by default
-			G4int nParticles = 1;
-			fParticleGun = new G4ParticleGun(nParticles);
+		  // set up particle gun
+		  G4int nParticles = 1;
+		  fParticleGun1 = new G4ParticleGun(nParticles);
+		  fParticleGun2 = new G4ParticleGun(nParticles);
 
-			// define particle properties
-			const G4String& particleName = "e+";
+		  // define particle properties
+		  //const G4String& particleName = "opticalphoton";
+		  const G4String& particleName1 = "e+";
+		  const G4String& particleName2 = "neutron";
 
-			G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-			G4ParticleDefinition* particle
-				= particleTable->FindParticle(particleName);
+		  G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
+		  G4ParticleDefinition* particle1
+			  = particleTable->FindParticle(particleName1);
+		  G4ParticleDefinition* particle2
+			  = particleTable->FindParticle(particleName2);
 
-			fParticleGun->SetParticleDefinition(particle);
+		  fParticleGun1->SetParticleDefinition(particle1);
+		  fParticleGun2->SetParticleDefinition(particle2);
 
-			G4ThreeVector momentumDirection = G4ThreeVector(1, 0, 0);
-			//G4ThreeVector momentumDirection = G4ThreeVector(0, 1, 0);
 
-			//G4cout << "Particle direction: " << momentumDirection << G4endl;
-
-			fParticleGun->SetParticleMomentumDirection(momentumDirection);
-
-			G4double energy = 10.0 * MeV;
-			//G4cout << "Particle energy: " << G4BestUnit(energy, "Energy") << G4endl;
-
-			fParticleGun->SetParticleEnergy(energy);
-
-			G4ThreeVector position = G4ThreeVector(-200.0 * mm, 0 * mm, 0 * mm);
+		  //G4ThreeVector momentumDirection = G4ThreeVector(1, 0, 0);
+		  //G4ThreeVector momentumDirection = G4ThreeVector(0, 1, 0);
+		  G4ThreeVector momentumDirection = G4ThreeVector(0, 0, 1);
+		  //G4ThreeVector momentumDirection = G4ThreeVector(0, 0, -1);
 		
-			fParticleGun->SetParticlePosition(position);
+	    fParticleGun1->SetParticleMomentumDirection(momentumDirection);
+		  fParticleGun2->SetParticleMomentumDirection(momentumDirection);
+		  G4double positron_energy = 10.0 * MeV;
+		  //G4double neutron_energy = 0.025 * eV;
+		  //G4double neutron_energy = 0.05 * eV;
+		  G4double neutron_energy = 0.5 * MeV;
+		  //G4double neutron_energy = 1e-5 * eV;
+		  //G4cout << "Particle energy: " << G4BestUnit(energy, "Energy") << G4endl;
 
-			fParticleGun->GeneratePrimaryVertex(event);
-		}
-	}
-}
+		  fParticleGun1->SetParticleEnergy(positron_energy);
+		  fParticleGun2->SetParticleEnergy(neutron_energy);
+      G4ThreeVector positron_position = G4ThreeVector(-200.0 * mm, 0 * mm, 0 * mm);
+		
+		  fParticleGun1->SetParticlePosition(positron_position);
+
+		  fParticleGun1->GeneratePrimaryVertex(event);
+		  //G4ThreeVector neutron_position = G4ThreeVector(-200.0 * mm, 10 * mm, 0 * mm);
+		  //G4ThreeVector neutron_position = G4ThreeVector(-200.0 * mm, 0 * mm, 0 * mm);
+		  G4ThreeVector neutron_position = G4ThreeVector(0.0 * mm, 100 * mm, 0 * mm);
+		  //G4ThreeVector neutron_position = G4ThreeVector(0 * mm, 0 * mm, 1 * mm);
+		  fParticleGun2->SetParticlePosition(neutron_position);
+		  fParticleGun2->GeneratePrimaryVertex(event);
+    
+   	} // else 
+	} // GeneratePrimaries
+} // G4_BREMS
+

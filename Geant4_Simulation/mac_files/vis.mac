@@ -44,6 +44,9 @@
 /vis/modeling/trajectories/drawByParticleID-0/set e- orange
 /vis/modeling/trajectories/drawByParticleID-0/set e+ red
 /vis/modeling/trajectories/drawByParticleID-0/set gamma magenta
+/vis/modeling/trajectories/drawByParticleID-0/set alpha cyan
+/vis/modeling/trajectories/drawByParticleID-0/set neutron red
+
 
 
 # Differentiate trajectories by creation process name (CPN)
