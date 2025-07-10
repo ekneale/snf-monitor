@@ -46,6 +46,7 @@ namespace G4_BREMS {
         RunAction* fRunAction;
         G4LogicalVolume* fSensitiveVolume;
         std::vector<SipmHit> fSipmHits;
+	int debug_sipms = 0;
     };
 
 }  // namespace G4_BREMS

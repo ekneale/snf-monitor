@@ -40,6 +40,8 @@ namespace G4_BREMS {
         G4VSensitiveDetector* fSipmSD;
         G4VSensitiveDetector* fBNSD;
         G4VSensitiveDetector* fAlSD;
+
+	      G4String data_dir="";
     };
 }
 

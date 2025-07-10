@@ -35,7 +35,8 @@
 #include "G4Material.hh"
 #include "G4LogicalBorderSurface.hh"
 
-namespace G4_BREMS {
+namespace G4_BREMS 
+{
     class SensitiveDetector : public G4VSensitiveDetector {
     public:
         SensitiveDetector(G4String name) : G4VSensitiveDetector(name) {}
@@ -58,6 +59,10 @@ namespace G4_BREMS {
         fFiberCoreVolume(nullptr),
         fFiberCladVolume(nullptr), fSipmVolume(nullptr),
         fTileSD(nullptr), fFiberCoreSD(nullptr), fFiberCladSD(nullptr), fSipmSD(nullptr) {
+	data_dir = G4String(getenv("SNF_MONITOR_DATADIR"));
+	G4cout << "**********************************" << G4endl;
+	G4cout << data_dir << G4endl;
+	G4cout << "**********************************" << G4endl;
     }
 
     DetectorConstruction::~DetectorConstruction() {}
@@ -74,12 +79,12 @@ namespace G4_BREMS {
         std::vector<G4double> scintEmission;
 
         // read emission data
-        std::ifstream emissionFile("D:/University of Sheffield Books/Liz Kneale/Work/G4-Brems-0.6.1-alpha1/src/bcf91a_emission.csv");
+        std::ifstream emissionFile(data_dir+"/bcf91a_emission.csv");
         if (!emissionFile.is_open()) {
             G4cout << "Failed to open emission file" << G4endl;
             return nullptr;
         }
-        std::ifstream absorptionFile("D:/University of Sheffield Books/Liz Kneale/Work/G4-Brems-0.6.1-alpha1/src/bcf91a_absorption.csv");
+        std::ifstream absorptionFile(data_dir+"/bcf91a_absorption.csv");
 
         G4double wavelength1, intensity1;
         std::string line1;
@@ -860,6 +865,6 @@ namespace G4_BREMS {
         SetSensitiveDetector(fAlVolume, fAlSD);
 
     }
-}
+}// namespace G4_BREMS
 
 

@@ -5,6 +5,13 @@
 # Start up
 /run/initialize
 
+# Uncomment to use IBD generator.
+# Defaults to positron gun if ibd
+# generator is not used.
+#/mygen/generator ibd
+#/mygen/ibd_database IBDSpectra.json
+#/mygen/ibd_spectrum Flat
+
 # Open an OpenGL viewer
 /vis/open OGL
 #/vis/open OGL
@@ -93,7 +100,7 @@
 /vis/scene/endOfEventAction accumulate
 
 # Run the simulation
-#/run/beamOn 5
+/run/beamOn 1
 
 # Refresh the viewer
 #/vis/viewer/refresh

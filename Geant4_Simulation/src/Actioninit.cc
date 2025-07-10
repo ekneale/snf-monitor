@@ -5,23 +5,28 @@
 #include "RunAction.hh"
 
 namespace G4_BREMS {
-	void ActionInit::Build() const {
-		SetUserAction(new PrimaryGeneratorAction);
 
-		SteppingAction* steppingAction = new SteppingAction(nullptr);
+void ActionInit::Build() const {
+	
+	SetUserAction(new PrimaryGeneratorAction);
 
-		RunAction* runAction = new RunAction(steppingAction);
+	SteppingAction* steppingAction = new SteppingAction(nullptr);
 
-		steppingAction->SetRunAction(runAction);
+	RunAction* runAction = new RunAction(steppingAction);
 
-		SetUserAction(runAction);
-		SetUserAction(steppingAction);
+	steppingAction->SetRunAction(runAction);
 
-	}
-	void ActionInit::BuildForMaster() const {
-		SetUserAction(new RunAction(nullptr));
+	SetUserAction(runAction);
+	SetUserAction(steppingAction);
 
-	}
 }
+
+void ActionInit::BuildForMaster() const {
+	
+	SetUserAction(new RunAction(nullptr));
+
+}
+
+}// namespace G4_BREMS
 
 
