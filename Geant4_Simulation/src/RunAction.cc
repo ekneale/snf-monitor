@@ -315,38 +315,42 @@ namespace G4_BREMS {
             fOtherCount = fAccOtherCount.GetValue();
             fPhotonsEnteredFiber = fAccPhotonsEnteredFiber.GetValue();
             fPhotonsAbsorbedFiber = fAccPhotonsAbsorbedFiber.GetValue();
+	    if(debug_runaction){
+        	    G4cout << "Tile Count: " << fTileCount << G4endl;
+	            G4cout << "Clad Count: " << fCladCount << G4endl;
+        	    G4cout << "Core Count: " << fCoreCount << G4endl;
+	            G4cout << "Sipm Count: " << fSipmCount << G4endl;
+        	    G4cout << "Other Count: " << fOtherCount << G4endl;
 
-            G4cout << "Tile Count: " << fTileCount << G4endl;
-            G4cout << "Clad Count: " << fCladCount << G4endl;
-            G4cout << "Core Count: " << fCoreCount << G4endl;
-            G4cout << "Sipm Count: " << fSipmCount << G4endl;
-            G4cout << "Other Count: " << fOtherCount << G4endl;
-
-            G4cout << "Trapping Efficiency: " << CalculateTrappingEfficiency() * 100.0 << " %" << G4endl;
-
+	            G4cout << "Trapping Efficiency: " << CalculateTrappingEfficiency() * 100.0 << " %" << G4endl;
+            }
             std::vector<G4String> volumes = { "Tile", "FiberCore", "FiberClad", "Sipm" };
             for (const auto& volume : volumes) {
-                G4cout << "\nVolume: " << volume << G4endl;
-
-                // creation processes
-                G4cout << "Creation Processes:" << G4endl;
+		if(debug_runaction){
+                  G4cout << "\nVolume: " << volume << G4endl;
+		
+                  // creation processes
+                  G4cout << "Creation Processes:" << G4endl;
+		}
                 std::vector<G4String> creationProcesses = { "Cerenkov", "Scintillation", "OpWLS" };
                 for (const auto& process : creationProcesses) {
                     G4String key = volume + "_Creation_" + process;
                     auto it = fAccCreationCounts.find(key);
-                    if (it != fAccCreationCounts.end()) {
+                    if (it != fAccCreationCounts.end() && debug_runaction) {
                         G4cout << std::setw(15) << process << ": "
                             << it->second->GetValue() << G4endl;
                     }
                 }
 
                 // Interaction processes
-                G4cout << "Interaction Processes:" << G4endl;
+		if(debug_runaction){
+	                G4cout << "Interaction Processes:" << G4endl;
+	    	}
                 std::vector<G4String> interactionProcesses = { "OpAbsorption", "OpWLS", "Transportation" };
                 for (const auto& process : interactionProcesses) {
                     G4String key = volume + "_Interaction_" + process;
                     auto it = fAccInteractionCounts.find(key);
-                    if (it != fAccInteractionCounts.end()) {
+                    if (it != fAccInteractionCounts.end() && debug_runaction) {
                         G4cout << std::setw(15) << process << ": "
                             << it->second->GetValue() << G4endl;
                     }
@@ -368,8 +372,10 @@ namespace G4_BREMS {
                         }
                     }
                     outFile.close();
-                    G4cout << "Wrote " << gAnnihilationEvents.size()
-                        << " annihilation events to " << filename << G4endl;
+		    if(debug_runaction){
+                        G4cout << "Wrote " << gAnnihilationEvents.size()
+                          << " annihilation events to " << filename << G4endl;
+		    }
                 }
                 else {
                     G4cerr << "Could not open " << filename << " for writing." << G4endl;
@@ -380,7 +386,6 @@ namespace G4_BREMS {
             }
 
             G4cout << "\nAttempting to write " << gSipmHits.size() << " SiPM hits to CSV file." << G4endl;
-            //G4cout << "\nAttempting to write " << gSipmHits.size() << " SiPM hits to ROOT file." << G4endl;
 
             if (!gSipmHits.empty()) {
                 std::string filename1 = "sipm_hits_run.csv";

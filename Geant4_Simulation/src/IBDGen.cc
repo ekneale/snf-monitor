@@ -21,6 +21,7 @@ IBDGen::IBDGen()
 	snfmondir = std::string(getenv("SNF_MONITOR_DATADIR"));	
 	myIBDGun = new G4ParticleGun();
 	// Initialised
+
 	G4cout << "IBDGen: [INFO] Initialised IBDGen" << G4endl;
 
 }
@@ -96,7 +97,7 @@ void IBDGen::ReadSpectrumFromDB(G4String spectrum_database, G4String spectrum_na
 			flux_max = *std::max_element(fluxVector.begin(), fluxVector.end());
 			xsec_flux_max = MaxXSecFlux();
 			
-			if (debug)
+			if (debug_ibdgen)
 				G4cout << "IBDGen: [INFO] emin, emax, flux max, dsigma/dt(flux_max): " << e_min << ", " << e_max << ", " << flux_max << ", " << xsec_flux_max << G4endl;
 			return;
 
@@ -316,7 +317,9 @@ double IBDGen::GetEe(double e_nu, double cos_theta) {
 
 G4ThreeVector IBDGen::GenerateRandomPosition() {
 
-        G4cout << "IBDGen: [INFO] Generating random position" << G4endl;
+        if(debug_ibdgen){
+		G4cout << "IBDGen: [INFO] Generating random position" << G4endl;
+	}
 
 	// Generate random neutrino position
 	// TODO access detector size dynamically
@@ -337,7 +340,9 @@ G4ThreeVector IBDGen::GenerateRandomPosition() {
 
 void IBDGen::GeneratePositronKinematics(G4LorentzVector &positron, float e_nu, float cos_theta, G4ThreeVector nu_dir){
 
-        G4cout << "IBDGen: [INFO] Generating positron" << G4endl;
+        if(debug_ibdgen){
+			G4cout << "IBDGen: [INFO] Generating positron" << G4endl;
+	}
 	// First order correction to positron quantities
 	// for finite nucleon mass
 	double e1 = GetEe(e_nu, cos_theta);
@@ -361,7 +366,9 @@ void IBDGen::GeneratePositronKinematics(G4LorentzVector &positron, float e_nu, f
 
 void IBDGen::GenerateNeutronKinematics(G4LorentzVector &neutron, G4LorentzVector positron, G4LorentzVector neutrino){
 
-        G4cout << "IBDGen: [INFO] Generating neutron" << G4endl;
+        if(debug_ibdgen){
+		G4cout << "IBDGen: [INFO] Generating neutron" << G4endl;
+	}
 	// Compute neutron 4-momentum
 	neutron.setVect(neutrino.vect() - positron.vect());
 	neutron.setE(sqrt(neutron.vect().mag2() + CLHEP::neutron_mass_c2 * CLHEP::neutron_mass_c2));

@@ -1,0 +1,18 @@
+
+#/tracking/storeTrajectory 0
+
+
+# Start up
+/run/initialize
+
+# Uncomment to use IBD generator.
+# Defaults to positron gun if ibd
+# generator is not used.
+/mygen/generator ibd
+/mygen/ibd_database IBDSpectra.json
+/mygen/ibd_spectrum Flat
+
+
+# Run the simulation
+/run/beamOn 1
+

@@ -50,9 +50,9 @@ namespace G4_BREMS {
         if (track->GetDefinition()->GetParticleName() == "neutron") {
             G4String name = track->GetDefinition()->GetParticleName();
             
-            G4cout << "particle name" << name << G4endl;
             auto proc = step->GetPostStepPoint()->GetProcessDefinedStep();
-            if (proc) {
+            if (proc && debug_steppingaction) {
+            	G4cout << "particle name" << name << G4endl;
                 G4cout << "[DEBUG] Neutron post-step process: "
                     << proc->GetProcessName() << G4endl;
             }
@@ -76,10 +76,11 @@ namespace G4_BREMS {
             G4double       time = post->GetGlobalTime();
 
             G4String  physVolName = post->GetTouchableHandle()->GetVolume()->GetName();
-
-            G4cout << "Neutron_Capture_X_Pos = " << pos.x() / mm << " " << "Neutron_Capture_Y_Pos = " << pos.y() / mm
-                << " " << "Neutron_Capture_Z_Pos = " << pos.z() / mm << " mm  t=" << time / ns << " ns  vol="
-                << physVolName << G4endl;
+	    if(debug_steppingaction){
+	            G4cout << "Neutron_Capture_X_Pos = " << pos.x() / mm << " " << "Neutron_Capture_Y_Pos = " << pos.y() / mm
+        	        << " " << "Neutron_Capture_Z_Pos = " << pos.z() / mm << " mm  t=" << time / ns << " ns  vol="
+                	<< physVolName << G4endl;
+	    }
         }
 
         if (track->GetDefinition()->GetParticleName() == "e+" &&
@@ -105,12 +106,14 @@ namespace G4_BREMS {
                  auto touchable = step->GetPostStepPoint()->GetTouchableHandle();
                  G4VPhysicalVolume* physVol = touchable->GetVolume();
                  G4String           name = physVol->GetName();
-                 G4cout << "Track " << track->GetTrackID()
-                     << " born in physical volume: " << name << G4endl;
-
-                 G4cout << "ANNIHILATION Time: " << annihilationTime / ns << " ns, "
-                        << "Position: " << annihilationPosition / mm << " mm, "
-                        << "Volume: " << volName << G4endl;
+		 if(debug_steppingaction){
+	                 G4cout << "Track " << track->GetTrackID()
+        	             << " born in physical volume: " << name << G4endl;
+	
+        	         G4cout << "ANNIHILATION Time: " << annihilationTime / ns << " ns, "
+                	        << "Position: " << annihilationPosition / mm << " mm, "
+                        	<< "Volume: " << volName << G4endl;
+		 }
 
                  gAnnihilationEvents.push_back({ annihilationTime, annihilationPosition, volName });
         }
@@ -251,7 +254,7 @@ namespace G4_BREMS {
                     lock.unlock();
 
 			
-		                if (debug_sipms) {
+		    if (debug_steppingaction) {
                         G4cout << "Hit SiPM with name: " << fullSipmName << " " << "Hit Time: " << hitTime << " "
                         << "Hit Local Time: " << hitTimeLocal << " " << "Hit Position: "
                         << hitPosition << " " << "Hit Wavelength: " << hitWavelength << " " << "Pre Volume: " << preVolumeName
@@ -267,7 +270,7 @@ namespace G4_BREMS {
                         //G4cout << "Adding SiPM hit to collection, current size: " << fSipmHits.size() << G4endl;
                         //fSipmHits.push_back(hit);
                         //G4cout << "New collection size: " << fSipmHits.size() << G4endl;
-		                } // debug_sipms
+		    } // debug_steppingaction
                   
                     auto analysisManager = G4AnalysisManager::Instance();
                     analysisManager->FillH1(11, hitTime / ns);
@@ -295,9 +298,12 @@ namespace G4_BREMS {
                     G4String fullSipmName = physVolume->GetName();
                     G4int sipmID = step->GetPostStepPoint()->GetTouchableHandle()->GetCopyNumber();
 
-                    G4cout << "Hit Time: " << hitTime << " " << "Hit Position: " << hitPosition << " " << "Hit Energy: "
-                        << hitEnergy << " " << "Hit Wavelength: " << hitWavelength << " " << "Pre Volume: " << preVolumeName
-                        << " Step Number in Sipm: " << stepNum << " SiPM ID: " << sipmID << G4endl;
+		    if(debug_steppingaction){
+
+	                    G4cout << "Hit Time: " << hitTime << " " << "Hit Position: " << hitPosition << " " << "Hit Energy: "
+        	                << hitEnergy << " " << "Hit Wavelength: " << hitWavelength << " " << "Pre Volume: " << preVolumeName
+                	        << " Step Number in Sipm: " << stepNum << " SiPM ID: " << sipmID << G4endl;
+		    }
                 }
                 
             }

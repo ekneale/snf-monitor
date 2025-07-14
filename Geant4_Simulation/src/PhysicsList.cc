@@ -62,8 +62,8 @@ namespace G4_BREMS
     PhysicsList::PhysicsList() : G4VModularPhysicsList()
     {
 
-        RegisterPhysics(new G4EmStandardPhysics_option4());
-        RegisterPhysics(new G4HadronPhysicsQGSP_BERT_HP());
+        RegisterPhysics(new G4EmStandardPhysics_option4(0));
+        RegisterPhysics(new G4HadronPhysicsQGSP_BERT_HP(0));
         
 
         G4OpticalPhysics* opticalPhysics = new G4OpticalPhysics();

@@ -55,9 +55,9 @@ class IBDGen {
     // Calculate positron energy
     double GetEe(double e_nu, double cos_theta);
 
-  private:
+    G4int debug_ibdgen = 0;
 
-    int debug = 1;
+  private:
 
     std::string snfmondir;
 

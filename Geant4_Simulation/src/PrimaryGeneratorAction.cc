@@ -48,9 +48,11 @@ namespace G4_BREMS
 			// This will read the spectrum from the db
 			// and produce a 2D histogram of the spectrum.
 			if(!fIBDGen){
-				G4cout << "PrimaryGeneratorAction::GeneratePrimaries  [INFO] Initialising IBD generator" << G4endl;
-				fIBDGen = new IBDGen();
-				fIBDGen->ReadSpectrumFromDB(spectrum_database,spectrum_name);
+				if(debug_primarygenerator){
+					G4cout << "PrimaryGeneratorAction::GeneratePrimaries  [INFO] Initialising IBD generator" << G4endl;
+					fIBDGen = new IBDGen();
+					fIBDGen->ReadSpectrumFromDB(spectrum_database,spectrum_name);
+				}
 			}
 
 			// Create the particles
@@ -64,7 +66,9 @@ namespace G4_BREMS
 			// direction and energy of the particles,
 			// with a random position in the detector
 			// and will populate the G4Event
-			G4cout << "PrimaryGeneratorAction::GeneratePrimaries  [INFO] Generating IBD interaction" << G4endl;
+			if(debug_primarygenerator){
+				G4cout << "PrimaryGeneratorAction::GeneratePrimaries  [INFO] Generating IBD interaction" << G4endl;
+			}
 			fIBDGen->GenerateEvent(neutrino,positron,neutron,event);
 
 			// Populate truth information to be written out
@@ -76,7 +80,10 @@ namespace G4_BREMS
 			fNeutronDir = neutron.getV();
 			fVertex = {neutrino.getX(),neutrino.getY(),neutrino.getZ()};
 
-			G4cout << "EventAction: [INFO] Writing primary vertex information to root file..." << G4endl;
+			if(debug_primarygenerator){
+				G4cout << "PrimaryGeneratorAction::GeneratePrimaries: [INFO] Writing primary vertex information to root file..." << G4endl;
+			}
+
 			// get analysis manager
 			auto analysisManager = G4AnalysisManager::Instance();
 

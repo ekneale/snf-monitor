@@ -33,6 +33,7 @@ namespace G4_BREMS
 	private:
 		IBDGen* 			              fIBDGen;
 		PrimaryGeneratorMessenger*	fGenMessenger;
+		G4int debug_primarygenerator = 0;
 
 		// Variables set by the messenger
 		G4bool 				useIBDGen;
@@ -40,13 +41,13 @@ namespace G4_BREMS
 		G4String 			spectrum_name;
 
 		// Variables for saving vertex information
-    G4double fNuEnergy;
-    G4ThreeVector fNuDir;
-    G4ThreeVector fVertex;
-    G4double fPositronEnergy;
-    G4ThreeVector fPositronDir;
-    G4double fNeutronEnergy;
-    G4ThreeVector fNeutronDir;
+		G4double fNuEnergy;
+		G4ThreeVector fNuDir;
+		G4ThreeVector fVertex;
+		G4double fPositronEnergy;
+		G4ThreeVector fPositronDir;
+		G4double fNeutronEnergy;
+		G4ThreeVector fNeutronDir;
 
 	public: 
 		// Addition of IBD event generator

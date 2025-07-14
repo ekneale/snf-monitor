@@ -34,6 +34,7 @@ namespace G4_BREMS {
 
         void AddProcessCount(const G4String& volume, const G4String& processName, bool isCreationProcess);
         G4double CalculateTrappingEfficiency() const;
+	G4int debug_runaction = 0;
 
     private:
         G4int fTileCount;

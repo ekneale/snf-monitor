@@ -60,9 +60,6 @@ namespace G4_BREMS
         fFiberCladVolume(nullptr), fSipmVolume(nullptr),
         fTileSD(nullptr), fFiberCoreSD(nullptr), fFiberCladSD(nullptr), fSipmSD(nullptr) {
 	data_dir = G4String(getenv("SNF_MONITOR_DATADIR"));
-	G4cout << "**********************************" << G4endl;
-	G4cout << data_dir << G4endl;
-	G4cout << "**********************************" << G4endl;
     }
 
     DetectorConstruction::~DetectorConstruction() {}
@@ -81,7 +78,7 @@ namespace G4_BREMS
         // read emission data
         std::ifstream emissionFile(data_dir+"/bcf91a_emission.csv");
         if (!emissionFile.is_open()) {
-            G4cout << "Failed to open emission file" << G4endl;
+            G4cout << "[ERROR] Failed to open emission file" << G4endl;
             return nullptr;
         }
         std::ifstream absorptionFile(data_dir+"/bcf91a_absorption.csv");
@@ -312,13 +309,15 @@ namespace G4_BREMS
         AbsFiber = sortedAbsFiber;
         EmissionIntensity = sortedEmissionIntensity;
 
-        for (size_t i = 0; i < mergedData.size(); i++) {
-            G4cout << "Energy [" << i << "] " << sortedEnergies[i] << " "
-                << " ---- ScintEmission [" << i << "] " << sortedScintEmission[i]
-                << " ---- AbsFiber [" << i << "] " << sortedAbsFiber[i]
-                << " ---- EmissionIntensity [" << i << "] " << sortedEmissionIntensity[i]
-                << G4endl;
-        }
+	if(debug_detector){
+	        for (size_t i = 0; i < mergedData.size(); i++) {
+        	    G4cout << "Energy [" << i << "] " << sortedEnergies[i] << " "
+                	<< " ---- ScintEmission [" << i << "] " << sortedScintEmission[i]
+	                << " ---- AbsFiber [" << i << "] " << sortedAbsFiber[i]
+        	        << " ---- EmissionIntensity [" << i << "] " << sortedEmissionIntensity[i]
+                	<< G4endl;
+	        }
+	}
 
         // material properties for polystyrene scintillator
         std::vector<G4double> RIndexScint(sortedEnergies.size(), 1.59);
