@@ -27,9 +27,19 @@ namespace G4_BREMS {
 
     SteppingAction::SteppingAction(RunAction* runAction)
         : G4UserSteppingAction(), fRunAction(runAction), fSensitiveVolume(nullptr) {
+	
+
+
+	    sipm_t.resize(0);
+	    sipm_x.resize(0);
+	    sipm_y.resize(0);
+	    sipm_z.resize(0);
+
     }
 
-    SteppingAction::~SteppingAction() {}
+    SteppingAction::~SteppingAction() {
+    
+    }
 
     void SteppingAction::UserSteppingAction(const G4Step* step)
     {
@@ -248,29 +258,26 @@ namespace G4_BREMS {
                     hit.energy = hitEnergy;
                     hit.wavelength = hitWavelength;
                     fSipmHits.push_back(hit);
+                    
+                    //G4cout << fSipmHits[(int)fSipmHits.size()-1].time << G4endl;
+		            sipm_t.push_back(hitTime);
+		            sipm_x.push_back(hitPosition.x());
+		            sipm_y.push_back(hitPosition.y());
+		            sipm_z.push_back(hitPosition.z());
 
                     G4AutoLock lock(&sipmHitsMutex);
                     gSipmHits.push_back(hit);
                     lock.unlock();
 
 			
-		    if (debug_steppingaction) {
+		            if (debug_steppingaction) {
                         G4cout << "Hit SiPM with name: " << fullSipmName << " " << "Hit Time: " << hitTime << " "
                         << "Hit Local Time: " << hitTimeLocal << " " << "Hit Position: "
                         << hitPosition << " " << "Hit Wavelength: " << hitWavelength << " " << "Pre Volume: " << preVolumeName
                         << " " << "Hit Position Sipm: " << hitPositionSipm
-                        //<< " " << "Energy Deposition in Sipm: "
-                        //<< edepSipm 
                         << G4endl;
 
-                        //G4cout << "Hit Time: " << hitTime << " " << "Hit Position: " << hitPosition << " " << "Hit Energy: "
-                        //<< hitEnergy << " " << "Hit Wavelength: " << hitWavelength << " " << "Pre Volume: " << preVolumeName
-                        //<< " Step Number in Sipm: " << stepNum << " SiPM ID: " << sipmID << G4endl;
-
-                        //G4cout << "Adding SiPM hit to collection, current size: " << fSipmHits.size() << G4endl;
-                        //fSipmHits.push_back(hit);
-                        //G4cout << "New collection size: " << fSipmHits.size() << G4endl;
-		    } // debug_steppingaction
+		            } // debug_steppingaction
                   
                     auto analysisManager = G4AnalysisManager::Instance();
                     analysisManager->FillH1(11, hitTime / ns);
@@ -298,12 +305,12 @@ namespace G4_BREMS {
                     G4String fullSipmName = physVolume->GetName();
                     G4int sipmID = step->GetPostStepPoint()->GetTouchableHandle()->GetCopyNumber();
 
-		    if(debug_steppingaction){
+		            if(debug_steppingaction){
 
 	                    G4cout << "Hit Time: " << hitTime << " " << "Hit Position: " << hitPosition << " " << "Hit Energy: "
         	                << hitEnergy << " " << "Hit Wavelength: " << hitWavelength << " " << "Pre Volume: " << preVolumeName
                 	        << " Step Number in Sipm: " << stepNum << " SiPM ID: " << sipmID << G4endl;
-		    }
+		            }
                 }
                 
             }
@@ -340,7 +347,12 @@ namespace G4_BREMS {
             analysisManager->FillH2(10, position.y() / mm, position.z() / mm, edep / MeV);
             analysisManager->FillH2(11, position.x() / mm, position.z() / mm, edep / MeV);
         }
-    }
+
+        int n_sipm_hits = fSipmHits.size();
+	    analysisManager->FillNtupleIColumn(15, n_sipm_hits);
+        analysisManager->AddNtupleRow();
+
+    } // UserSteppingAction
 
 } // namespace G4_BREMS
 

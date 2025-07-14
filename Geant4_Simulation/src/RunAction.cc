@@ -248,6 +248,12 @@ namespace G4_BREMS {
 	analysisManager->CreateNtupleDColumn("neutron_dir_x");          // column ID = 12
 	analysisManager->CreateNtupleDColumn("neutron_dir_y");          // column ID = 13
 	analysisManager->CreateNtupleDColumn("neutron_dir_z");          // column ID = 14
+	analysisManager->CreateNtupleIColumn("n_sipm_hits");		// column ID = 15
+	analysisManager->CreateNtupleDColumn("sipm_x");                 // column ID = 16
+	analysisManager->CreateNtupleDColumn("sipm_y");			// column ID = 17
+	analysisManager->CreateNtupleDColumn("sipm_z");                 // column ID = 18
+	analysisManager->CreateNtupleDColumn("sipm_t");                 // column ID = 19
+	analysisManager->CreateNtupleDColumn("sipm_q");                 // column ID = 20
 	analysisManager->FinishNtuple();
     }
 

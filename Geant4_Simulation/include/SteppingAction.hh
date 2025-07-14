@@ -47,6 +47,11 @@ namespace G4_BREMS {
         G4LogicalVolume* fSensitiveVolume;
         std::vector<SipmHit> fSipmHits;
 	G4int debug_steppingaction = 0;
+	std::vector<double> sipm_t;
+	std::vector<double> sipm_x;
+	std::vector<double> sipm_y;
+	std::vector<double> sipm_z;
+	std::vector<double> sipm_q;
     };
 
 }  // namespace G4_BREMS
