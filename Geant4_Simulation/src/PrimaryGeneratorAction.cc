@@ -50,9 +50,9 @@ namespace G4_BREMS
 			if(!fIBDGen){
 				if(debug_primarygenerator){
 					G4cout << "PrimaryGeneratorAction::GeneratePrimaries  [INFO] Initialising IBD generator" << G4endl;
-					fIBDGen = new IBDGen();
-					fIBDGen->ReadSpectrumFromDB(spectrum_database,spectrum_name);
 				}
+				fIBDGen = new IBDGen();
+				fIBDGen->ReadSpectrumFromDB(spectrum_database,spectrum_name);
 			}
 
 			// Create the particles

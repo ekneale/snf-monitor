@@ -97,8 +97,9 @@ void IBDGen::ReadSpectrumFromDB(G4String spectrum_database, G4String spectrum_na
 			flux_max = *std::max_element(fluxVector.begin(), fluxVector.end());
 			xsec_flux_max = MaxXSecFlux();
 			
-			if (debug_ibdgen)
+			if (debug_ibdgen){
 				G4cout << "IBDGen: [INFO] emin, emax, flux max, dsigma/dt(flux_max): " << e_min << ", " << e_max << ", " << flux_max << ", " << xsec_flux_max << G4endl;
+			}
 			return;
 
 		}
