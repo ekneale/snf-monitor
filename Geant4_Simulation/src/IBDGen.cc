@@ -174,6 +174,9 @@ void IBDGen::GenerateNeutrinoKinematics(float &rand_ene, float &rand_cos_theta) 
 	while (!passed) {
 		
 		// Pick energy and direction uniformly in correct range
+		// Energy between 1.8 MeV and emax
+		// Cos theta between -1 and 1
+		e_min = 1.8;
 		rand_ene = e_min + (e_max - e_min) * G4UniformRand();
 		rand_cos_theta = -1.0 + 2.0 * G4UniformRand();
 

@@ -10,11 +10,13 @@
 
 class G4Step;
 class G4Event;
-namespace G4_BREMS {
+namespace G4_BREMS
+{
 
     class RunAction;
 
-    struct SipmHit {
+    struct SipmHit
+    {
         G4int sipmID;
         G4String sipmName;
         G4double time;
@@ -23,7 +25,8 @@ namespace G4_BREMS {
         G4double wavelength;
     };
 
-    struct AnnihilationEvent {
+    struct AnnihilationEvent
+    {
         G4double time;
         G4ThreeVector position;
         G4String volume;
@@ -31,30 +34,31 @@ namespace G4_BREMS {
 
     extern std::vector<SipmHit> gSipmHits;
     extern std::vector<AnnihilationEvent> gAnnihilationEvents;
-    //extern G4Mutex sipmHitsMutex;
-    class SteppingAction : public G4UserSteppingAction {
+    // extern G4Mutex sipmHitsMutex;
+    class SteppingAction : public G4UserSteppingAction
+    {
     public:
-        SteppingAction(RunAction* runAction);
+        SteppingAction(RunAction *runAction);
         virtual ~SteppingAction();
-        virtual void UserSteppingAction(const G4Step*);
+        virtual void UserSteppingAction(const G4Step *);
 
-        void SetRunAction(RunAction* runAction) { fRunAction = runAction; }
+        void SetRunAction(RunAction *runAction) { fRunAction = runAction; }
         void ClearHits() { fSipmHits.clear(); }
-        const std::vector<SipmHit>& GetSipmHits() const { return fSipmHits; }
+        const std::vector<SipmHit> &GetSipmHits() const { return fSipmHits; }
 
     private:
-        RunAction* fRunAction;
-        G4LogicalVolume* fSensitiveVolume;
+        RunAction *fRunAction;
+        G4LogicalVolume *fSensitiveVolume;
         std::vector<SipmHit> fSipmHits;
-	G4int debug_steppingaction = 0;
-	std::vector<double> sipm_t;
-	std::vector<double> sipm_x;
-	std::vector<double> sipm_y;
-	std::vector<double> sipm_z;
-	std::vector<double> sipm_q;
+        G4int debug_steppingaction = 0;
+        std::vector<double> sipm_t;
+        std::vector<double> sipm_x;
+        std::vector<double> sipm_y;
+        std::vector<double> sipm_z;
+        std::vector<double> sipm_q;
+        int generate_histograms = 0;
     };
 
-}  // namespace G4_BREMS
+} // namespace G4_BREMS
 
 #endif
-

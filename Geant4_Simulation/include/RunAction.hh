@@ -60,6 +60,9 @@ namespace G4_BREMS {
         std::map<G4String, G4Accumulable<G4int>*> fAccInteractionCounts;
 
         SteppingAction* fSteppingAction;
+
+	int write_to_csv = 0;
+    int generate_histograms = 0;
     };
 
 }

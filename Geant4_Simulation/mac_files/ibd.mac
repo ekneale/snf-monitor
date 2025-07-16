@@ -3,6 +3,7 @@
 
 
 # Start up
+/run/numberOfThreads 1
 /run/initialize
 
 # Uncomment to use IBD generator.
@@ -10,9 +11,9 @@
 # generator is not used.
 /mygen/generator ibd
 /mygen/ibd_database IBDSpectra.json
-/mygen/ibd_spectrum Flat
+/mygen/ibd_spectrum Sizewell_single_0.5
 
 
 # Run the simulation
-/run/beamOn 1
+/run/beamOn 1000
 
