@@ -1,4 +1,3 @@
-
 #include "ActionInit.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "SteppingAction.hh"
@@ -23,5 +22,4 @@ namespace G4_BREMS {
 
 	}
 }
-
 

@@ -1,4 +1,3 @@
-
 #include "RunAction.hh"
 #include "SteppingAction.hh"
 #include "G4Run.hh"
@@ -231,6 +230,29 @@ namespace G4_BREMS {
         analysisManager->SetH2XAxisTitle(14, "x [mm]");
         analysisManager->SetH2YAxisTitle(14, "z [mm]");
         analysisManager->SetH2ZAxisTitle(14, "Time [ns]");
+
+        analysisManager->CreateH1("Sipm_Timing_NeutronCapture", "Sipm Timing NeutronCapture",
+            200, 300, 600);
+        analysisManager->SetH1XAxisTitle(20, "Time [ns]");
+        analysisManager->SetH1YAxisTitle(20, "Counts");
+
+        analysisManager->CreateH2("Sipm_Timing_NeutronCapture_xy", "Sipm Timing NeutronCapture XY",
+            100, -400., 300., 100, -40., 40.);
+        analysisManager->SetH2XAxisTitle(21, "x [mm]");
+        analysisManager->SetH2YAxisTitle(21, "y [mm]");
+        analysisManager->SetH2ZAxisTitle(21, "Time [ns]");
+
+        analysisManager->CreateH2("Sipm_Timing_NeutronCapture_yz", "Sipm Timing NeutronCapture YZ",
+            100, -400., 300., 100, -40., 40.);
+        analysisManager->SetH2XAxisTitle(22, "y [mm]");
+        analysisManager->SetH2YAxisTitle(22, "z [mm]");
+        analysisManager->SetH2ZAxisTitle(22, "Time [ns]");
+
+        analysisManager->CreateH2("Sipm_Timing_NeutronCapture_xz", "Sipm Timing NeutronCapture XZ",
+            100, -400., 300., 100, -40., 40.);
+        analysisManager->SetH2XAxisTitle(23, "x [mm]");
+        analysisManager->SetH2YAxisTitle(23, "z [mm]");
+        analysisManager->SetH2ZAxisTitle(23, "Time [ns]");
     }
 
     G4_BREMS::RunAction::~RunAction() {
@@ -251,7 +273,7 @@ namespace G4_BREMS {
 
         if (G4Threading::IsMasterThread()) {
             gSipmHits.clear();
-            gAnnihilationEvents.clear();  
+            gAnnihilationEvents.clear();
         }
 
         auto analysisManager = G4AnalysisManager::Instance();
@@ -335,7 +357,27 @@ namespace G4_BREMS {
                 }
             }
 
-            if (!gAnnihilationEvents.empty() ) {
+            //if (!gneutronCaptureSipmHits.empty()) {
+                std::string filename1 = "sipm_hits_neutron_capture.csv";
+                std::ofstream out(filename1);
+                //std::ofstream out("sipm_hits_capture.csv");
+                out << "SipmID,X(mm),Y(mm),Z(mm),Time(ns)\n";
+                for (auto& hit : gneutronCaptureSipmHits) {
+                    if (hit.creatorProcess == "capture_induced") {
+                        out << hit.sipmID << ","
+                            << hit.position.x() / mm << ","
+                            << hit.position.y() / mm << ","
+                            << hit.position.z() / mm << ","
+                            << hit.time / ns << "\n";
+                    }
+                }
+                out.close();
+                G4cout << "Wrote " << gneutronCaptureSipmHits.size()
+                    << " neutron capture events to " << filename1 << G4endl;
+            //}
+            
+
+            if (!gAnnihilationEvents.empty()) {
                 std::string filename = "annihilation_events.csv";
                 std::ofstream outFile(filename);
                 if (outFile.is_open()) {
@@ -429,6 +471,12 @@ namespace G4_BREMS {
                     G4cerr << "Error: Could not open " << filename1 << " for writing" << G4endl;
                 }
 
+                
+                
+                
+
+
+
                 std::string filename2 = "Sipm_Charge_Deposition.csv";
                 std::ofstream outFile2(filename2);
                 if (outFile2.is_open()) {
@@ -483,6 +531,8 @@ namespace G4_BREMS {
                 else {
                     G4cerr << "Error: Could not open " << filename2 << " for writing" << G4endl;
                 }
+                
+
 
             }
 
@@ -496,5 +546,4 @@ namespace G4_BREMS {
     }
 
 }  // namespace G4_BREMS
-
 
