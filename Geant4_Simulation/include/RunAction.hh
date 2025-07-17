@@ -1,4 +1,3 @@
-
 #ifndef RunAction_h
 #define RunAction_h 1
 
@@ -64,7 +63,3 @@ namespace G4_BREMS {
 }
 
 #endif
-
-
-
-

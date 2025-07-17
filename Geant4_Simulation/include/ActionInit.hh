@@ -1,4 +1,3 @@
-
 #ifndef G4_BREMS_ACTION_INIT_H
 #define G4_BREMS_ACTION_INIT_H 1
 
@@ -17,6 +16,4 @@ namespace G4_BREMS {
 	};
 }
 #endif // !G4_BREMS_ACTION_INIT_H
-
-
 

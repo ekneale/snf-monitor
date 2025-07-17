@@ -23,7 +23,11 @@ int main(int argc, char** argv)
 	}
 	auto* runManager =
 		G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
-	
+
+	//auto* runManager =
+		//G4RunManagerFactory::CreateRunManager(G4RunManagerType::Serial);
+
+
 	runManager->SetUserInitialization(new PhysicsList());
 	runManager->SetUserInitialization(new DetectorConstruction());
 	runManager->SetUserInitialization(new ActionInit());
@@ -37,7 +41,7 @@ int main(int argc, char** argv)
 
 	// random seed
 	long seed = 12345;
-	
+
 	CLHEP::HepRandom::setTheSeed(seed);
 	G4Random::setTheSeed(seed);
 
@@ -67,6 +71,3 @@ int main(int argc, char** argv)
 	delete runManager;
 	return 0;
 }
-
-
-
