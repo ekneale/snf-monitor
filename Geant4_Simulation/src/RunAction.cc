@@ -233,26 +233,26 @@ namespace G4_BREMS {
 
         analysisManager->CreateH1("Sipm_Timing_NeutronCapture", "Sipm Timing NeutronCapture",
             200, 300, 600);
-        analysisManager->SetH1XAxisTitle(20, "Time [ns]");
-        analysisManager->SetH1YAxisTitle(20, "Counts");
+        analysisManager->SetH1XAxisTitle(13, "Time [ns]");
+        analysisManager->SetH1YAxisTitle(13, "Counts");
 
         analysisManager->CreateH2("Sipm_Timing_NeutronCapture_xy", "Sipm Timing NeutronCapture XY",
             100, -400., 300., 100, -40., 40.);
-        analysisManager->SetH2XAxisTitle(21, "x [mm]");
-        analysisManager->SetH2YAxisTitle(21, "y [mm]");
-        analysisManager->SetH2ZAxisTitle(21, "Time [ns]");
+        analysisManager->SetH2XAxisTitle(15, "x [mm]");
+        analysisManager->SetH2YAxisTitle(15, "y [mm]");
+        analysisManager->SetH2ZAxisTitle(15, "Time [ns]");
 
         analysisManager->CreateH2("Sipm_Timing_NeutronCapture_yz", "Sipm Timing NeutronCapture YZ",
             100, -400., 300., 100, -40., 40.);
-        analysisManager->SetH2XAxisTitle(22, "y [mm]");
-        analysisManager->SetH2YAxisTitle(22, "z [mm]");
-        analysisManager->SetH2ZAxisTitle(22, "Time [ns]");
+        analysisManager->SetH2XAxisTitle(16, "y [mm]");
+        analysisManager->SetH2YAxisTitle(16, "z [mm]");
+        analysisManager->SetH2ZAxisTitle(16, "Time [ns]");
 
         analysisManager->CreateH2("Sipm_Timing_NeutronCapture_xz", "Sipm Timing NeutronCapture XZ",
             100, -400., 300., 100, -40., 40.);
-        analysisManager->SetH2XAxisTitle(23, "x [mm]");
-        analysisManager->SetH2YAxisTitle(23, "z [mm]");
-        analysisManager->SetH2ZAxisTitle(23, "Time [ns]");
+        analysisManager->SetH2XAxisTitle(17, "x [mm]");
+        analysisManager->SetH2YAxisTitle(17, "z [mm]");
+        analysisManager->SetH2ZAxisTitle(17, "Time [ns]");
     }
 
     G4_BREMS::RunAction::~RunAction() {
@@ -362,13 +362,13 @@ namespace G4_BREMS {
                 std::ofstream out(filename1);
                 //std::ofstream out("sipm_hits_capture.csv");
                 out << "SipmID,X(mm),Y(mm),Z(mm),Time(ns)\n";
-                for (auto& hit : gneutronCaptureSipmHits) {
-                    if (hit.creatorProcess == "capture_induced") {
-                        out << hit.sipmID << ","
-                            << hit.position.x() / mm << ","
-                            << hit.position.y() / mm << ","
-                            << hit.position.z() / mm << ","
-                            << hit.time / ns << "\n";
+                for (auto& nhit : gneutronCaptureSipmHits) {
+                    if (nhit.creatorProcess == "inelastic") {
+                        out << nhit.sipmID << ","
+                            << nhit.position.x() / mm << ","
+                            << nhit.position.y() / mm << ","
+                            << nhit.position.z() / mm << ","
+                            << nhit.time / ns << "\n";
                     }
                 }
                 out.close();

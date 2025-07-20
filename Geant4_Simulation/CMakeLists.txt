@@ -43,9 +43,9 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 #----------------------------------------------------------------------------
 # Add sources and headers to this project's executable.
 add_executable (G4_Brems "G4-Brems.cc" ${sources} ${headers})
-add_executable (G4_Brems_terminal "G4-Brems-terminal.cc" ${sources} ${headers})
+#add_executable (G4_Brems_terminal "G4-Brems-terminal.cc" ${sources} ${headers})
 target_link_libraries(G4_Brems ${Geant4_LIBRARIES})
-target_link_libraries(G4_Brems_terminal ${Geant4_LIBRARIES})
+#target_link_libraries(G4_Brems_terminal ${Geant4_LIBRARIES})
 
 #----------------------------------------------------------------------------
 # Set standard to C++20
@@ -63,7 +63,7 @@ set(CMAKE_CONFIGURATION_TYPES "Release" CACHE INTERNAL "")
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS G4_Brems DESTINATION bin)
-install(TARGETS G4_Brems_terminal DESTINATION bin)
+#install(TARGETS G4_Brems_terminal DESTINATION bin)
 
 #----------------------------------------------------------------------------
 # Copy all the mac files from "mac_files" directory into the

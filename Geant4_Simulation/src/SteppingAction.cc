@@ -92,6 +92,8 @@ namespace G4_BREMS {
             G4cout << "Particle Name: " << name << " " << "TrackID: " << trackID << G4endl;
             //captureDaughterIDs.push_back(track->GetTrackID());
             captureDaughterIDs.push_back(trackID);
+            captureDaughters.emplace_back(trackID, name);
+            G4cout<<"neutronCapture Daughter Name: "<< name<<" trackID="<< trackID << G4endl;
             //captureDaughterIDs.push_back({name, neutronCapturePos, neutronCapturetime});
             for (G4int i = 0; i < captureDaughterIDs.size(); i++) {
                 G4cout << "Size: " << captureDaughterIDs.size() << "TrackID: " << captureDaughterIDs[i] << G4endl;
@@ -173,6 +175,16 @@ namespace G4_BREMS {
         }
         */
          
+
+        if (creatorProcess && creatorProcess->GetProcessName()=="Scintillation") {
+            G4int scintParent = track->GetParentID();
+            auto it = std::find_if(captureDaughters.begin(), captureDaughters.end(), 
+                                                 [&](auto &p){ return p.first==scintParent; });
+            if (it!=captureDaughters.end()) {
+                captureScintPhotonIDs.push_back(track->GetTrackID());
+                G4cout<<" scintPhoton PID="<< track->GetTrackID() <<" from "<< it->second << G4endl;
+            }
+        }
         
 
         // track WLS events
@@ -252,7 +264,7 @@ namespace G4_BREMS {
 
                 if ((postVolumeName == "Sipm") && (preVolumeName == "FiberCore" || preVolumeName == "FiberClad")
                     && creatorName == "OpWLS") {
-                    
+                    /*
                     G4int parentID = track->GetParentID();
                     if (count(captureDaughterIDs.begin(), captureDaughterIDs.end(), parentID) != 0) {
                         //return;
@@ -282,7 +294,41 @@ namespace G4_BREMS {
                         analysisManager->FillH2(23, pos.x() / mm, pos.z() / mm, t / ns);
                     
                     }
+                    */
 
+                    G4int wlsParent = track->GetParentID();
+                    if ( std::find(captureScintPhotonIDs.begin(), captureScintPhotonIDs.end(), wlsParent)==captureScintPhotonIDs.end()){
+                        return; 
+
+                    }
+                    auto post = step->GetPostStepPoint();
+                    auto pos = post->GetPosition();
+                    auto t = post->GetGlobalTime();
+
+                    neutronCaptureSipmHit nhit;
+                    nhit.sipmID = post->GetTouchableHandle()->GetCopyNumber();
+                    nhit.position = pos;
+                    nhit.time = t;
+                    nhit.creatorProcess = "Inelastic";
+
+                    //gSipmHits.push_back(hit);
+                    fneutroncaptureSipmHits.push_back(nhit);
+
+
+                    G4AutoLock nlock(&neutronCaptureSipmHitsMutex);
+                    gneutronCaptureSipmHits.push_back(nhit);
+                    nlock.unlock();
+
+
+                    auto analysisManager = G4AnalysisManager::Instance();
+                    //analysisManager->FillH1(20, t / ns);
+                    //analysisManager->FillH2(21, pos.x() / mm, pos.y() / mm, t / ns);
+                    //analysisManager->FillH2(22, pos.y() / mm, pos.z() / mm, t / ns);
+                    //analysisManager->FillH2(23, pos.x() / mm, pos.z() / mm, t / ns);
+                    analysisManager->FillH1(13, t / ns);
+                    analysisManager->FillH2(15, pos.x() / mm, pos.y() / mm, t / ns);
+                    analysisManager->FillH2(16, pos.y() / mm, pos.z() / mm, t / ns);
+                    analysisManager->FillH2(17, pos.x() / mm, pos.z() / mm, t / ns);
                     /*
                     auto post = step->GetPostStepPoint();
                     auto pos = post->GetPosition();
@@ -348,7 +394,7 @@ namespace G4_BREMS {
                     //fSipmHits.push_back(hit);
                     //G4cout << "New collection size: " << fSipmHits.size() << G4endl;
 
-                    auto analysisManager = G4AnalysisManager::Instance();
+                    //auto analysisManager = G4AnalysisManager::Instance();
                     analysisManager->FillH1(11, hitTime / ns);
                     analysisManager->FillH1(12, hitWavelength);
                     analysisManager->FillH2(12, hitPositionSipm.x() / mm, hitPositionSipm.y() / mm, hitTime);

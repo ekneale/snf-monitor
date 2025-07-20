@@ -67,6 +67,8 @@ namespace G4_BREMS {
         G4LogicalVolume* fSensitiveVolume;
         std::vector<SipmHit> fSipmHits;
         std::vector<G4int> captureDaughterIDs;
+        std::vector<std::pair<G4int,G4String>> captureDaughters;
+        std::vector<G4int> captureScintPhotonIDs;
         std::vector<neutronCaptureSipmHit> fneutroncaptureSipmHits;
     };
 

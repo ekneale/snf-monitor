@@ -73,12 +73,12 @@ namespace G4_BREMS {
         std::vector<G4double> scintEmission;
 
         // read emission data
-        std::ifstream emissionFile("D:/University of Sheffield Books/Liz Kneale/Work/G4-Brems-0.6.1-alpha1/src/bcf91a_emission.csv");
+        std::ifstream emissionFile("/home/vishnuprasad/snf-monitor/bcf91a_emission.csv");
         if (!emissionFile.is_open()) {
             G4cout << "Failed to open emission file" << G4endl;
             return nullptr;
         }
-        std::ifstream absorptionFile("D:/University of Sheffield Books/Liz Kneale/Work/G4-Brems-0.6.1-alpha1/src/bcf91a_absorption.csv");
+        std::ifstream absorptionFile("/home/vishnuprasad/snf-monitor/bcf91a_absorption.csv");
 
         G4double wavelength1, intensity1;
         std::string line1;
@@ -375,8 +375,8 @@ namespace G4_BREMS {
         // tile dimensions
         G4double tileX = 200.0 * mm;
         G4double tileY = 200.0 * mm;
-       // G4double tileZ = 5.0 * mm;
-        G4double tileZ = 50.0 * mm;
+        G4double tileZ = 5.0 * mm;
+        //G4double tileZ = 50.0 * mm;
         //G4double gap = 1.0 * mm;
         //G4double gap = 0.1 * mm;
         //G4double layerSpacing = 1.0 * mm;
@@ -386,28 +386,28 @@ namespace G4_BREMS {
         //G4double fiberLength = 2 * tileX + gap;
         G4double fiberLength = 2 * tileX;
 
-        //G4double sipm_sizeX = 1.0 * mm;
-        //G4double sipm_sizeY = 1.0 * mm;
-        //G4double sipm_sizeZ = 1.0 * mm;
+        G4double sipm_sizeX = 1.0 * mm;
+        G4double sipm_sizeY = 1.0 * mm;
+        G4double sipm_sizeZ = 1.0 * mm;
 
-        G4double sipm_sizeX = 10.0 * mm;
-        G4double sipm_sizeY = 10.0 * mm;
-        G4double sipm_sizeZ = 10.0 * mm;
+        //G4double sipm_sizeX = 10.0 * mm;
+        //G4double sipm_sizeY = 10.0 * mm;
+        //G4double sipm_sizeZ = 10.0 * mm;
 
         G4double layerX = 2 * tileX;
         G4double layerY = 2 * tileY;
 
         // groove dimensions
-        //G4double grooveWidth = 1.5 * mm;
-        //G4double grooveDepth = 2.5 * mm;
+        G4double grooveWidth = 1.5 * mm;
+        G4double grooveDepth = 2.5 * mm;
 
-        G4double grooveWidth = 15 * mm;
-        G4double grooveDepth = 25 * mm;
+        //G4double grooveWidth = 15 * mm;
+        //G4double grooveDepth = 25 * mm;
 
-        //G4double thicknessBN = 0.0005 * mm;
-        //G4double thicknessAl = 0.0009 * mm;
-        G4double thicknessBN = 50.0 * mm;
-        G4double thicknessAl = 5.0 * mm;
+        G4double thicknessBN = 0.0005 * mm;
+        G4double thicknessAl = 0.0009 * mm;
+        //G4double thicknessBN = 50.0 * mm;
+        //G4double thicknessAl = 5.0 * mm;
 
         // groove positions 
         G4double groovePositions[] = {
@@ -538,12 +538,12 @@ namespace G4_BREMS {
 
         
         G4double top_bottom_layer_gap = 0.2019 * mm;
-        /*
+        
         std::vector<G4double> bottomlayer_posZ = { 0.0 * mm, 10.0 * mm + 2 * top_bottom_layer_gap,
                                                    20.0 * mm + 4 * top_bottom_layer_gap, 30.0 * mm + 6 * top_bottom_layer_gap };
         std::vector<G4double> toplayer_posZ = { 5.0 * mm + top_bottom_layer_gap, 15.0 * mm + 3 * top_bottom_layer_gap,
                                     25.0 * mm + 5 * top_bottom_layer_gap, 35.0 * mm + 7 * top_bottom_layer_gap};
-        */     
+            
         G4double gap = 50 * mm;
 
         //std::vector<G4double> bottomlayer_posZ = { 0.0 * mm };
@@ -557,11 +557,11 @@ namespace G4_BREMS {
         //std::vector<G4double> toplayer_posZ = { 5.0 * mm + top_bottom_layer_gap + 2 * gap, 
             //15 * mm + top_bottom_layer_gap + 4 * gap };
 
-        std::vector<G4double> bottomlayer_posZ = { 0.0 * mm, 100 * mm + top_bottom_layer_gap + 3 * gap,
-            200 * mm + top_bottom_layer_gap + 5 * gap };
+        //std::vector<G4double> bottomlayer_posZ = { 0.0 * mm, 100 * mm + top_bottom_layer_gap + 3 * gap,
+            //200 * mm + top_bottom_layer_gap + 5 * gap };
         //std::vector<G4double> toplayer_posZ = { 5.0 * mm + top_bottom_layer_gap };
-        std::vector<G4double> toplayer_posZ = { 50.0 * mm + top_bottom_layer_gap + 2 * gap,
-            150 * mm + top_bottom_layer_gap + 4 * gap };
+        //std::vector<G4double> toplayer_posZ = { 50.0 * mm + top_bottom_layer_gap + 2 * gap,
+            //150 * mm + top_bottom_layer_gap + 4 * gap };
         for (size_t i = 0; i < bottomlayer_posZ.size(); ++i) {
               //G4double z_bot = bottomlayer_posZ[i] - (tileZ / 2 + layerSpacing / 2);
               //G4double z_bot = bottomlayer_posZ[i];

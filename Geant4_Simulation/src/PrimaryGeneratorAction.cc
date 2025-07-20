@@ -68,8 +68,8 @@ namespace G4_BREMS
 		//G4ThreeVector neutron_position = G4ThreeVector(-200.0 * mm, 10 * mm, 0 * mm);
 		//G4ThreeVector neutron_position = G4ThreeVector(-200.0 * mm, 0 * mm, 0 * mm);
 		//G4ThreeVector neutron_position = G4ThreeVector(0.0 * mm, 100 * mm, 0 * mm);
-		G4ThreeVector neutron_position = G4ThreeVector(100.0 * mm, 100 * mm, 50 * mm);
-		//G4ThreeVector neutron_position = G4ThreeVector(0 * mm, 0 * mm, 0 * mm);
+		//G4ThreeVector neutron_position = G4ThreeVector(100.0 * mm, 100 * mm, 50 * mm); -works
+		G4ThreeVector neutron_position = G4ThreeVector(0 * mm, 0 * mm, 0 * mm);
 		fParticleGun2->SetParticlePosition(neutron_position);
 		fParticleGun2->GeneratePrimaryVertex(event);
 

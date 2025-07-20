@@ -1,0 +1,7 @@
+/home/vishnuprasad/snf-monitor/build/CMakeFiles/G4_Brems.dir
+/home/vishnuprasad/snf-monitor/build/CMakeFiles/edit_cache.dir
+/home/vishnuprasad/snf-monitor/build/CMakeFiles/rebuild_cache.dir
+/home/vishnuprasad/snf-monitor/build/CMakeFiles/list_install_components.dir
+/home/vishnuprasad/snf-monitor/build/CMakeFiles/install.dir
+/home/vishnuprasad/snf-monitor/build/CMakeFiles/install/local.dir
+/home/vishnuprasad/snf-monitor/build/CMakeFiles/install/strip.dir

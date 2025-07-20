@@ -31,7 +31,7 @@
 #include "G4NeutronInelasticXS.hh"
 #include "G4ElasticHadrNucleusHE.hh"
 #include "G4HadronInelasticProcess.hh"
-#include "G4neutronInelasticXS.hh"
+#include "G4NeutronInelasticXS.hh"
 #include "G4ChipsElasticModel.hh"
 #include "G4NeutronElasticXS.hh"
 //#include "G4NeutronInelasticProcess.hh"
