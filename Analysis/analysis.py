@@ -2,9 +2,10 @@ import ROOT
 from array import array
 from efficiency import detector_efficiency
 import numpy as np
+import json
 
 
-def threshold_eff(root_filename, tree_name="reco_data", ibd_threshold=0.5, bins=400, scale = 1, distance = 1): #change threshold to positron equiv of nu energy of 1.8MeV
+def threshold_eff(root_filename, tree_name="reco_data", ibd_threshold=0.506, bins=400, scale = 1, distance = 1): #change threshold to positron equiv of nu energy of 1.8MeV
 
     canvas = ROOT.TCanvas("canvas", "e+ and n energy scaled and eff applied", 1200, 600)
     canvas.SetGrid()
@@ -59,6 +60,57 @@ def threshold_eff(root_filename, tree_name="reco_data", ibd_threshold=0.5, bins=
 
 
     return passed_sim_events 
+
+def final_neutrino(root_filename, tree_name="reco_data", ibd_threshold=1.806, bins=400, scale = 1, distance = 1): #change threshold to positron equiv of nu energy of 1.8MeV
+
+    canvas = ROOT.TCanvas("canvas", "neutrino energy scaled and eff applied", 1200, 600)
+    canvas.SetGrid()
+
+    file = ROOT.TFile(root_filename)
+    tree = file.Get(tree_name)
+
+    neutrino_energy_hist = ROOT.TH1F("neutrino_hist", "Neutrino Energy Histogram with smearing, threshold cut and detector efficiency applied",bins, 1.8, 5)
+   
+
+    #fill histos from sim data 
+    for event in tree:
+        neutrino_energy = event.reco_nu_energy
+        if neutrino_energy > ibd_threshold:
+            neutrino_energy_hist.Fill(neutrino_energy)
+        
+
+    # applying the efficency by calling other macro 
+    for i in range(1, neutrino_energy_hist.GetNbinsX() + 1):
+        bin_center = neutrino_energy_hist.GetBinCenter(i)
+        content = neutrino_energy_hist.GetBinContent(i)
+        eff = detector_efficiency(bin_center)
+        neutrino_energy_hist.SetBinContent(i, content * eff)
+
+
+    neutrino_energy_hist.SetLineColor(ROOT.kBlue)
+    neutrino_energy_hist.Draw("HIST")
+
+    # scale final spectrum to be in days when input is in secs
+    secs_per_day = 86400
+    neutrino_energy_hist.Scale(secs_per_day)
+
+    # scale for ratio 
+    neutrino_energy_hist.Scale(scale)
+
+    #scale for distance from detector
+
+    neutrino_energy_hist.Scale(distance)
+
+    #scale for size of detector 
+
+
+    neutrino_energy_hist.GetXaxis().SetTitle("Scaled Neutrino Energy [MeV]")
+    neutrino_energy_hist.GetYaxis().SetTitle("Time [days]")
+
+    canvas.Update()
+    canvas.SaveAs("final_neutrino_spec.png")
+
+    print(f"saved as final_neutrino_spec.png")
 
 
 
@@ -133,6 +185,23 @@ def rate_calc(integral, cross_sec, distance):
     print(f"this is the rate:{rate}")
 
     return rate 
+
+#this plots the energy against resilution directly from the json file 
+canvas = ROOT.TCanvas("energy_res_can", "Energy Against Resolution", 1200, 600)
+canvas.SetGrid()
+with open("eff.json", 'r') as f:
+    eff_data = json.load(f)
+    energy = array('d', eff_data['energy'])
+   # efficiency = np.interp(energy, eff_data['energy'], eff_data['efficiency'])
+    efficiency = array('d',eff_data['efficiency'])
+    energy_res_graph = ROOT.TGraph(len(energy), energy, efficiency)
+    energy_res_graph.SetLineColor(ROOT.kRed)
+    energy_res_graph.SetTitle("Energy against Resolution")
+    energy_res_graph.GetXaxis().SetTitle("Energy [MeV]")
+    energy_res_graph.GetYaxis().SetTitle("Resolution")
+    energy_res_graph.Draw("APL")
+    canvas.SaveAs("energy_res.png")
+    print("saved as energy_res.png")
 
 
 #define variables
@@ -221,8 +290,7 @@ rate_calc(integral=integral_rate, cross_sec= sigma , distance= 40)
 # this scales the histogram using the scaled ratio of passed events 
 ratio_val = calc_ratio("Sizewell_Multiple_5000_IBD.root")
 threshold_eff("Sizewell_Multiple_5000_IBD.root", scale= ratio_val, distance = 40) #distance in m 
-
-
+final_neutrino("Sizewell_Multiple_5000_IBD.root", scale=ratio_val, distance=40)
 
 
 
