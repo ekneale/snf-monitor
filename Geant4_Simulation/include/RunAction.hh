@@ -5,6 +5,7 @@
 #include "G4Accumulable.hh"
 #include "globals.hh"
 #include <map>
+#include "G4GenericAnalysisManager.hh"
 
 class G4Run;
 
@@ -58,6 +59,11 @@ namespace G4_BREMS {
         std::map<G4String, G4Accumulable<G4int>*> fAccInteractionCounts;
 
         SteppingAction* fSteppingAction;
+
+
+        //G4GenericAnalysisManager* fH1mgr;
+        //G4GenericAnalysisManager* fH2mgr;
+        //G4GenericAnalysisManager* fNtupleMgr;
     };
 
 }

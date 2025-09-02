@@ -4,6 +4,8 @@
 # Start up
 /run/initialize
 
+
+#help /vis/open
 # Open an OpenGL viewer
 #/vis/open OGL
 #/vis/open OGL
@@ -11,6 +13,28 @@
 
 # Draw geometry
 #/vis/drawVolume
+#/vis/open
+#/vis/open Qt
+
+
+#/vis/open OGLIQt
+#/vis/viewer/set/viewpointThetaPhi  80  20
+#/vis/drawVolume
+#/vis/scene/add/trajectories  
+#/vis/sceneHandler/attach
+#/vis/scene/create  
+
+
+
+#/vis/open OGLIX
+#/vis/scene/create
+#/vis/scene/add/trajectories
+#/vis/sceneHandler/attach
+#/vis/viewer/set/viewpointThetaPhi 80 20
+#/vis/drawVolume
+#/vis/sceneHandler/transfer all
+#/vis/viewer/flush
+
 
 
 #/vis/viewer/set/style cloud
@@ -86,11 +110,46 @@
 #/vis/viewer/set/hiddenEdge true
 
 # Superimpose all of the events from a given run
-/vis/scene/endOfEventAction accumulate
+#/vis/scene/endOfEventAction accumulate
 
 # Run the simulation
-/run/beamOn 1000
+#/run/beamOn 10
 
 # Refresh the viewer
 #/vis/viewer/refresh
+#/vis/viewer/flush
+
+
+
+
+#/vis/open OGL
+#/vis/open Qt
+#/vis/open DAWNFILE
+#/vis/open HepRepFile
+#/vis/open VRML2FILE
+#/vis/viewer/set/autoRefresh false
+#/vis/verbose errors
+#/vis/drawVolume
+#/vis/viewer/set/viewpointThetaPhi 90. 0.
+#/vis/viewer/zoom 2
+#/vis/viewer/set/style wireframe
+#/vis/scene/add/axes 0 0 0 1 m
+#/vis/scene/add/trajectories smooth
+#/vis/modeling/trajectories/create/drawByCharge
+#/vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
+#/vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 2
+#/vis/scene/add/hits
+#/vis/filtering/trajectories/create/particleFilter
+#/vis/filtering/trajectories/particleFilter-0/add gamma
+#/vis/filtering/trajectories/particleFilter-0/invert true
+#/vis/modeling/trajectories/create/drawByParticleID
+#/vis/modeling/trajectories/drawByParticleID-0/set e- blue
+#/vis/scene/endOfEventAction accumulate
+#/vis/viewer/set/autoRefresh true
+
+
+#/run/numberOfThreads 1
+/run/beamOn 2000
+
+#/vis/verbose warnings
 #/vis/viewer/flush

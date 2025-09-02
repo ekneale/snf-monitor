@@ -9,6 +9,9 @@
 #include "DetectorConstruction.hh"
 #include "PhysicsList.hh"
 #include "ActionInit.hh"
+#include "Annihilation.hh"
+#include "DetectorPrototype1.hh"
+#include "DetectorPrototype2.hh"
 
 using namespace G4_BREMS;
 
@@ -27,11 +30,17 @@ int main(int argc, char** argv)
 	//auto* runManager =
 		//G4RunManagerFactory::CreateRunManager(G4RunManagerType::Serial);
 
-
-	runManager->SetUserInitialization(new PhysicsList());
+    //runManager->SetNumberOfThreads(3);
 	runManager->SetUserInitialization(new DetectorConstruction());
+	runManager->SetUserInitialization(new PhysicsList());
+	
+	//G4VUserDetectorConstruction* DetectorPrototype1 = new G4VUserDetectorConstruction();
+	//runManager->SetUserInitialization(new DetectorPrototype1);
+    //runManager->SetUserInitialization(new DetectorPrototype1());
+	//runManager->SetUserInitialization(new DetectorPrototype2());
+	//runManager->SetUserInitialization(new Annihilation());
 	runManager->SetUserInitialization(new ActionInit());
-
+    
 
 	G4VisManager* visManager = new G4VisExecutive;
 	visManager->Initialize();

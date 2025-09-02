@@ -1,4 +1,4 @@
-#include "DetectorConstruction.hh"
+#include "DetectorPrototype2.hh"
 #include "G4Box.hh"
 #include "G4Tubs.hh"
 #include "G4PVPlacement.hh"
@@ -53,16 +53,16 @@ namespace G4_BREMS {
         }
     };
 
-    DetectorConstruction::DetectorConstruction() : fTileVolume(nullptr),
+    DetectorPrototype2::DetectorPrototype2() : fTileVolume(nullptr),
         fFiberCoreVolume(nullptr),
         fFiberCladVolume(nullptr), fSipmVolume(nullptr),
         fTileSD(nullptr), fFiberCoreSD(nullptr), fFiberCladSD(nullptr), fSipmSD(nullptr) {
     }
 
-    DetectorConstruction::~DetectorConstruction() {}
+    DetectorPrototype2::~DetectorPrototype2() {}
 
     
-    G4VPhysicalVolume* DetectorConstruction::Construct() {
+    G4VPhysicalVolume* DetectorPrototype2::Construct() {
         
         G4NistManager* nist = G4NistManager::Instance();
         G4Material* air = nist->FindOrBuildMaterial("G4_AIR");
@@ -524,15 +524,11 @@ namespace G4_BREMS {
         
         
         G4Element* boron = new G4Element("Boron", "B", 5, 10.81 * g / mole);
-       // G4Element* nitrogen = new G4Element("Nitrogen", "N", 7, 14.01 * g / mole);
+        G4Element* nitrogen = new G4Element("Nitrogen", "N", 7, 14.01 * g / mole);
 
-        //G4Material* boronNitride = new G4Material("BoronNitride", 2.1 * g / cm3, 2);
-        //boronNitride->AddElement(boron, 1);
-        //boronNitride->AddElement(nitrogen, 1);
-
-        G4Material* boronNitride = new G4Material("BoronNitride", 2.1 * g / cm3, 1);
+        G4Material* boronNitride = new G4Material("BoronNitride", 2.1 * g / cm3, 2);
         boronNitride->AddElement(boron, 1);
-        //boronNitride->AddElement(nitrogen, 1);
+        boronNitride->AddElement(nitrogen, 1);
 
         G4Material* aluminium = nist->FindOrBuildMaterial("G4_Al");
         
@@ -554,11 +550,12 @@ namespace G4_BREMS {
         
         G4double top_bottom_layer_gap = 0.2019 * mm;
         
-        std::vector<G4double> bottomlayer_posZ = { 0.0 * mm, 10.0 * mm + 2 * top_bottom_layer_gap,
-                                                   20.0 * mm + 4 * top_bottom_layer_gap, 30.0 * mm + 6 * top_bottom_layer_gap };
-        std::vector<G4double> toplayer_posZ = { 5.0 * mm + top_bottom_layer_gap, 15.0 * mm + 3 * top_bottom_layer_gap,
-                                    25.0 * mm + 5 * top_bottom_layer_gap, 35.0 * mm + 7 * top_bottom_layer_gap};
-            
+        //std::vector<G4double> bottomlayer_posZ = { 0.0 * mm, 10.0 * mm + 2 * top_bottom_layer_gap,
+                                                   //20.0 * mm + 4 * top_bottom_layer_gap, 30.0 * mm + 6 * top_bottom_layer_gap };
+        //std::vector<G4double> toplayer_posZ = { 5.0 * mm + top_bottom_layer_gap, 15.0 * mm + 3 * top_bottom_layer_gap,
+                                    //25.0 * mm + 5 * top_bottom_layer_gap, 35.0 * mm + 7 * top_bottom_layer_gap};
+        std::vector<G4double> bottomlayer_posZ = { 0.0 * mm};
+        std::vector<G4double> toplayer_posZ = { 5.0 * mm + top_bottom_layer_gap};
         G4double gap = 50 * mm;
 
         //std::vector<G4double> bottomlayer_posZ = { 0.0 * mm };
@@ -873,7 +870,7 @@ namespace G4_BREMS {
            return physWorld;
     }
 
-    void DetectorConstruction::ConstructSDandField() {
+    void DetectorPrototype2::ConstructSDandField() {
              //if (!fTileVolume) return;
              if (!fTileVolume || !fFiberCoreVolume || !fFiberCladVolume || !fSipmVolume || !fBNVolume || !fAlVolume) return;
 
@@ -888,7 +885,7 @@ namespace G4_BREMS {
              SetSensitiveDetector(fFiberCoreVolume, fFiberCoreSD);
 
              G4String CladSensName = "FiberCladSD";
-             fFiberCladSD = new SensitiveDetector(CladSensName);
+              fFiberCladSD = new SensitiveDetector(CladSensName);
              G4SDManager::GetSDMpointer()->AddNewDetector(fFiberCladSD);
              SetSensitiveDetector(fFiberCladVolume, fFiberCladSD);
 

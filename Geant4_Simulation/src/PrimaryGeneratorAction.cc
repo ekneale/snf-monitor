@@ -12,21 +12,21 @@ namespace G4_BREMS
 	PrimaryGeneratorAction::PrimaryGeneratorAction() {
 		// set up particle gun
 		G4int nParticles = 1;
-		//fParticleGun1 = new G4ParticleGun(nParticles);
+		fParticleGun1 = new G4ParticleGun(nParticles);
 		fParticleGun2 = new G4ParticleGun(nParticles);
 
 		// define particle properties
 		//const G4String& particleName = "opticalphoton";
-		//const G4String& particleName1 = "e+";
+		const G4String& particleName1 = "e+";
 		const G4String& particleName2 = "neutron";
 
 		G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-		//G4ParticleDefinition* particle1
-			//= particleTable->FindParticle(particleName1);
+		G4ParticleDefinition* particle1
+			= particleTable->FindParticle(particleName1);
 		G4ParticleDefinition* particle2
 			= particleTable->FindParticle(particleName2);
 
-		//fParticleGun1->SetParticleDefinition(particle1);
+		fParticleGun1->SetParticleDefinition(particle1);
 		fParticleGun2->SetParticleDefinition(particle2);
 
 
@@ -37,7 +37,7 @@ namespace G4_BREMS
 
 		//G4cout << "Particle direction: " << momentumDirection << G4endl;
 
-		//fParticleGun1->SetParticleMomentumDirection(momentumDirection);
+		fParticleGun1->SetParticleMomentumDirection(momentumDirection);
 		fParticleGun2->SetParticleMomentumDirection(momentumDirection);
 		G4double positron_energy = 10.0 * MeV;
 		//G4double neutron_energy = 0.025 * eV;
@@ -47,13 +47,13 @@ namespace G4_BREMS
 		//G4double neutron_energy = 1e-5 * eV;
 		//G4cout << "Particle energy: " << G4BestUnit(energy, "Energy") << G4endl;
 
-		//fParticleGun1->SetParticleEnergy(positron_energy);
+		fParticleGun1->SetParticleEnergy(positron_energy);
 		fParticleGun2->SetParticleEnergy(neutron_energy);
 
 	}
 
 	PrimaryGeneratorAction::~PrimaryGeneratorAction() {
-		//delete fParticleGun1;
+		delete fParticleGun1;
 		delete fParticleGun2;
 	}
 
@@ -61,10 +61,10 @@ namespace G4_BREMS
 	{
 
 		//G4ThreeVector positron_position = G4ThreeVector(-200.0 * mm, 0 * mm, 0 * mm);
+        G4ThreeVector positron_position = G4ThreeVector(0 * mm, -5.00 * mm, 0 * mm);
+		fParticleGun1->SetParticlePosition(positron_position);
 
-		//fParticleGun1->SetParticlePosition(positron_position);
-
-		//fParticleGun1->GeneratePrimaryVertex(event);
+		fParticleGun1->GeneratePrimaryVertex(event);
 		//G4ThreeVector neutron_position = G4ThreeVector(-200.0 * mm, 10 * mm, 0 * mm);
 		//G4ThreeVector neutron_position = G4ThreeVector(-200.0 * mm, 0 * mm, 0 * mm);
 		//G4ThreeVector neutron_position = G4ThreeVector(0.0 * mm, 100 * mm, 0 * mm);

@@ -71,7 +71,7 @@
 #include "G4MesonConstructor.hh"
 #include "G4BaryonConstructor.hh"
 #include "G4IonConstructor.hh"
-
+#include "Annihilation.hh"
 namespace G4_BREMS
 {
     PhysicsList::PhysicsList() : G4VModularPhysicsList()
@@ -245,12 +245,32 @@ namespace G4_BREMS
         pmanager->AddDiscreteProcess(theCaptureProcess);
 
 
+       //G4ProcessManager* pmanager_positron = G4Positron::PositronDefinition()->GetProcessManager();
+        //auto pmanager_positron = G4Positron::PositronDefinition()->GetProcessManager();
+        //auto annProc  = new G4_BREMS::Annihilation("AnnihilationAtRest");
+        //auto annProc  = new G4_BREMS::Annihilation("Annihil");
+        
+        //pmanager_positron->AddRestProcess(annProc);
+        /*
+        G4ProcessManager* pman = G4Positron::PositronDefinition()->GetProcessManager();
 
+        G4ProcessVector* procVector = pman->GetProcessList();
+        if ( procVector ) {
+            for ( size_t i = 0; i < procVector->size(); ++i ) {
+                G4VProcess* proc = (*procVector)[i];
+                if ( proc->GetProcessName() == "annihil" ) {
+                    pman->RemoveProcess(proc);
+                    break;
+                }
+            }
+        }
 
+        //auto* myAnn = new G4_BREMS::Annihilation("AnnihilationAtRest");
+        auto* myAnn = new G4_BREMS::Annihilation("annihil");
 
-
-
-
+        pman->AddRestProcess(myAnn);
+ 
+        */
     }
 
 }
