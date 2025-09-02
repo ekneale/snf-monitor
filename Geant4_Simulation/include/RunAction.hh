@@ -61,9 +61,6 @@ namespace G4_BREMS {
         SteppingAction* fSteppingAction;
 
 
-        //G4GenericAnalysisManager* fH1mgr;
-        //G4GenericAnalysisManager* fH2mgr;
-        //G4GenericAnalysisManager* fNtupleMgr;
     };
 
 }

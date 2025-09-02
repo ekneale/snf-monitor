@@ -89,22 +89,6 @@ namespace G4_BREMS
 
         RegisterPhysics(opticalPhysics);
 
-        /*
-        G4String hadronphysName = "hInelastic Shielding";
-        RegisterPhysics(new G4HadronPhysicsShielding(hadronphysName, 1));
-        //new G4HadronicInteraction("nRadCapture");
-        //RegisterPhysics(new G4NeutronRadCapture());
-        //RegisterPhysics(new G4HadronPhysicsLEND(1, ""));
-        auto captureModel = new G4NeutronRadCapture();
-        G4NeutronCaptureProcess* n_capture = new G4NeutronCaptureProcess();
-        n_capture->RegisterMe(captureModel);
-        auto fissionModel = new G4LFission();
-        G4NeutronFissionProcess* n_fission = new G4NeutronFissionProcess();
-        n_fission->RegisterMe(fissionModel);
-        */
-
-
-
 
     }
     void PhysicsList::ConstructParticle()
@@ -127,84 +111,6 @@ namespace G4_BREMS
     void PhysicsList::ConstructProcess()
     {
         G4VModularPhysicsList::ConstructProcess();
-
-        //G4ParticleDefinition* neutron = G4Neutron::Neutron();
-        //G4ProcessManager* pManager = neutron->GetProcessManager();
-
-
-
-        /*
-        G4HadronicProcess* capture = 0;
-        const G4String& process = "nCapture";
-        capture = new G4HadronicProcess(process, fCapture);
-
-        pManager->AddDiscreteProcess(capture);
-        */
-        /*
-        G4ParticleDefinition* neutron = G4Neutron::Neutron();
-        G4ProcessManager* pManager = neutron->GetProcessManager();
-
-
-        G4ProcessTable* processTable = G4ProcessTable::GetProcessTable();
-        G4VProcess* process1 = 0;
-        process1 = processTable->FindProcess("hadElastic", neutron);
-        pManager->AddProcess(process1);
-
-        G4VProcess* process2 = 0;
-        process2 = processTable->FindProcess("neutronInelastic", neutron);
-        pManager->AddProcess(process2);
-
-        G4VProcess* process3 = 0;
-        process3 = processTable->FindProcess("nCapture", neutron);
-        pManager->AddProcess(process3);
-
-        G4VProcess* process4 = 0;
-        process4 = processTable->FindProcess("nFission", neutron);
-        pManager->AddProcess(process4);
-        */
-
-
-        /*
-        G4ParticleDefinition* neutron = G4Neutron::NeutronDefinition();
-        G4ProcessManager* pManager = neutron->GetProcessManager();
-
-        G4ElasticHadrNucleusHE* elastic_he = new G4ElasticHadrNucleusHE();
-        G4HadronElasticProcess* theElasticProcess = new G4HadronElasticProcess;
-        theElasticProcess->AddDataSet(new G4NeutronElasticXS());
-        theElasticProcess->RegisterMe(elastic_he);
-        pManager->AddDiscreteProcess(theElasticProcess);
-
-        G4HadronInelasticProcess* theInelasticProcess =
-            new G4HadronInelasticProcess("inelastic", neutron);
-        theInelasticProcess->AddDataSet(new G4NeutronInelasticXS());
-        //theInelasticProcess->RegisterMe(theFTFModel1);
-        //theInelasticProcess->RegisterMe(theBERTModel0);
-        pManager->AddDiscreteProcess(theInelasticProcess);
-        */
-        /*
-        G4ProcessTable* table = G4ProcessTable::GetProcessTable();
-        G4VProcess* elastic = table->FindProcess("neutronHPElastic", neutron);
-        if (elastic) {
-            pManager->AddProcess(elastic, ordDefault, ordDefault, ordDefault);
-        }
-
-        G4VProcess* inelastic = table->FindProcess("neutronHPInelastic", neutron);
-        if (inelastic) {
-            // discrete inelastic interactions happen post-step
-            pManager->AddDiscreteProcess(inelastic);
-        }
-
-        G4VProcess* capture = table->FindProcess("nCapture", neutron);
-        if (capture) {
-            pManager->AddDiscreteProcess(capture);
-        }
-        G4VProcess* fission = table->FindProcess("neutronHPFission", neutron);
-        if (fission) {
-            pManager->AddDiscreteProcess(fission);
-        }
-        this->SetVerboseLevel(1);
-
-        */
 
         G4ParticleDefinition* neutron = G4Neutron::Neutron();
         G4ProcessManager* pmanager = neutron->GetProcessManager();
@@ -244,85 +150,11 @@ namespace G4_BREMS
         theCaptureProcess->AddDataSet(new G4ParticleHPCaptureData);
         pmanager->AddDiscreteProcess(theCaptureProcess);
 
-
-       //G4ProcessManager* pmanager_positron = G4Positron::PositronDefinition()->GetProcessManager();
-        //auto pmanager_positron = G4Positron::PositronDefinition()->GetProcessManager();
-        //auto annProc  = new G4_BREMS::Annihilation("AnnihilationAtRest");
-        //auto annProc  = new G4_BREMS::Annihilation("Annihil");
         
-        //pmanager_positron->AddRestProcess(annProc);
-        /*
-        G4ProcessManager* pman = G4Positron::PositronDefinition()->GetProcessManager();
-
-        G4ProcessVector* procVector = pman->GetProcessList();
-        if ( procVector ) {
-            for ( size_t i = 0; i < procVector->size(); ++i ) {
-                G4VProcess* proc = (*procVector)[i];
-                if ( proc->GetProcessName() == "annihil" ) {
-                    pman->RemoveProcess(proc);
-                    break;
-                }
-            }
-        }
-
-        //auto* myAnn = new G4_BREMS::Annihilation("AnnihilationAtRest");
-        auto* myAnn = new G4_BREMS::Annihilation("annihil");
-
-        pman->AddRestProcess(myAnn);
- 
-        */
     }
 
 }
 
 
-
-                    /*
-                    void PhysicsList::ConstructHad()
-                    {
-                        auto particleIterator = GetParticleIterator();
-
-                        G4ParticleDefinition* particle = particleIterator->value();
-                        G4ProcessManager* pmanager = particle->GetProcessManager();
-                        G4String particleName = particle->GetParticleName();
-
-                        if (particleName == "neutron") {
-                            // elastic scattering
-                            G4HadronElasticProcess* theElasticProcess = new G4HadronElasticProcess;
-                            theElasticProcess->AddDataSet(new G4NeutronElasticXS());
-                            G4HadronElastic* elastic_neutronChipsModel = new G4ChipsElasticModel();
-                            //elastic_neutronChipsModel->SetMinEnergy(19.0 * MeV);
-                            theElasticProcess->RegisterMe(elastic_neutronChipsModel);
-                            G4ParticleHPElastic* theElasticNeutronHP = new G4ParticleHPElastic;
-                            //theElasticNeutronHP->SetMinEnergy(theHPMin);
-                            //theElasticNeutronHP->SetMaxEnergy(theHPMax);
-                            theElasticProcess->RegisterMe(theElasticNeutronHP);
-                            theElasticProcess->AddDataSet(new G4ParticleHPElasticData);
-                            pmanager->AddDiscreteProcess(theElasticProcess);
-                            // inelastic scattering
-                            G4HadronInelasticProcess* theInelasticProcess =
-                                new G4HadronInelasticProcess("inelastic", G4Neutron::Definition());
-                            theInelasticProcess->AddDataSet(new G4NeutronInelasticXS());
-                            //theInelasticProcess->RegisterMe(theFTFModel1);
-                            //theInelasticProcess->RegisterMe(theBERTModel1);
-                            G4ParticleHPInelastic* theNeutronInelasticHPModel = new G4ParticleHPInelastic;
-                            //theNeutronInelasticHPModel->SetMinEnergy(theHPMin);
-                            //theNeutronInelasticHPModel->SetMaxEnergy(theHPMax);
-                            theInelasticProcess->RegisterMe(theNeutronInelasticHPModel);
-                            theInelasticProcess->AddDataSet(new G4ParticleHPInelasticData);
-                            pmanager->AddDiscreteProcess(theInelasticProcess);
-                            // capture
-                            G4NeutronCaptureProcess* theCaptureProcess =
-                                new G4NeutronCaptureProcess;
-                            G4ParticleHPCapture* theLENeutronCaptureModel = new G4ParticleHPCapture;
-                            //theLENeutronCaptureModel->SetMinEnergy(theHPMin);
-                            //theLENeutronCaptureModel->SetMaxEnergy(theHPMax);
-                            theCaptureProcess->RegisterMe(theLENeutronCaptureModel);
-                            theCaptureProcess->AddDataSet(new G4ParticleHPCaptureData);
-                            pmanager->AddDiscreteProcess(theCaptureProcess);
-                        }
-                    }
-
-                    */
 
                     
