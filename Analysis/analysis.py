@@ -5,7 +5,7 @@ import numpy as np
 import json
 
 
-def threshold_eff(root_filename, tree_name="reco_data", ibd_threshold=0.506, bins=400, scale = 1, distance = 1): #change threshold to positron equiv of nu energy of 1.8MeV
+def threshold_eff(root_filename, tree_name="reco_data", ibd_threshold=1.3, bins=400, scale = 1, distance = 1): #change threshold to positron equiv of nu energy of 1.8MeV
 
     canvas = ROOT.TCanvas("canvas", "e+ and n energy scaled and eff applied", 1200, 600)
     canvas.SetGrid()
@@ -35,8 +35,8 @@ def threshold_eff(root_filename, tree_name="reco_data", ibd_threshold=0.506, bin
     positron_energy_hist.Draw("HIST")
 
     # scale final spectrum to be in days when input is in secs
-    secs_per_day = 86400
-    positron_energy_hist.Scale(secs_per_day)
+    #secs_per_day = 86400
+    #positron_energy_hist.Scale(secs_per_day)
 
     # scale for ratio 
     positron_energy_hist.Scale(scale)
@@ -52,9 +52,9 @@ def threshold_eff(root_filename, tree_name="reco_data", ibd_threshold=0.506, bin
     positron_energy_hist.GetYaxis().SetTitle("Time [days]")
 
     canvas.Update()
-    canvas.SaveAs("threshold_energy_eff.png")
+    canvas.SaveAs("threshold_energy_eff_hartlepool.png") #change for reactor
 
-    print(f"saved as threshold_energy_eff.png")
+    print(f"saved as threshold_energy_eff_hartlepool.png") #change for reacctor
 
     passed_sim_events = positron_energy_hist.GetEntries()
 
@@ -108,24 +108,24 @@ def final_neutrino(root_filename, tree_name="reco_data", ibd_threshold=1.806, bi
     neutrino_energy_hist.GetYaxis().SetTitle("Time [days]")
 
     canvas.Update()
-    canvas.SaveAs("final_neutrino_spec.png")
+    canvas.SaveAs("final_neutrino_spec_hartlepool.png") #change for reactor
 
-    print(f"saved as final_neutrino_spec.png")
+    print(f"saved as final_neutrino_spec_hartlepool.png") #change for reactor
 
 
 
 
 #how many input events are above 1.8MeV? the integral of this is what the ratio should be scaled by
 
-def ibd__above_threshold_input(rootfilename, treename = "simdata", macro_file="Sizewell_MultipleCasks.C", macro_function="Sizewell_MultipleCasks" , threshold=1.8):
+def ibd__above_threshold_input(rootfilename, treename = "simdata", macro_file="Hartlepool_Multi.C", macro_function="Hartlepool_Multi" , threshold=1.8):
 
-    file = ROOT.TFile(rootfilename) #don't know if i actually need this
+    file = ROOT.TFile(rootfilename) 
     tree = file.Get(treename)
 
     ROOT.gROOT.LoadMacro(macro_file)
     getattr(ROOT, macro_function)() 
 
-    hist2 = ROOT.gDirectory.Get("casks__7") # this probably also needs to be an argument if i wan t it fully automated
+    hist2 = ROOT.gDirectory.Get("hartlepool_multi__1") # this probably also needs to be an argument if i wan t it fully automated
     
 
     total_events = 0 
@@ -156,17 +156,22 @@ def calc_ratio( rootfilename, treename = "simdata"):
 
     total_sim_events = sum(1 for _ in tree) 
       
-    passed_sim_events = threshold_eff("Sizewell_Multiple_5000_IBD.root")
+    passed_sim_events = threshold_eff("Hartlepool_0.5_20000_IBD.root") #chnage for sim file
 
+    # scale to events per day 
+    secs_per_day = 86400
+    passed_sim_events_day = passed_sim_events * secs_per_day
+    total_sim_events_day = total_sim_events * secs_per_day
 
-    ratio = passed_sim_events / total_sim_events 
+    ratio = passed_sim_events_day / total_sim_events_day
+    print(ratio)
+    #input_above_IBD = ibd__above_threshold_input("Sizewell_Multiple_5000_IBD.root")
+    #scaled_input = input_above_IBD * (secs_per_day)
     
-    scale = ibd__above_threshold_input("Sizewell_Multiple_5000_IBD.root") 
-    scaled_ratio = ratio * scale 
-  #  print(scaled_ratio) # why is this so big 
-   # print(ratio)
 
-    return scaled_ratio
+    #scaled_ratio = ratio * scaled_input#no of events per day 
+    #print(scaled_ratio)
+    return ratio
 
 
 
@@ -176,7 +181,7 @@ def rate_calc(integral, cross_sec, distance):
 
     flux = (1/(4*np.pi*distance*100)**2) *integral
 
-    N_p = (40*20*10) * 1e6 *4.6*1e23
+    N_p = (40*40*2) * 1e6 *4.6*1e23
 
     #eff = detector_efficiency(energy)
 
@@ -200,12 +205,13 @@ with open("eff.json", 'r') as f:
     energy_res_graph.GetXaxis().SetTitle("Energy [MeV]")
     energy_res_graph.GetYaxis().SetTitle("Resolution")
     energy_res_graph.Draw("APL")
+    energy_res_graph.GetXaxis().SetRangeUser(1,10)
     canvas.SaveAs("energy_res.png")
     print("saved as energy_res.png")
 
 
 #define variables
-nP = (40*20*10) * 1e6 *4.6*1e23 #detectors[options.detector] # number of protons in detector volume
+nP = (40*40*2) * 1e6 *4.6*1e23 #detectors[options.detector] # number of protons in detector volume
 mN = 939.5654 #MeV
 mP = 938.2721 #MeV
 mE = 0.5109989 #MeV
@@ -274,7 +280,7 @@ def dSigmadE(eNu, eE):
     return 2 * mP * gF**2 * 0.9746**2 / (8 * np.pi * mP**2 * eNu**2) * absMsquared(eNu, eE)
 
 
-myFile = ROOT.TFile("Sizewell_Multiple_5000_IBD.root") # please change for simulation output file
+myFile = ROOT.TFile("Hartlepool_0.5_20000_IBD.root") # please change for simulation output file
 tree = myFile.Get("simdata")
 for event in tree:
     nu_E = event.nu_energy
@@ -283,14 +289,20 @@ for event in tree:
     #print(f"this is the sigma: {sigma}")
 
 # finding rate using the input integral
-integral_rate = ibd__above_threshold_input("Sizewell_Multiple_5000_IBD.root")
-rate_calc(integral=integral_rate, cross_sec= sigma , distance= 40)
+integral_rate = ibd__above_threshold_input("Hartlepool_0.5_20000_IBD.root") #change for sim file
+#rate_calc(integral=integral_rate, cross_sec= 10**-44 , distance= 40) # this is the rate for the input with no smearing 
 
 
 # this scales the histogram using the scaled ratio of passed events 
-ratio_val = calc_ratio("Sizewell_Multiple_5000_IBD.root")
-threshold_eff("Sizewell_Multiple_5000_IBD.root", scale= ratio_val, distance = 40) #distance in m 
-final_neutrino("Sizewell_Multiple_5000_IBD.root", scale=ratio_val, distance=40)
+
+val = calc_ratio("Hartlepool_0.5_20000_IBD.root") * integral_rate#no of events passed smearing etc. 
+
+#print(ratio_val)
+
+#integral_rate = ibd__above_threshold_input("Sizewell_Multiple_5000_IBD.root") #change for sim file
+rate_calc(integral=val, cross_sec= 10**-44 , distance= 40) # this is the rate for the input with no smearing 
+#threshold_eff("Sizewell_Multiple_5000_IBD.root", scale= ratio_val, distance = 40) #distance in m , change for sim file
+#final_neutrino("Sizewell_Multiple_5000_IBD.root", scale= ratio_val, distance=40) #change for sim file 
 
 
 
