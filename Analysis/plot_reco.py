@@ -1,6 +1,6 @@
 import ROOT
 from array import array
-from smearing import positron_energy_smeared , positron_direction_smeared , neutron_direction_smeared
+from smearing import positron_energy_smeared , positron_direction_smeared , neutron_direction_smeared , neutrino_energy_smeared
 from ROOT import TFile
 import numpy as np
 import json
@@ -20,6 +20,7 @@ for i in data['sigma']:
 
 # define the cariables for the branches
 reco_energy = array('d', [0])
+nu_energy = array('d', [0])
 x_pos = array('f', [0])
 y_pos = array('f', [0])
 z_pos = array('f', [0])
@@ -30,6 +31,7 @@ z_n = array('f', [0])
 
 # define branches
 energy_branch = my_tree.Branch("reco_energy", reco_energy, "reco_energy/D") 
+nu_branch = my_tree.Branch("reco_nu_energy", nu_energy, "reco_nu_energy/D")
 x_direction_pos = my_tree.Branch("reco_x_positron_direction", x_pos , "reco_x_positron_direction/F")
 y_direction_pos = my_tree.Branch("reco_y_positron_direction", y_pos , "reco_y_positron_direction/F")
 z_direction_pos = my_tree.Branch("reco_z_positron_direction", z_pos , "reco_z_positron_direction/F")
@@ -42,9 +44,11 @@ z_direction_n = my_tree.Branch("reco_z_neutron_direction", z_n , "reco_z_neutron
 #defining histograms 
 bins = 400 
 hist_reco_energy = ROOT.TH1F("hist", "Positron energy with applied smearing", bins, 0.4, 2.4)
+hist_nu_energy = ROOT.TH1F("nu_hist", "Neutrino Energy with applied smearing", bins, 0, 10)
 hist_pos_x = ROOT.TH1F("hist", "Positron Direction Histogram with Gaussian Smearing", bins, -2.5, 2.5)
 hist_pos_y = ROOT.TH1F("hist", "Positron y-direction Histogram", bins, -2.5, 2.5)
 hist_pos_z = ROOT.TH1F("hist", "Positron z-direction Histogram", bins, -2.5,2.5)
+
 
 #filling tree and histogram
 for event in tree:
@@ -53,8 +57,10 @@ for event in tree:
     efficiency = detector_efficiency(event.positron_energy)
     reco_energy[0] = positron_energy_smeared(event.positron_energy, sigma)
     hist_reco_energy.Fill(reco_energy[0])
-
    
+    nu_energy[0] = neutrino_energy_smeared(event.nu_energy, sigma)
+    hist_nu_energy.Fill(nu_energy[0])
+
     #direction (positron)
     sigma_x_p = np.interp(event.positron_energy, data['energy'], data['sigma_x_p']) 
     sigma_y_p = np.interp(event.positron_energy, data['energy'], data['sigma_y_p']) 
@@ -85,10 +91,10 @@ for i in range(1, hist_reco_energy.GetNbinsX() + 1):
 
 
 # histogram styling for positron energy histogram
-ROOT.gStyle.SetOptFit(1)  
-hist_reco_energy.Fit('gaus',"Q") # gives parameters for fitting overall gaussian to  data
+#ROOT.gStyle.SetOptFit(1)  
+#hist_reco_energy.Fit('gaus',"Q") # gives parameters for fitting overall gaussian to  data
 hist_reco_energy.Draw("HIST")
-hist_reco_energy.GetFunction("gaus").Draw("SAME")
+#hist_reco_energy.GetFunction("gaus").Draw("SAME")
 
 
 hist_reco_energy.SetLineColor(ROOT.kBlue)
