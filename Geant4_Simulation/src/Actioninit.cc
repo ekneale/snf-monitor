@@ -9,9 +9,14 @@ namespace G4_BREMS {
 	void ActionInit::Build() const {
 		SetUserAction(new PrimaryGeneratorAction);
         
-		SteppingAction* steppingAction = new SteppingAction(nullptr);
+		//SteppingAction* steppingAction = new SteppingAction(nullptr);
+		SteppingAction* steppingAction = new SteppingAction(nullptr, fFileIndex);
+        steppingAction->SetFileIndex(fFileIndex);
 
-		RunAction* runAction = new RunAction(steppingAction);
+
+		//RunAction* runAction = new RunAction(steppingAction);
+		RunAction* runAction = new RunAction(steppingAction, fFileIndex);
+
 
 		steppingAction->SetRunAction(runAction);
         
@@ -29,7 +34,9 @@ namespace G4_BREMS {
 
 	}
 	void ActionInit::BuildForMaster() const {
-		SetUserAction(new RunAction(nullptr));
+		//SetUserAction(new RunAction(nullptr));
+		SetUserAction(new RunAction(nullptr, fFileIndex));
+
 
 	}
 }

@@ -16,7 +16,7 @@ namespace G4_BREMS {
     class RunAction : public G4UserRunAction
     {
     public:
-        RunAction(SteppingAction* steppingAction);
+        RunAction(SteppingAction* steppingAction, int fileIndex);
         virtual ~RunAction();
 
         virtual void BeginOfRunAction(const G4Run*);
@@ -45,6 +45,7 @@ namespace G4_BREMS {
         G4int fPhotonsExitedFiber;
         G4int fPhotonsAbsorbedFiber;
         G4int chargeDeposited;
+        int fFileIndex;
 
         G4Accumulable<G4int> fAccTileCount;
         G4Accumulable<G4int> fAccCladCount;

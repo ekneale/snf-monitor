@@ -7,11 +7,15 @@
 namespace G4_BREMS {
 	class ActionInit : public G4VUserActionInitialization {
 	public:
-		ActionInit() = default;
+		//ActionInit() = default;
+		ActionInit(int fileIndex): fFileIndex(fileIndex) {}
+
 		~ActionInit() override = default;
 
 		void Build() const override;
 		void BuildForMaster() const override;
+	private:
+	    int fFileIndex;
 
 	};
 }

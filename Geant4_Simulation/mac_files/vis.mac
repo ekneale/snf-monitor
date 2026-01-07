@@ -149,7 +149,8 @@
 
 
 #/run/numberOfThreads 1
-/run/beamOn 2000
+#/run/beamOn 20000
+/run/beamOn 1000
 
 #/vis/verbose warnings
 #/vis/viewer/flush

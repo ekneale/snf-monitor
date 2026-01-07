@@ -1,3 +1,4 @@
+
 #include "RunAction.hh"
 #include "SteppingAction.hh"
 #include "G4Run.hh"
@@ -15,10 +16,16 @@
 #include <map>
 #include <vector>
 
+#include "Randomize.hh"   
+#include <chrono>         
+#include <cstdlib>        
+#include <cmath>
+
 namespace G4_BREMS {
 
-    G4_BREMS::RunAction::RunAction(SteppingAction* steppingAction)
+    G4_BREMS::RunAction::RunAction(SteppingAction* steppingAction, int fileIndex)
         : G4UserRunAction(),
+        fFileIndex(fileIndex),
         fTileCount(0), fCladCount(0), fCoreCount(0), fSipmCount(0), fOtherCount(0),
         fPhotonsEnteredFiber(0), fPhotonsExitedFiber(0), fPhotonsAbsorbedFiber(0),
         fAccTileCount("TileCount", 0),
@@ -69,7 +76,8 @@ namespace G4_BREMS {
         auto man = G4AnalysisManager::Instance();
         man->SetVerboseLevel(1);
         //man->SetFileName("H1:Sipm_Hits1, H2:Sipm_Hits2, NT:NeutronCaptureSipmHits");
-        man->SetFileName("SipmHits");
+        //man->SetFileName("SipmHits");
+        //man->SetFileName();
         //man->SetFileName("Sipm_Hits1");
         man->SetDefaultFileType("root");
         man->SetNtupleMerging(true);
@@ -373,9 +381,11 @@ namespace G4_BREMS {
         man->SetH2XAxisTitle(26, "x [mm]");
         man->SetH2YAxisTitle(26, "z [mm]");
         man->SetH2ZAxisTitle(26, "Time [ns]"); 
-        
 
         man->CreateNtuple("SipmHits","SipmHits");
+        man->CreateNtupleIColumn(0, "EventID");
+        man->CreateNtupleIColumn(0, "RunID");
+        man->CreateNtupleIColumn(0, "FileIndex");
         man->CreateNtupleDColumn(0, "SipmTimeSpectrum");
         man->CreateNtupleDColumn(0, "SipmWavelength");
         man->CreateNtupleDColumn(0, "Sipm_Hit_XPosition");
@@ -383,36 +393,54 @@ namespace G4_BREMS {
         man->CreateNtupleDColumn(0, "Sipm_Hit_ZPosition");
         
         man->FinishNtuple(0);
+        man->SetNtupleFileName(0, "Sipm_Hits_Ntuple");
         
         man->CreateNtuple("NeutronCaptureSipmHits","NeutronCaptureSipmHits");
+        man->CreateNtupleIColumn(1, "EventID");
+        man->CreateNtupleIColumn(1, "RunID");
+        man->CreateNtupleIColumn(1, "FileIndex");
         man->CreateNtupleIColumn(1, "SipmID");
         man->CreateNtupleDColumn(1, "X(mm)");
         man->CreateNtupleDColumn(1, "Y(mm)");
         man->CreateNtupleDColumn(1, "Z(mm)");
         man->CreateNtupleDColumn(1, "Time(ns)");
+
+        
         man->FinishNtuple(1);
         
-        man->SetNtupleFileName(0, "NeutronCaptureSipmHits");
+        //man->SetNtupleFileName(0, "NeutronCaptureSipmHits");
+        man->SetNtupleFileName(1, "NeutronCaptureSipmHits");
 
         man->CreateNtuple("AnnihilationEvents","AnnihilationEvents");
+        man->CreateNtupleIColumn(2, "EventID");
+        man->CreateNtupleIColumn(2, "RunID");
+        man->CreateNtupleIColumn(2, "FileIndex");
         man->CreateNtupleDColumn(2, "X(mm)");
         man->CreateNtupleDColumn(2, "Y(mm)");
         man->CreateNtupleDColumn(2, "Z(mm)");
         man->CreateNtupleDColumn(2, "Time(ns)");
-        //man->CreateNtupleDColumn(2, "Volume");
+        man->CreateNtupleDColumn(2, "Volume");
         man->FinishNtuple(2);
+
         
-        man->SetNtupleFileName(1, "AnnihilationEvents");
+        //man->SetNtupleFileName(1, "AnnihilationEvents");
+        man->SetNtupleFileName(2, "AnnihilationEvents");
 
         man->CreateNtuple("NeutronCaptureEvents","NeutronCaptureEvents");
+        man->CreateNtupleIColumn(3, "EventID");
+        man->CreateNtupleIColumn(3, "RunID");
+        man->CreateNtupleIColumn(3, "FileIndex");
         man->CreateNtupleDColumn(3, "X(mm)");
         man->CreateNtupleDColumn(3, "Y(mm)");
         man->CreateNtupleDColumn(3, "Z(mm)");
         man->CreateNtupleDColumn(3, "Time(ns)");
         //man->CreateNtupleDColumn(3, "Volume");
         man->FinishNtuple(3);
+
+       
         
-        man->SetNtupleFileName(2, "NeutronCaptureEvents");
+        //man->SetNtupleFileName(2, "NeutronCaptureEvents");
+        man->SetNtupleFileName(3, "NeutronCaptureEvents");
        
         
     }
@@ -426,10 +454,10 @@ namespace G4_BREMS {
         }
     }
 
-    void G4_BREMS::RunAction::BeginOfRunAction(const G4Run*) {
-        //G4AccumulableManager::Instance()->Reset();
-        G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
-        accumulableManager->Reset();
+    void G4_BREMS::RunAction::BeginOfRunAction(const G4Run* run) {
+        G4AccumulableManager::Instance()->Reset();
+        //G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
+        //accumulableManager->Reset();
 
         if (fSteppingAction) {
            fSteppingAction->ClearHits();
@@ -439,16 +467,47 @@ namespace G4_BREMS {
             gSipmHits.clear();
             //fSipmHits.clear();
             gAnnihilationEvents.clear();
+            
         }
         
+        //auto man = G4AnalysisManager::Instance();
         auto man = G4AnalysisManager::Instance();
+        std::ostringstream fname;
+        fname << "SipmHits_" << fFileIndex;
+
+        man->SetFileName(fname.str());
+        if (G4Threading::IsMasterThread()) {
+            G4cout << "=====================================" << G4endl;
+            G4cout << " Output ROOT file : " << fname.str() << ".root" << G4endl;
+            G4cout << "=====================================" << G4endl;
+        }
+
+        //G4cout << " Output ROOT file : " << man->GetFileName() << ".root" << G4endl;
+        long s1 = 0, s2 = 0;
+
+        if (const char* e1 = std::getenv("G4_SEED1")) s1 = std::strtol(e1, nullptr, 10);
+        if (const char* e2 = std::getenv("G4_SEED2")) s2 = std::strtol(e2, nullptr, 10);
+        if (s1 == 0 || s2 == 0) {
+            auto now = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+            long base = static_cast<long>(now) ^ (static_cast<long>(run->GetRunID()) << 24);
+            if (s1 == 0) s1 = std::llabs(base) + 11;
+            if (s2 == 0) s2 = std::llabs(base * 1812433253L + 12345L) + 17;
+        }
+
+        long seeds[2] = { s1, s2 };
+        if (G4Threading::IsMasterThread()) {
+             G4Random::setTheSeeds(seeds, 2);
+             G4cout << "Run " << run->GetRunID()
+               << " using RNG seeds: " << s1 << " , " << s2 << G4endl;
+        }
+        
         man->Reset();
         //analysisManager->OpenFile("Sipm_Hits.root");
         man->OpenFile();
         //man->OpenFile("Sipm_Hits1.root");
         //man->OpenFile("Sipm_Hits2.root");
         //man->SetFileName("Sipm_Hits1.root");
-
+        
     }
 
     void G4_BREMS::RunAction::AddProcessCount(const G4String& volume,
@@ -481,6 +540,9 @@ namespace G4_BREMS {
         G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
         accumulableManager->Merge();
         auto man = G4AnalysisManager::Instance();
+    
+        man->Write();
+        man->CloseFile(); 
 
         if (G4Threading::IsMasterThread()) {
             fTileCount = fAccTileCount.GetValue();
@@ -528,11 +590,7 @@ namespace G4_BREMS {
                 }
             }
             
-            
         }
-        
-        man->Write();
-        man->CloseFile(false);
         
 
     }

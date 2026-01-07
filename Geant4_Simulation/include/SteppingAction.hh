@@ -56,24 +56,7 @@ namespace G4_BREMS {
         G4double time;
         G4ThreeVector position;
     };
-    /*
-    struct neutronCaptureEvent {
-        //std::vector<neutronCaptureEvent> captureDaughterIDs;
-        G4String name;
-        G4ThreeVector neutronCapturepos;
-        G4double neutronCapturetime;
-    };
-   */
-   /*
-    struct GammaInfo {
-       G4int   trackID;
-       G4double time;
-    };
-  
-  
-    extern std::vector<GammaInfo> fOpticalphotontrack;
-    */
-    //extern std::vector<SipmHit> fSipmHits;
+    
     extern std::vector<SipmHit> gSipmHits;
     extern std::vector<AnnihilationEvent> gAnnihilationEvents;
     extern std::vector<neutronCaptureSipmHit> gneutronCaptureSipmHits;
@@ -83,7 +66,7 @@ namespace G4_BREMS {
     //extern G4Mutex sipmHitsMutex;
     class SteppingAction : public G4UserSteppingAction {
     public:
-        SteppingAction(RunAction* runAction);
+        SteppingAction(RunAction* runAction, int fileIndex);
         virtual ~SteppingAction();
         virtual void UserSteppingAction(const G4Step*);
         
@@ -98,7 +81,7 @@ namespace G4_BREMS {
         
         void ClearHits() { fSipmHits.clear(); }
         const std::vector<SipmHit>& GetSipmHits() const { return fSipmHits; }
-
+        void SetFileIndex(int idx) { fFileIndex = idx; }
 
         //static std::set<G4int> captureDaughterIDs;
         G4double annihilationTime;
@@ -119,6 +102,7 @@ namespace G4_BREMS {
         //std::vector<std::pair<G4int, G4double>> fOpticalphotontrack;
         std::vector<GammaInfo> fAnnihilationGammas;
         //G4VProcess* fAnni = nullptr;
+        int fFileIndex = 0;
         
     };
 

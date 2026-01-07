@@ -16,6 +16,8 @@
 //#include "TrackingAction.hh"
 #include "Annihilation.hh"
 #include "G4GenericAnalysisManager.hh"
+#include "G4Event.hh"
+#include "G4Run.hh"
 
 
 namespace G4_BREMS {
@@ -28,8 +30,8 @@ namespace G4_BREMS {
     std::vector<GammaInfo> fAnnihilationGammas;
     std::vector<NeutronCaptureEvent> gNeutronCaptureEvents;
     
-    SteppingAction::SteppingAction(RunAction* runAction)
-        : G4UserSteppingAction(), fRunAction(runAction), fSensitiveVolume(nullptr) {
+    SteppingAction::SteppingAction(RunAction* runAction, int fileIndex)
+        : G4UserSteppingAction(), fRunAction(runAction), fFileIndex(fileIndex), fSensitiveVolume(nullptr) {
     }
 
     SteppingAction::~SteppingAction() {}
@@ -40,14 +42,20 @@ namespace G4_BREMS {
 
         G4Track* track = step->GetTrack();
         if (!track) return;
+        
 
+        const G4Event* evt = G4RunManager::GetRunManager()->GetCurrentEvent();
+        G4int eventID = evt ? evt->GetEventID() : -1;
 
+        const G4Run* run = G4RunManager::GetRunManager()->GetCurrentRun();
+        G4int runID = run ? run->GetRunID() : -1;
+        
         G4String name = track->GetDefinition()->GetParticleName();
         G4int trackID = track->GetTrackID();
 
         const G4VProcess* creatorProcess = track->GetCreatorProcess();
         //G4String volName = step->GetPostStepPoint() ->GetTouchableHandle() ->GetVolume()
-
+       
 
         const G4StepPoint* post = step->GetPostStepPoint();
         if (!post) return;
@@ -77,65 +85,40 @@ namespace G4_BREMS {
             captureDaughters.emplace_back(trackID, name);
             //gNeutronCaptureEvents.push_back({neutronCapturePos, neutronCapturetime, physVolName});
             //gNeutronCaptureEvents.push_back(G4_BREMS::NeutronCaptureEvent{neutronCapturetime, neutronCapturePos, physVolName});
-
-            NeutronCaptureEvent nc_hit;
-            nc_hit.time = neutronCapturetime;
-            nc_hit.position = neutronCapturePos;
-            nc_hit.volume = physVolName;
-            auto man = G4AnalysisManager::Instance();
+            if ((name == "Li7")){
+                G4cout << "RunID: " << runID << G4endl;
+                NeutronCaptureEvent nc_hit;
+                nc_hit.time = neutronCapturetime;
+                nc_hit.position = neutronCapturePos;
+                nc_hit.volume = physVolName;
+                auto man = G4AnalysisManager::Instance();
   
-            man->FillH1(22, nc_hit.time / ns);
+                man->FillH1(22, nc_hit.time / ns);
             
-            man->FillH1(23, nc_hit.position.x() / mm);
-            man->FillH1(24, nc_hit.position.y() / mm);
-            man->FillH1(25, nc_hit.position.z() / mm);
+                man->FillH1(23, nc_hit.position.x() / mm);
+                man->FillH1(24, nc_hit.position.y() / mm);
+                man->FillH1(25, nc_hit.position.z() / mm);
 
-            man->FillH2(24, nc_hit.position.x() / mm, nc_hit.position.y() / mm, nc_hit.time);
-            man->FillH2(25, nc_hit.position.y() / mm, nc_hit.position.z() / mm, nc_hit.time);
-            man->FillH2(26, nc_hit.position.x() / mm, nc_hit.position.z() / mm, nc_hit.time);
+                man->FillH2(24, nc_hit.position.x() / mm, nc_hit.position.y() / mm, nc_hit.time);
+                man->FillH2(25, nc_hit.position.y() / mm, nc_hit.position.z() / mm, nc_hit.time);
+                man->FillH2(26, nc_hit.position.x() / mm, nc_hit.position.z() / mm, nc_hit.time);
 
-            //man->FillNtupleIColumn(1, 0, an_hit.sipmID);
-            man->FillNtupleDColumn(3, 0, nc_hit.position.x() / mm);
-            man->FillNtupleDColumn(3, 1, nc_hit.position.y() / mm);
-            man->FillNtupleDColumn(3, 2, nc_hit.position.z() / mm);
-            man->FillNtupleDColumn(3, 3, nc_hit.time / ns);
-            //man->FillNtupleDColumn(3, 4, nc_hit.volume);
+                //man->FillNtupleIColumn(1, 0, an_hit.sipmID);
+                man->FillNtupleIColumn(3, 0, eventID);
+                man->FillNtupleIColumn(3, 1, runID);
+                man->FillNtupleIColumn(3, 2, fFileIndex);
+                man->FillNtupleDColumn(3, 3, nc_hit.position.x() / mm);
+                man->FillNtupleDColumn(3, 4, nc_hit.position.y() / mm);
+                man->FillNtupleDColumn(3, 5, nc_hit.position.z() / mm);
+                man->FillNtupleDColumn(3, 6, nc_hit.time / ns);
+                //man->FillNtupleDColumn(3, 4, nc_hit.volume);
 
-            man->AddNtupleRow(3);
+                man->AddNtupleRow(3);
 
-        }
-        /*
-        if (step->GetPreStepPoint()->GetProcessDefinedStep()->GetProcessName() == "annihil") {
-            //G4String name = track->GetDefinition()->GetParticleName();
-            //G4int id = track->GetTrackID();
-            G4cout << "Name : " << track->GetDefinition()->GetParticleName() << " " << "TrackID: " << track->GetTrackID() << G4endl;
-
-        }
-        */
-       /*
-        if (track->GetDefinition()->GetParticleName() == "e+"){  
-            G4VParticleChange* AtRestDoIt(const G4Track track, const G4Step step){
-
-            
-                G4VParticleChange* particleChange = new particleChange();
-                particleChange->Initialize(track);
-
-
-                if (step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() == "annihil"){
-
-                    theListOfSecondaries =  new G4TrackFastVector();
-                    theNumberOfSecondaries = right.theNumberOfSecondaries;
-                    for (G4int index = 0; index<theNumberOfSecondaries; index++){
-                        G4Track* newTrack =  new G4Track(*((*right.theListOfSecondaries)[index] ));
-                        theListOfSecondaries->SetElement(index, newTrack);                      
-                    }
-
-
-                }
             }
 
         }
-        */
+        
         if (track->GetDefinition()->GetParticleName() == "e+" &&
             track->GetTrackStatus() == fStopAndKill &&
             step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() == "annihil" &&
@@ -158,18 +141,6 @@ namespace G4_BREMS {
 
             G4String volName = step->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetName();
 
-            //auto touchable = step->GetPostStepPoint()->GetTouchableHandle();
-            //G4VPhysicalVolume* physVol = touchable->GetVolume();
-            //G4String           name = physVol->GetName();
-            //G4cout << "Track " << track->GetTrackID()
-                //<< " born in physical volume: " << name << G4endl;
-
-           // G4cout << "ANNIHILATION Time: " << annihilationTime / ns << " ns, "
-                //<< "Position: " << annihilationPosition / mm << " mm, "
-                //<< "Volume: " << volName << G4endl;
-                //<< G4endl;
-            //gAnnihilationEvents.push_back({ annihilationTime, annihilationPosition, volName });
-
 
             AnnihilationEvent an_hit;
             an_hit.position = annihilationPosition;
@@ -190,42 +161,14 @@ namespace G4_BREMS {
             man->FillH2(23, an_hit.position.x() / mm, an_hit.position.z() / mm, an_hit.time);
 
 
-            man->FillNtupleDColumn(2, 0, an_hit.position.x() / mm);
-            man->FillNtupleDColumn(2, 1, an_hit.position.y() / mm);
-            man->FillNtupleDColumn(2, 2, an_hit.position.z() / mm);
-            man->FillNtupleDColumn(2, 3, an_hit.time / ns);
-            //man->FillNtupleDColumn(2, 4, an_hit.volume);
-
+            man->FillNtupleIColumn(2, 0, eventID);
+            man->FillNtupleIColumn(2, 1, runID);
+            man->FillNtupleIColumn(2, 2, fFileIndex);
+            man->FillNtupleDColumn(2, 3, an_hit.position.x() / mm);
+            man->FillNtupleDColumn(2, 4, an_hit.position.y() / mm);
+            man->FillNtupleDColumn(2, 5, an_hit.position.z() / mm);
+            man->FillNtupleDColumn(2, 6, an_hit.time / ns);
             man->AddNtupleRow(2);
-            //fAnnihilationGammas = fAnni->Annihilation::annihilationOutput();
-            //G4cout << 
-            // Store details of daughters from e+ annihilation
-            /*
-            for (auto* sec : *(step->GetSecondaryInCurrentStep())) {
-                //if (sec->GetDefinition()==G4Gamma::GammaDefinition()) {
-                  //G4int  gid = sec->GetTrackID();
-                    
-                    G4int  gid = sec->GetTrackID();
-                    G4String sec_name = sec->GetDefinition()->GetParticleName();
-                    G4double create_t  = sec->GetGlobalTime();
-                    G4double local_t = sec->GetLocalTime();
-                    //G4ThreeVector create_position = sec->GetPostStepPoint()->GetPosition();
-                    G4ThreeVector create_position = sec->GetVertexPosition();
-                    //G4double gEnergy = sec->GetKineticEnergy();
-                    //fAnnihilationGammaIDs.insert(gid);
-                    //fGammaEnergies[gid] = gEnergy;
-                    //fAnnihilationGammas.push_back({ gid, gEnergy });
-                    fAnnihilationGammas.emplace_back( create_t, sec_name );
-                    G4cout<<" Annihilation particle ID="<< gid
-                          <<"  name ="<< sec_name 
-                          << "Creation_time_sec =" << create_t
-                          //<< "Creation_Pos =" << annihilationPosition
-                          << "Local Time: " << local_t
-                          << G4endl;
-                //}
-            }
-            
-            */
 
             
         }
@@ -381,14 +324,18 @@ namespace G4_BREMS {
                         man->FillH2(16, pos.y() / mm, pos.z() / mm, t / ns);
                         man->FillH2(17, pos.x() / mm, pos.z() / mm, t / ns);
                         
-
-                       man->FillNtupleIColumn(1, 0, nhit.sipmID);
-                       man->FillNtupleDColumn(1, 1, nhit.position.x() / mm);
-                       man->FillNtupleDColumn(1, 2, nhit.position.y() / mm);
-                       man->FillNtupleDColumn(1, 3, nhit.position.z() / mm);
-                       man->FillNtupleDColumn(1, 4, nhit.time / ns);
+                       man->FillNtupleIColumn(1, 0, eventID);
+                       man->FillNtupleIColumn(1, 1, runID);
+                       man->FillNtupleIColumn(1, 2, fFileIndex);
+                       man->FillNtupleIColumn(1, 3, nhit.sipmID);
+                       man->FillNtupleDColumn(1, 4, nhit.position.x() / mm);
+                       man->FillNtupleDColumn(1, 5, nhit.position.y() / mm);
+                       man->FillNtupleDColumn(1, 6, nhit.position.z() / mm);
+                       man->FillNtupleDColumn(1, 7, nhit.time / ns);
 
                        man->AddNtupleRow(1);
+
+                       
                        
                     }
                     
@@ -429,6 +376,9 @@ namespace G4_BREMS {
 
 
                     G4double hitTime = step->GetPostStepPoint()->GetGlobalTime();
+                    //if (hitTime > 50000){
+                        //G4cout << "Hit time" <<  hitTime <<  G4endl;
+                    //}
                     G4double hitTimeLocal = step->GetPostStepPoint()->GetLocalTime();
                     G4ThreeVector hitPosition = step->GetPreStepPoint()->GetPosition();
                     G4ThreeVector hitPositionSipm = step->GetPostStepPoint()->GetPosition();
@@ -460,12 +410,15 @@ namespace G4_BREMS {
                     man->FillH2(12, hitPositionSipm.x() / mm, hitPositionSipm.y() / mm, hitTime);
                     man->FillH2(13, hitPositionSipm.y() / mm, hitPositionSipm.z() / mm, hitTime);
                     man->FillH2(14, hitPositionSipm.x() / mm, hitPositionSipm.z() / mm, hitTime);
-
-                    man->FillNtupleDColumn(0, 0, hit.time);
-                    man->FillNtupleDColumn(0, 1, hit.wavelength);
-                    man->FillNtupleDColumn(0, 2, hit.position.x() / mm);
-                    man->FillNtupleDColumn(0, 3, hit.position.y() / mm);
-                    man->FillNtupleDColumn(0, 4, hit.position.z() / mm);
+                    
+                    man->FillNtupleIColumn(0, 0, eventID);
+                    man->FillNtupleIColumn(0, 1, runID);
+                    man->FillNtupleIColumn(0, 2, fFileIndex);
+                    man->FillNtupleDColumn(0, 3, hit.time / ns);
+                    man->FillNtupleDColumn(0, 4, hit.wavelength);
+                    man->FillNtupleDColumn(0, 5, hit.position.x() / mm);
+                    man->FillNtupleDColumn(0, 6, hit.position.y() / mm);
+                    man->FillNtupleDColumn(0, 7, hit.position.z() / mm);
                     
 
                     man->AddNtupleRow(0);
