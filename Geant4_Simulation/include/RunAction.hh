@@ -1,4 +1,3 @@
-
 #ifndef RunAction_h
 #define RunAction_h 1
 
@@ -6,6 +5,7 @@
 #include "G4Accumulable.hh"
 #include "globals.hh"
 #include <map>
+#include "G4GenericAnalysisManager.hh"
 
 class G4Run;
 
@@ -16,7 +16,7 @@ namespace G4_BREMS {
     class RunAction : public G4UserRunAction
     {
     public:
-        RunAction(SteppingAction* steppingAction);
+        RunAction(SteppingAction* steppingAction, int fileIndex);
         virtual ~RunAction();
 
         virtual void BeginOfRunAction(const G4Run*);
@@ -46,6 +46,7 @@ namespace G4_BREMS {
         G4int fPhotonsExitedFiber;
         G4int fPhotonsAbsorbedFiber;
         G4int chargeDeposited;
+        int fFileIndex;
 
         G4Accumulable<G4int> fAccTileCount;
         G4Accumulable<G4int> fAccCladCount;
@@ -61,14 +62,14 @@ namespace G4_BREMS {
 
         SteppingAction* fSteppingAction;
 
+<<<<<<< HEAD
 	int write_to_csv = 0;
     int generate_histograms = 0;
+=======
+
+>>>>>>> de58850d03e5e20eca7efe1fbccc298b16c13d49
     };
 
 }
 
 #endif
-
-
-
-

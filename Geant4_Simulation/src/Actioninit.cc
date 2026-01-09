@@ -1,8 +1,9 @@
-
 #include "ActionInit.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "SteppingAction.hh"
 #include "RunAction.hh"
+#include "Annihilation.hh"
+//#include "EventAction.hh"  
 
 namespace G4_BREMS {
 

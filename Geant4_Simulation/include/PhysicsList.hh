@@ -14,6 +14,7 @@ namespace G4_BREMS
 
 		virtual void ConstructParticle() override;
 		virtual void ConstructProcess() override;
+		//virtual void ConstructHad();
 	};
 }
 

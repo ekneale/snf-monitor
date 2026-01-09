@@ -8,12 +8,18 @@
 #include "G4Threading.hh"
 #include "G4AnalysisManager.hh"
 #include "G4AccumulableManager.hh"
+#include "G4GenericAnalysisManager.hh"
 
 #include <iomanip>
 #include <string>
 #include <fstream>
 #include <map>
 #include <vector>
+
+#include "Randomize.hh"   
+#include <chrono>         
+#include <cstdlib>        
+#include <cmath>
 
 namespace G4_BREMS
 {
@@ -50,7 +56,7 @@ namespace G4_BREMS
             fAccInteractionCounts[name] = new G4Accumulable<G4int>(name, 0);
         }
 
-        auto accumulableManager = G4AccumulableManager::Instance();
+        G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
         accumulableManager->RegisterAccumulable(fAccTileCount);
         accumulableManager->RegisterAccumulable(fAccCladCount);
         accumulableManager->RegisterAccumulable(fAccCoreCount);
@@ -68,13 +74,22 @@ namespace G4_BREMS
         {
             accumulableManager->RegisterAccumulable(*pair.second);
         }
-
-        auto analysisManager = G4AnalysisManager::Instance();
+        
+        //auto man = G4GenericAnalysisManager::Instance();
+        auto man = G4AnalysisManager::Instance();
         analysisManager->SetVerboseLevel(1);
-        analysisManager->SetFileName("OpticalPhotonAnalysis1");
+        //analysisManager->SetFileName("H1:Sipm_Hits1, H2:Sipm_Hits2, NT:NeutronCaptureSipmHits");
+        //analysisManager->SetFileName("SipmHits");
+        //analysisManager->SetFileName();
+        //analysisManager->SetFileName("Sipm_Hits1");
         analysisManager->SetDefaultFileType("root");
         analysisManager->SetNtupleMerging(true);
 
+        analysisManager->CreateH1("edep", "Energy Deposition Distribution", 100, 0., 2.0E-5 * CLHEP::MeV);
+        analysisManager->SetH1XAxisTitle(0, "Energy Deposition [MeV]");
+        analysisManager->SetH1YAxisTitle(0, "Counts");
+
+<<<<<<< HEAD
         if (generate_histograms)
         {
             // create histograms
@@ -237,9 +252,162 @@ namespace G4_BREMS
             analysisManager->SetH2XAxisTitle(14, "x [mm]");
             analysisManager->SetH2YAxisTitle(14, "z [mm]");
             analysisManager->SetH2ZAxisTitle(14, "Time [ns]");
+
+            analysisManager->CreateH1("Sipm_Timing_NeutronCapture", "Sipm Timing NeutronCapture",
+                                        200, 300, 600);
+            analysisManager->SetH1XAxisTitle(13, "Time [ns]");
+            analysisManager->SetH1YAxisTitle(13, "Counts");
+
+        
+            analysisManager->CreateH1("Sipm_Timing_Annihilation", "Sipm Timing Annihilation",
+                                        200, 300, 600);
+            analysisManager->SetH1XAxisTitle(14, "Time [ns]");
+            analysisManager->SetH1YAxisTitle(14, "Counts");
+
+            analysisManager->CreateH1("Sipm_Timing_NeutronCapture", "Sipm Timing NeutronCapture",
+                                        200, 300, 600);
+            analysisManager->SetH1XAxisTitle(13, "Time [ns]");
+            analysisManager->SetH1YAxisTitle(13, "Counts");
+
+        
+            analysisManager->CreateH1("Sipm_Timing_Annihilation", "Sipm Timing Annihilation",
+                                        200, 300, 600);
+            analysisManager->SetH1XAxisTitle(14, "Time [ns]");
+            analysisManager->SetH1YAxisTitle(14, "Counts");
+
+            analysisManager->CreateH1("Sipm_Hit_XPosition", "Sipm Hit XPosition",
+                                        200, 300, 600);
+            analysisManager->SetH1XAxisTitle(15, "X_hitPosition");
+            analysisManager->SetH1YAxisTitle(15, "Counts");
+
+            analysisManager->CreateH1("Sipm_Hit_YPosition", "Sipm Hit YPosition",
+                                        200, 300, 600);
+            analysisManager->SetH1XAxisTitle(16, "Y_hitPosition");
+            analysisManager->SetH1YAxisTitle(16, "Counts");
+
+            analysisManager->CreateH1("Sipm_Hit_ZPosition", "Sipm Hit ZPosition",
+                                        200, 300, 600);
+            analysisManager->SetH1XAxisTitle(17, "Z_hitPosition");
+            analysisManager->SetH1YAxisTitle(17, "Counts");
+
+            analysisManager->CreateH1("Timing_Annihilation", "Timing Annihilation",
+                                        200, 300, 600);
+            analysisManager->SetH1XAxisTitle(18, "Time [ns]");
+            analysisManager->SetH1YAxisTitle(18, "Counts");
+
+            analysisManager->CreateH1("Annihilation_XPosition", "Annihilation XPosition",
+                                        200, 300, 600);
+            analysisManager->SetH1XAxisTitle(19, "X_hitPosition");
+            analysisManager->SetH1YAxisTitle(19, "Counts");
+
+            analysisManager->CreateH1("Annihilation_YPosition", "Annihilation YPosition",
+                                        200, 300, 600);
+            analysisManager->SetH1XAxisTitle(20, "Y_hitPosition");
+            analysisManager->SetH1YAxisTitle(20, "Counts");
+
+            analysisManager->CreateH1("Annihilation_ZPosition", "Annihilation ZPosition",
+                                        200, 300, 600);
+            analysisManager->SetH1XAxisTitle(21, "Z_hitPosition");
+            analysisManager->SetH1YAxisTitle(21, "Counts");
+        
+
+            analysisManager->CreateH1("Timing_Neutron_Capture", "Timing Neutron_Capture",
+                                        200, 300, 600);
+            analysisManager->SetH1XAxisTitle(22, "Time [ns]");
+            analysisManager->SetH1YAxisTitle(22, "Counts");
+
+            analysisManager->CreateH1("Neutron_Capture_XPosition", "Neutron_Capture XPosition",
+                                        200, 300, 600);
+            analysisManager->SetH1XAxisTitle(23, "X_hitPosition");
+            analysisManager->SetH1YAxisTitle(23, "Counts");
+
+            analysisManager->CreateH1("Neutron_Capture_YPosition", "Neutron_Capture YPosition",
+                                        200, 300, 600);
+            analysisManager->SetH1XAxisTitle(24, "Y_hitPosition");
+            analysisManager->SetH1YAxisTitle(24, "Counts");
+
+            analysisManager->CreateH1("Neutron_Capture_ZPosition", "Neutron_Capture ZPosition",
+                200, 300, 600);
+            analysisManager->SetH1XAxisTitle(25, "Z_hitPosition");
+            analysisManager->SetH1YAxisTitle(25, "Counts");
+
+            analysisManager->CreateH2("Sipm_Timing_NeutronCapture_xy", "Sipm Timing NeutronCapture XY",
+                100, -400., 300., 100, -40., 40.);
+            analysisManager->SetH2XAxisTitle(15, "x [mm]");
+            analysisManager->SetH2YAxisTitle(15, "y [mm]");
+            analysisManager->SetH2ZAxisTitle(15, "Time [ns]");
+
+            analysisManager->CreateH2("Sipm_Timing_NeutronCapture_yz", "Sipm Timing NeutronCapture YZ",
+                100, -400., 300., 100, -40., 40.);
+            analysisManager->SetH2XAxisTitle(16, "y [mm]");
+            analysisManager->SetH2YAxisTitle(16, "z [mm]");
+            analysisManager->SetH2ZAxisTitle(16, "Time [ns]");
+
+            analysisManager->CreateH2("Sipm_Timing_NeutronCapture_xz", "Sipm Timing NeutronCapture XZ",
+                100, -400., 300., 100, -40., 40.);
+            analysisManager->SetH2XAxisTitle(17, "x [mm]");
+            analysisManager->SetH2YAxisTitle(17, "z [mm]");
+            analysisManager->SetH2ZAxisTitle(17, "Time [ns]");
+
+            analysisManager->CreateH2("Sipm_Timing_Annihilation_xy", "Sipm Timing Annihilation XY",
+                100, -400., 300., 100, -40., 40.);
+            analysisManager->SetH2XAxisTitle(18, "x [mm]");
+            analysisManager->SetH2YAxisTitle(18, "y [mm]");
+            analysisManager->SetH2ZAxisTitle(18, "Time [ns]");
+
+            analysisManager->CreateH2("Sipm_Timing_Annihilation_yz", "Sipm Timing Annihilation YZ",
+                100, -400., 300., 100, -40., 40.);
+            analysisManager->SetH2XAxisTitle(19, "y [mm]");
+            analysisManager->SetH2YAxisTitle(19, "z [mm]");
+            analysisManager->SetH2ZAxisTitle(19, "Time [ns]");
+
+            analysisManager->CreateH2("Sipm_Timing_Annihilation_xz", "Sipm Timing Annihilation XZ",
+                100, -400., 300., 100, -40., 40.);
+            analysisManager->SetH2XAxisTitle(20, "x [mm]");
+            analysisManager->SetH2YAxisTitle(20, "z [mm]");
+            analysisManager->SetH2ZAxisTitle(20, "Time [ns]"); 
+            
+            analysisManager->CreateH2("Annihilation_xy", "Annihilation XY",
+                100, -400., 300., 100, -40., 40.);
+            analysisManager->SetH2XAxisTitle(21, "x [mm]");
+            analysisManager->SetH2YAxisTitle(21, "y [mm]");
+            analysisManager->SetH2ZAxisTitle(21, "Time [ns]");
+
+            analysisManager->CreateH2("Annihilation_yz", "Annihilation YZ",
+                100, -400., 300., 100, -40., 40.);
+            analysisManager->SetH2XAxisTitle(22, "y [mm]");
+            analysisManager->SetH2YAxisTitle(22, "z [mm]");
+            analysisManager->SetH2ZAxisTitle(22, "Time [ns]");
+
+            analysisManager->CreateH2("Annihilation_xz", "Annihilation XZ",
+                100, -400., 300., 100, -40., 40.);
+            analysisManager->SetH2XAxisTitle(23, "x [mm]");
+            analysisManager->SetH2YAxisTitle(23, "z [mm]");
+            analysisManager->SetH2ZAxisTitle(23, "Time [ns]"); 
+
+            analysisManager->CreateH2("NeutronCapture_xy", "NeutronCapture XY",
+                100, -400., 300., 100, -40., 40.);
+            analysisManager->SetH2XAxisTitle(24, "x [mm]");
+            analysisManager->SetH2YAxisTitle(24, "y [mm]");
+            analysisManager->SetH2ZAxisTitle(24, "Time [ns]");
+
+            analysisManager->CreateH2("NeutronCapture_yz", "NeutronCapture YZ",
+                100, -400., 300., 100, -40., 40.);
+            analysisManager->SetH2XAxisTitle(25, "y [mm]");
+            analysisManager->SetH2YAxisTitle(25, "z [mm]");
+            analysisManager->SetH2ZAxisTitle(25, "Time [ns]");
+
+            analysisManager->CreateH2("NeutronCapture_xz", "NeutronCapture XZ",
+                100, -400., 300., 100, -40., 40.);
+            analysisManager->SetH2XAxisTitle(26, "x [mm]");
+            analysisManager->SetH2YAxisTitle(26, "z [mm]");
+            analysisManager->SetH2ZAxisTitle(26, "Time [ns]"); 
+
         } // endif generate_histograms
 
         analysisManager->CreateNtuple("simdata", "MC truth tree");
+        analysisManager->CreateNtupleIColumn("runID");
+        analysisManager->CreateNtupleIColumn("eventID");
         analysisManager->CreateNtupleDColumn("nu_energy");       // column ID = 0
         analysisManager->CreateNtupleDColumn("nu_dir_x");        // column ID = 1
         analysisManager->CreateNtupleDColumn("nu_dir_y");        // column ID = 2
@@ -261,7 +429,32 @@ namespace G4_BREMS
         analysisManager->CreateNtupleDColumn("sipm_z");          // column ID = 18
         analysisManager->CreateNtupleDColumn("sipm_t");          // column ID = 19
         analysisManager->CreateNtupleDColumn("sipm_q");          // column ID = 20
+        analysisManager->CreateNtupleDColumn("sipm_wl");          // column ID = 20
+        analysisManager->CreateNtupleDColumn("vtx_x_ncapture");           // column ID = 4
+        analysisManager->CreateNtupleDColumn("vtx_y_ncapture");           // column ID = 5
+        analysisManager->CreateNtupleDColumn("vtx_z_ncapture"); 
+        analysisManager->CreateNtupleDColumn("t_ncapture");
+        analysisManager->CreateNtupleIColumn("n_sipm_hits_ncapture");     // column ID = 15
+        analysisManager->CreateNtupleDColumn("sipm_x_ncapture");          // column ID = 16
+        analysisManager->CreateNtupleDColumn("sipm_y_ncapture");          // column ID = 17
+        analysisManager->CreateNtupleDColumn("sipm_z_ncapture");          // column ID = 18
+        analysisManager->CreateNtupleDColumn("sipm_t_ncapture");          // column ID = 19
+        analysisManager->CreateNtupleDColumn("sipm_q_ncapture");          // column ID = 20
+        analysisManager->CreateNtupleDColumn("sipm_wl_ncapture");          // column ID = 20
+        analysisManager->CreateNtupleDColumn("vtx_x_annihilation");
+        analysisManager->CreateNtupleDColumn("vtx_y_annihilation");
+        analysisManager->CreateNtupleDColumn("vtx_z_annihilation");
+        analysisManager->CreateNtupleDColumn("vol_annihilation");
+        analysisManager->CreateNtupleDColumn("t_annihilation");
+        analysisManager->CreateNtupleIColumn("n_sipm_hits_annihilation");     // column ID = 15
+        analysisManager->CreateNtupleDColumn("sipm_x_annihilation");          // column ID = 16
+        analysisManager->CreateNtupleDColumn("sipm_y_annihilation");          // column ID = 17
+        analysisManager->CreateNtupleDColumn("sipm_z_annihilation");          // column ID = 18
+        analysisManager->CreateNtupleDColumn("sipm_t_annihilation");          // column ID = 19
+        analysisManager->CreateNtupleDColumn("sipm_q_annihilation");          // column ID = 20
+        analysisManager->CreateNtupleDColumn("sipm_wl_annihilation");          // column ID = 20
         analysisManager->FinishNtuple();
+
     }
 
     G4_BREMS::RunAction::~RunAction()
@@ -279,6 +472,8 @@ namespace G4_BREMS
     void G4_BREMS::RunAction::BeginOfRunAction(const G4Run *)
     {
         G4AccumulableManager::Instance()->Reset();
+        //G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
+        //accumulableManager->Reset();
 
         if (fSteppingAction)
         {
@@ -291,9 +486,31 @@ namespace G4_BREMS
             gAnnihilationEvents.clear();
         }
 
+
+
+        long s1 = 0, s2 = 0;
+
+        if (const char* e1 = std::getenv("G4_SEED1")) s1 = std::strtol(e1, nullptr, 10);
+        if (const char* e2 = std::getenv("G4_SEED2")) s2 = std::strtol(e2, nullptr, 10);
+        if (s1 == 0 || s2 == 0) {
+            auto now = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+            long base = static_cast<long>(now) ^ (static_cast<long>(run->GetRunID()) << 24);
+            if (s1 == 0) s1 = std::llabs(base) + 11;
+            if (s2 == 0) s2 = std::llabs(base * 1812433253L + 12345L) + 17;
+        }
+
+        long seeds[2] = { s1, s2 };
+        if (G4Threading::IsMasterThread()) {
+             G4Random::setTheSeeds(seeds, 2);
+             G4cout << "Run " << run->GetRunID()
+               << " using RNG seeds: " << s1 << " , " << s2 << G4endl;
+        }
+
         auto analysisManager = G4AnalysisManager::Instance();
         analysisManager->Reset();
-        analysisManager->OpenFile("Sipm_Hits.root");
+        //TODO set file name in macro
+        analysisManager->OpenFile("nuwim_output.root");
+        
     }
 
     void G4_BREMS::RunAction::AddProcessCount(const G4String &volume,
@@ -354,7 +571,9 @@ namespace G4_BREMS
 
                     G4cout << "Trapping Efficiency: " << CalculateTrappingEfficiency() * 100.0 << " %" << G4endl;
                 }
+
                 std::vector<G4String> volumes = {"Tile", "FiberCore", "FiberClad", "Sipm"};
+
                 for (const auto &volume : volumes)
                 {
                     if (debug_runaction)
@@ -364,221 +583,14 @@ namespace G4_BREMS
                         // creation processes
                         G4cout << "Creation Processes:" << G4endl;
                     }
-                    std::vector<G4String> creationProcesses = {"Cerenkov", "Scintillation", "OpWLS"};
-                    for (const auto &process : creationProcesses)
-                    {
-                        G4String key = volume + "_Creation_" + process;
-                        auto it = fAccCreationCounts.find(key);
-                        if (it != fAccCreationCounts.end() && debug_runaction)
-                        {
-                            G4cout << std::setw(15) << process << ": "
-                                   << it->second->GetValue() << G4endl;
-                        }
-                    }
-
-                    // Interaction processes
-                    if (debug_runaction)
-                    {
-                        G4cout << "Interaction Processes:" << G4endl;
-                    }
-                    std::vector<G4String> interactionProcesses = {"OpAbsorption", "OpWLS", "Transportation"};
-                    for (const auto &process : interactionProcesses)
-                    {
-                        G4String key = volume + "_Interaction_" + process;
-                        auto it = fAccInteractionCounts.find(key);
-                        if (it != fAccInteractionCounts.end() && debug_runaction)
-                        {
-                            G4cout << std::setw(15) << process << ": "
-                                   << it->second->GetValue() << G4endl;
-                        }
-                    }
                 }
-
-                if (!gAnnihilationEvents.empty())
-                {
-                    std::string filename = "annihilation_events.csv";
-                    std::ofstream outFile(filename);
-                    if (outFile.is_open())
-                    {
-                        outFile << "Time(ns),X(mm),Y(mm),Z(mm),Volume\n";
-                        for (const auto &event : gAnnihilationEvents)
-                        {
-                            if (event.volume != "World")
-                            {
-                                outFile << event.time / ns << ","
-                                        << event.position.x() / mm << ","
-                                        << event.position.y() / mm << ","
-                                        << event.position.z() / mm << ","
-                                        << event.volume << "\n";
-                            }
-                        }
-                        outFile.close();
-                        if (debug_runaction)
-                        {
-                            G4cout << "Wrote " << gAnnihilationEvents.size()
-                                   << " annihilation events to " << filename << G4endl;
-                        }
-                    }
-                    else
-                    {
-                        G4cerr << "Could not open " << filename << " for writing." << G4endl;
-                    }
-                }
-                else
-                {
-                    G4cout << "No positron annihilation events recorded in this run." << G4endl;
-                }
-
-                G4cout << "\nAttempting to write " << gSipmHits.size() << " SiPM hits to CSV file." << G4endl;
-
-                if (!gSipmHits.empty())
-                {
-                    std::string filename1 = "sipm_hits_run.csv";
-                    G4cout << "Creating file: " << filename1 << G4endl;
-
-                    std::ofstream outFile1(filename1);
-                    if (outFile1.is_open())
-                    {
-                        // outFile << "SipmID,SipmName,Time(ns),X(mm),Y(mm),Z(mm),Energy(eV),Wavelength(nm)" << std::endl;
-                        // outFile << "SipmName,Time(ns),X(mm),Y(mm),Z(mm),Energy(eV),Wavelength(nm)" << std::endl;
-                        outFile1 << "SipmName,Time(ns),X(mm),Y(mm),Z(mm),Energy(eV),Wavelength(nm)" // TimeWindow(ns),ChargeDepositionCounts"
-                                 << std::endl;
-
-                        // sort all hits by SiPM ID and then by time
-                        std::map<G4String, std::vector<SipmHit>> hitsBySipm;
-                        for (const auto &hit : gSipmHits)
-                        {
-                            hitsBySipm[hit.sipmName].push_back(hit);
-                        }
-
-                        for (auto &sipmPair : hitsBySipm)
-                        {
-                            auto &sipmName = sipmPair.first;
-                            auto &hits = sipmPair.second;
-
-                            // sort hits by time
-                            std::sort(hits.begin(), hits.end(),
-                                      [](const SipmHit &a, const SipmHit &b)
-                                      {
-                                          return a.time < b.time;
-                                      });
-                            const G4double timeWindow = 100.0 * ns; // 100 ns time window
-
-                            // determine its time window and charge contribution for each hit
-                            for (size_t i = 0; i < hits.size(); i++)
-                            {
-                                const auto &hit = hits[i];
-
-                                // find the start of the time window for this hit
-                                G4double windowStart = hit.time;
-                                G4double windowEnd = windowStart + timeWindow;
-
-                                // count photons in this window
-                                G4int photonsInWindow = 0;
-                                for (size_t j = i; j < hits.size(); j++)
-                                {
-                                    if (hits[j].time >= windowStart && hits[j].time <= windowEnd)
-                                    {
-                                        photonsInWindow++;
-                                    }
-                                    if (hits[j].time > windowEnd)
-                                        break;
-                                }
-                                // write hit data with charge information
-                                outFile1 << hit.sipmName << ","
-                                         << hit.time / ns << ","
-                                         << hit.position.x() / mm << ","
-                                         << hit.position.y() / mm << ","
-                                         << hit.position.z() / mm << ","
-                                         << hit.energy / eV << ","
-                                         << hit.wavelength << std::endl;
-                                //<< windowStart / ns << "-" << windowEnd / ns << ","
-                                //<< charge << std::endl;
-                                //<< photonsInWindow << std::endl;
-                            }
-                        }
-                        outFile1.close();
-                        G4cout << "Successfully wrote " << gSipmHits.size() << " SiPM hits with charge information to "
-                               << filename1 << G4endl;
-                    }
-                    else
-                    {
-                        G4cerr << "Error: Could not open " << filename1 << " for writing" << G4endl;
-                    }
-
-                    std::string filename2 = "Sipm_Charge_Deposition.csv";
-                    std::ofstream outFile2(filename2);
-                    if (outFile2.is_open())
-                    {
-                        outFile2 << "SipmName, 0 - 20 ns, 20 - 40 ns, 40 - 60 ns, 60 - 80 ns, 80 - 100 ns, 100 - 120 ns, 120 - 140 ns, 140 - 160 ns, 160 - 180 ns, 180 - 200 ns, 200+ ns"
-                                 << std::endl;
-
-                        // group hits by SiPM
-                        std::map<G4String, std::vector<SipmHit>> hitsBySipm;
-                        for (const auto &hit : gSipmHits)
-                        {
-                            hitsBySipm[hit.sipmName].push_back(hit);
-                        }
-
-                        // process each SiPM's hits once
-                        for (auto &sipmPair : hitsBySipm)
-                        {
-                            auto &sipmName = sipmPair.first;
-                            auto &hits = sipmPair.second;
-
-                            // time windows
-                            std::vector<G4double> timeWindows = {0.0, 20.0, 40.0, 60.0, 80.0, 100.0, 120.0, 140.0, 160.0, 180.0, 200.0};
-
-                            // Initialize counters for each time window
-                            std::vector<G4int> photonsInWindows(timeWindows.size(), 0);
-                            G4int photonsAfter200ns = 0;
-
-                            // count hits in each time window
-                            for (const auto &hit : hits)
-                            {
-                                G4double hitTime = hit.time / ns;
-
-                                bool counted = false;
-                                // check which time window this hit belongs to
-                                for (size_t i = 0; i < timeWindows.size() - 1; i++)
-                                {
-                                    if (hitTime >= timeWindows[i] && hitTime < timeWindows[i + 1])
-                                    {
-                                        photonsInWindows[i]++;
-                                        counted = true;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            // write data for this SiPM only once
-                            outFile2 << sipmName;
-                            for (size_t i = 0; i < photonsInWindows.size(); i++)
-                            {
-                                outFile2 << ", " << photonsInWindows[i];
-                            }
-                            outFile2 << std::endl;
-                        }
-
-                        outFile2.close();
-                        G4cout << "Successfully wrote SiPM hits with time window information to "
-                               << filename2 << G4endl;
-                    }
-                    else
-                    {
-                        G4cerr << "Error: Could not open " << filename2 << " for writing" << G4endl;
-                    }
-                }
-
-                else
-                {
-                    G4cout << "No SiPM hits recorded in this run" << G4endl;
-                }
-                G4cout << "\n=================================" << G4endl;
             }
+            
         }
+        
         analysisManager->Write();
-        analysisManager->CloseFile(false);
+        analysisManager->CloseFile();   
+
     }
 
 } // namespace G4_BREMS
