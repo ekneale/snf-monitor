@@ -1,23 +1,22 @@
+
 #ifndef G4_BREMS_ACTION_INIT_H
 #define G4_BREMS_ACTION_INIT_H 1
 
 #include "G4VUserActionInitialization.hh"
-//#include "TrackingAction.hh" 
+
 
 namespace G4_BREMS {
 	class ActionInit : public G4VUserActionInitialization {
 	public:
-		//ActionInit() = default;
-		ActionInit(int fileIndex): fFileIndex(fileIndex) {}
-
+		ActionInit() = default;
 		~ActionInit() override = default;
 
 		void Build() const override;
 		void BuildForMaster() const override;
-	private:
-	    int fFileIndex;
 
 	};
 }
 #endif // !G4_BREMS_ACTION_INIT_H
+
+
 

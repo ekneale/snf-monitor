@@ -16,7 +16,7 @@ namespace G4_BREMS {
     class RunAction : public G4UserRunAction
     {
     public:
-        RunAction(SteppingAction* steppingAction, int fileIndex);
+        RunAction(SteppingAction* steppingAction);
         virtual ~RunAction();
 
         virtual void BeginOfRunAction(const G4Run*);
@@ -62,12 +62,9 @@ namespace G4_BREMS {
 
         SteppingAction* fSteppingAction;
 
-<<<<<<< HEAD
 	int write_to_csv = 0;
-    int generate_histograms = 0;
-=======
+	int generate_histograms = 0;
 
->>>>>>> de58850d03e5e20eca7efe1fbccc298b16c13d49
     };
 
 }
