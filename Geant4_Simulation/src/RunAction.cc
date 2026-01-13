@@ -406,53 +406,53 @@ namespace G4_BREMS
         } // endif generate_histograms
 
         analysisManager->CreateNtuple("simdata", "MC truth tree");
-        analysisManager->CreateNtupleIColumn("runID");
-        analysisManager->CreateNtupleIColumn("eventID");
-        analysisManager->CreateNtupleDColumn("nu_energy");       // column ID = 0
-        analysisManager->CreateNtupleDColumn("nu_dir_x");        // column ID = 1
-        analysisManager->CreateNtupleDColumn("nu_dir_y");        // column ID = 2
-        analysisManager->CreateNtupleDColumn("nu_dir_z");        // column ID = 3
-        analysisManager->CreateNtupleDColumn("vtx_x");           // column ID = 4
-        analysisManager->CreateNtupleDColumn("vtx_y");           // column ID = 5
-        analysisManager->CreateNtupleDColumn("vtx_z");           // column ID = 6
-        analysisManager->CreateNtupleDColumn("positron_energy"); // column ID = 7
-        analysisManager->CreateNtupleDColumn("positron_dir_x");  // column ID = 8
-        analysisManager->CreateNtupleDColumn("positron_dir_y");  // column ID = 9
-        analysisManager->CreateNtupleDColumn("positron_dir_z");  // column ID = 10
-        analysisManager->CreateNtupleDColumn("neutron_energy");  // column ID = 11
-        analysisManager->CreateNtupleDColumn("neutron_dir_x");   // column ID = 12
-        analysisManager->CreateNtupleDColumn("neutron_dir_y");   // column ID = 13
-        analysisManager->CreateNtupleDColumn("neutron_dir_z");   // column ID = 14
-        analysisManager->CreateNtupleIColumn("n_sipm_hits");     // column ID = 15
-        analysisManager->CreateNtupleDColumn("sipm_x");          // column ID = 16
-        analysisManager->CreateNtupleDColumn("sipm_y");          // column ID = 17
-        analysisManager->CreateNtupleDColumn("sipm_z");          // column ID = 18
-        analysisManager->CreateNtupleDColumn("sipm_t");          // column ID = 19
-        analysisManager->CreateNtupleDColumn("sipm_q");          // column ID = 20
-        analysisManager->CreateNtupleDColumn("sipm_wl");          // column ID = 20
-        analysisManager->CreateNtupleDColumn("vtx_x_ncapture");           // column ID = 4
-        analysisManager->CreateNtupleDColumn("vtx_y_ncapture");           // column ID = 5
-        analysisManager->CreateNtupleDColumn("vtx_z_ncapture"); 
-        analysisManager->CreateNtupleDColumn("t_ncapture");
-        analysisManager->CreateNtupleIColumn("n_sipm_hits_ncapture");     // column ID = 15
-        analysisManager->CreateNtupleDColumn("sipm_x_ncapture");          // column ID = 16
-        analysisManager->CreateNtupleDColumn("sipm_y_ncapture");          // column ID = 17
-        analysisManager->CreateNtupleDColumn("sipm_z_ncapture");          // column ID = 18
-        analysisManager->CreateNtupleDColumn("sipm_t_ncapture");          // column ID = 19
-        analysisManager->CreateNtupleDColumn("sipm_q_ncapture");          // column ID = 20
-        analysisManager->CreateNtupleDColumn("sipm_wl_ncapture");          // column ID = 20
-        analysisManager->CreateNtupleDColumn("vtx_x_annihilation");
-        analysisManager->CreateNtupleDColumn("vtx_y_annihilation");
-        analysisManager->CreateNtupleDColumn("vtx_z_annihilation");
-        analysisManager->CreateNtupleDColumn("vol_annihilation");
-        analysisManager->CreateNtupleDColumn("t_annihilation");
-        analysisManager->CreateNtupleIColumn("n_sipm_hits_annihilation");     // column ID = 15
-        analysisManager->CreateNtupleDColumn("sipm_x_annihilation");          // column ID = 16
-        analysisManager->CreateNtupleDColumn("sipm_y_annihilation");          // column ID = 17
-        analysisManager->CreateNtupleDColumn("sipm_z_annihilation");          // column ID = 18
-        analysisManager->CreateNtupleDColumn("sipm_t_annihilation");          // column ID = 19
-        analysisManager->CreateNtupleDColumn("sipm_q_annihilation");          // column ID = 20
-        analysisManager->CreateNtupleDColumn("sipm_wl_annihilation");          // column ID = 20
+        analysisManager->CreateNtupleIColumn("runID");                     // column ID = 0
+        analysisManager->CreateNtupleIColumn("eventID");                   // column ID = 1
+        analysisManager->CreateNtupleDColumn("nu_energy");                 // column ID = 2
+        analysisManager->CreateNtupleDColumn("nu_dir_x");                  // column ID = 3
+        analysisManager->CreateNtupleDColumn("nu_dir_y");                  // column ID = 4
+        analysisManager->CreateNtupleDColumn("nu_dir_z");                  // column ID = 5
+        analysisManager->CreateNtupleDColumn("vtx_x");                     // column ID = 6
+        analysisManager->CreateNtupleDColumn("vtx_y");                     // column ID = 7
+        analysisManager->CreateNtupleDColumn("vtx_z");                     // column ID = 8
+        analysisManager->CreateNtupleDColumn("positron_energy");           // column ID = 9
+        analysisManager->CreateNtupleDColumn("positron_dir_x");            // column ID = 10
+        analysisManager->CreateNtupleDColumn("positron_dir_y");            // column ID = 11
+        analysisManager->CreateNtupleDColumn("positron_dir_z");            // column ID = 12
+        analysisManager->CreateNtupleDColumn("neutron_energy");            // column ID = 13
+        analysisManager->CreateNtupleDColumn("neutron_dir_x");             // column ID = 14
+        analysisManager->CreateNtupleDColumn("neutron_dir_y");             // column ID = 15
+        analysisManager->CreateNtupleDColumn("neutron_dir_z");             // column ID = 16
+        analysisManager->CreateNtupleIColumn("n_sipm_hits");               // column ID = 17
+        analysisManager->CreateNtupleDColumn("sipm_x");                    // column ID = 18
+        analysisManager->CreateNtupleDColumn("sipm_y");                    // column ID = 19
+        analysisManager->CreateNtupleDColumn("sipm_z");                    // column ID = 20
+        analysisManager->CreateNtupleDColumn("sipm_t");                    // column ID = 21
+        analysisManager->CreateNtupleDColumn("sipm_q");                    // column ID = 22
+        analysisManager->CreateNtupleDColumn("sipm_wl");                   // column ID = 23
+        analysisManager->CreateNtupleDColumn("vtx_x_ncapture");            // column ID = 24
+        analysisManager->CreateNtupleDColumn("vtx_y_ncapture");            // column ID = 25
+        analysisManager->CreateNtupleDColumn("vtx_z_ncapture");            // column ID = 26
+        analysisManager->CreateNtupleDColumn("t_ncapture");                // column ID = 27
+        analysisManager->CreateNtupleIColumn("n_sipm_hits_ncapture");      // column ID = 28
+        analysisManager->CreateNtupleDColumn("sipm_x_ncapture");           // column ID = 29
+        analysisManager->CreateNtupleDColumn("sipm_y_ncapture");           // column ID = 30
+        analysisManager->CreateNtupleDColumn("sipm_z_ncapture");           // column ID = 31
+        analysisManager->CreateNtupleDColumn("sipm_t_ncapture");           // column ID = 32
+        analysisManager->CreateNtupleDColumn("sipm_q_ncapture");           // column ID = 33
+        analysisManager->CreateNtupleDColumn("sipm_wl_ncapture");          // column ID = 34
+        analysisManager->CreateNtupleDColumn("vtx_x_annihilation");        // column ID = 35 
+        analysisManager->CreateNtupleDColumn("vtx_y_annihilation");        // column ID = 36
+        analysisManager->CreateNtupleDColumn("vtx_z_annihilation");        // column ID = 37
+        analysisManager->CreateNtupleDColumn("vol_annihilation");          // column ID = 38
+        analysisManager->CreateNtupleDColumn("t_annihilation");            // column ID = 39
+        analysisManager->CreateNtupleIColumn("n_sipm_hits_annihilation");  // column ID = 40
+        analysisManager->CreateNtupleDColumn("sipm_x_annihilation");       // column ID = 41
+        analysisManager->CreateNtupleDColumn("sipm_y_annihilation");       // column ID = 42
+        analysisManager->CreateNtupleDColumn("sipm_z_annihilation");       // column ID = 43
+        analysisManager->CreateNtupleDColumn("sipm_t_annihilation");       // column ID = 44
+        analysisManager->CreateNtupleDColumn("sipm_q_annihilation");       // column ID = 45
+        analysisManager->CreateNtupleDColumn("sipm_wl_annihilation");      // column ID = 46
         analysisManager->FinishNtuple();
 
     }
