@@ -22,12 +22,6 @@
 
 namespace G4_BREMS {
 
-    // global vectors
-    std::vector<SipmHit> gSipmHits;
-    std::vector<neutronCaptureSipmHit> gneutronCaptureSipmHits;
-    std::vector<AnnihilationEvent> gAnnihilationEvents;
-<<<<<<< HEAD
-
     SteppingAction::SteppingAction(RunAction *runAction)
         : G4UserSteppingAction(), fRunAction(runAction), fSensitiveVolume(nullptr)
     {
@@ -36,14 +30,7 @@ namespace G4_BREMS {
         sipm_x.resize(0);
         sipm_y.resize(0);
         sipm_z.resize(0);
-=======
-    std::vector<AnnihilationSipmHit> gAnnihilationSipmHits;
-    std::vector<GammaInfo> fAnnihilationGammas;
-    std::vector<NeutronCaptureEvent> gNeutronCaptureEvents;
-    
-    SteppingAction::SteppingAction(RunAction* runAction, int fileIndex)
-        : G4UserSteppingAction(), fRunAction(runAction), fFileIndex(fileIndex), fSensitiveVolume(nullptr) {
->>>>>>> de58850d03e5e20eca7efe1fbccc298b16c13d49
+
     }
 
     SteppingAction::~SteppingAction()
@@ -58,19 +45,23 @@ namespace G4_BREMS {
         G4Track *track = step->GetTrack();
         if (!track)
             return;
+     
+        auto analysisManager = G4AnalysisManager::Instance();    
+        
+        //const G4Event* evt = G4RunManager::GetRunManager()->GetCurrentEvent();
+        //G4int eventID = evt ? evt->GetEventID() : -1;
 
-<<<<<<< HEAD
+        //const G4Run* run = G4RunManager::GetRunManager()->GetCurrentRun();
+        //G4int runID = run ? run->GetRunID() : -1;       
+        
         G4String name = track->GetDefinition()->GetParticleName();
         G4int trackID = track->GetTrackID();
 
-        // G4String creatorProcess1 = track->GetCreatorProcess()->GetProcessName();
-        // G4cout << "Particle Name: " << name << " " << "TrackID: " << trackID << G4endl;
-        //"Creator Process: " << creatorProcess1 << G4endl;
+        const G4VProcess *creatorProcess = track->GetCreatorProcess();
 
-        if (track->GetDefinition()->GetParticleName() == "neutron")
+        G4String name = track->GetDefinition()->GetParticleName();
+        if (name == "neutron")
         {
-            G4String name = track->GetDefinition()->GetParticleName();
-
             auto proc = step->GetPostStepPoint()->GetProcessDefinedStep();
             if (proc && debug_steppingaction)
             {
@@ -80,107 +71,57 @@ namespace G4_BREMS {
             }
         }
 
-        const G4VProcess *creatorProcess = track->GetCreatorProcess();
-        // G4String volName = step->GetPostStepPoint() ->GetTouchableHandle() ->GetVolume()
-
         const G4StepPoint *post = step->GetPostStepPoint();
         if (!post)
             return;
 
         G4String procName = post->GetProcessDefinedStep()->GetProcessName();
-        // G4Track* track = step->GetTrack();
-        // if (track->GetDefinition() == G4Neutron::NeutronDefinition()
-        if (track->GetDefinition()->GetParticleName() == "neutron" && (procName == "nCapture" || procName == "nCaptureHP"))
-        {
-            G4ThreeVector pos = post->GetPosition();
-            G4double time = post->GetGlobalTime();
-
-            G4String physVolName = post->GetTouchableHandle()->GetVolume()->GetName();
-            if (debug_steppingaction)
-            {
-                G4cout << "Neutron_Capture_X_Pos = " << pos.x() / mm << " " << "Neutron_Capture_Y_Pos = " << pos.y() / mm
-                       << " " << "Neutron_Capture_Z_Pos = " << pos.z() / mm << " mm  t=" << time / ns << " ns  vol="
-                       << physVolName << G4endl;
-            }
-=======
-        G4Track* track = step->GetTrack();
-        if (!track) return;
-        
-
-        const G4Event* evt = G4RunManager::GetRunManager()->GetCurrentEvent();
-        G4int eventID = evt ? evt->GetEventID() : -1;
-
-        const G4Run* run = G4RunManager::GetRunManager()->GetCurrentRun();
-        G4int runID = run ? run->GetRunID() : -1;
-        
-        G4String name = track->GetDefinition()->GetParticleName();
-        G4int trackID = track->GetTrackID();
-
-        const G4VProcess* creatorProcess = track->GetCreatorProcess();
-        //G4String volName = step->GetPostStepPoint() ->GetTouchableHandle() ->GetVolume()
-       
-
-        const G4StepPoint* post = step->GetPostStepPoint();
-        if (!post) return;
-
-        G4String procName = post->GetProcessDefinedStep()->GetProcessName();
-        
         
         if ((name == "Li7" || name == "alpha") && track->GetCurrentStepNumber() == 1){
-            G4ThreeVector pos = post->GetPosition();
-            //G4double       time = post->GetGlobalTime();
-            G4double neutronCapturetime = step->GetPreStepPoint()->GetGlobalTime();
-            G4ThreeVector neutronCapturePos = track->GetVertexPosition();
-            G4String  physVolName = post->GetTouchableHandle()->GetVolume()->GetName();
-            const G4VProcess* creatorProcess1 = track->GetCreatorProcess();
-            /*
-            G4cout << "Name: " << name << " " << "Creator Process: " << creatorProcess1->GetProcessName() << " " << 
-                "neutronCapturePos_X = "
-                << neutronCapturePos.x() / mm << " " <<
-                "neutronCapturePos_Y = " << neutronCapturePos.y() / mm
-                << " " << "neutronCapturePos_Z = " << neutronCapturePos.z() / mm << " mm  t=" << neutronCapturetime / ns 
-                << " ns  vol="
-                << physVolName << " " << "TrackID: " << trackID << G4endl;
-            */
+
             G4cout << "Particle Name: " << name << " " << "TrackID: " << trackID << G4endl;
-            //captureDaughterIDs.push_back(track->GetTrackID());
+
             captureDaughterIDs.push_back(trackID);
             captureDaughters.emplace_back(trackID, name);
-            //gNeutronCaptureEvents.push_back({neutronCapturePos, neutronCapturetime, physVolName});
-            //gNeutronCaptureEvents.push_back(G4_BREMS::NeutronCaptureEvent{neutronCapturetime, neutronCapturePos, physVolName});
+
             if ((name == "Li7")){
-                G4cout << "RunID: " << runID << G4endl;
-                NeutronCaptureEvent nc_hit;
-                nc_hit.time = neutronCapturetime;
-                nc_hit.position = neutronCapturePos;
-                nc_hit.volume = physVolName;
-                auto man = G4AnalysisManager::Instance();
+
+                NeutronCaptureEvent nCapture;
+                nCapture.time = step->GetPreStepPoint()->GetGlobalTime();
+                nCapture.position = track->GetVertexPosition();
+                nCapture.volume = step->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetName();
+
+                if (debug_steppingaction){
+                    G4cout << "Name: " << name << " " << "Creator Process: " << creatorProcess->GetProcessName() << " " << 
+                    "neutronCapturePos_X = " << nCapture.position.x() / mm << " " <<
+                    "neutronCapturePos_Y = " << nCapture.position.y() / mm << " " << 
+                    "neutronCapturePos_Z = " << nCapture.position.z() / mm << " mm,  t=" << nCapture.time / ns 
+                    << "TrackID: " << trackID << G4endl;                
+                }
   
-                man->FillH1(22, nc_hit.time / ns);
-            
-                man->FillH1(23, nc_hit.position.x() / mm);
-                man->FillH1(24, nc_hit.position.y() / mm);
-                man->FillH1(25, nc_hit.position.z() / mm);
+                if (generate_histograms){
+                    analysisManager->FillH1(22, nCapture.time / ns);
 
-                man->FillH2(24, nc_hit.position.x() / mm, nc_hit.position.y() / mm, nc_hit.time);
-                man->FillH2(25, nc_hit.position.y() / mm, nc_hit.position.z() / mm, nc_hit.time);
-                man->FillH2(26, nc_hit.position.x() / mm, nc_hit.position.z() / mm, nc_hit.time);
+                    analysisManager->FillH1(23, nCapture.position.x() / mm);
+                    analysisManager->FillH1(24, nCapture.position.y() / mm);
+                    analysisManager->FillH1(25, nCapture.position.z() / mm);
 
-                //man->FillNtupleIColumn(1, 0, an_hit.sipmID);
-                man->FillNtupleIColumn(3, 0, eventID);
-                man->FillNtupleIColumn(3, 1, runID);
-                man->FillNtupleIColumn(3, 2, fFileIndex);
-                man->FillNtupleDColumn(3, 3, nc_hit.position.x() / mm);
-                man->FillNtupleDColumn(3, 4, nc_hit.position.y() / mm);
-                man->FillNtupleDColumn(3, 5, nc_hit.position.z() / mm);
-                man->FillNtupleDColumn(3, 6, nc_hit.time / ns);
-                //man->FillNtupleDColumn(3, 4, nc_hit.volume);
+                    analysisManager->FillH2(24, nCapture.position.x() / mm, nCapture.position.y() / mm, nCapture.time);
+                    analysisManager->FillH2(25, nCapture.position.y() / mm, nCapture.position.z() / mm, nCapture.time);
+                    analysisManager->FillH2(26, nCapture.position.x() / mm, nCapture.position.z() / mm, nCapture.time);
+                }
 
-                man->AddNtupleRow(3);
+                // Fill ntuple assuming only one neutron capture
+                analysisManager->FillNtupleDColumn(24, nCapture.position.x() / mm);
+                analysisManager->FillNtupleDColumn(25, nCapture.position.y() / mm);
+                analysisManager->FillNtupleDColumn(26, nCapture.position.z() / mm);
+                analysisManager->FillNtupleDColumn(27, nCapture.time / ns);
+                
+                // TODO consider saving to ntuple later, in case of multiple neutrons from muons
+                gNeutronCaptureEvents.push_back(nCapture);
 
             }
 
->>>>>>> de58850d03e5e20eca7efe1fbccc298b16c13d49
         }
         
         if (track->GetDefinition()->GetParticleName() == "e+" &&
@@ -189,459 +130,53 @@ namespace G4_BREMS {
             step->GetPostStepPoint()->GetKineticEnergy() < 1 * keV &&
             step->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetName() != "World") 
         {
-            /*
-            (step->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume()->GetName() == "Tile" ||
-            step->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume()->GetName() == "Sipm" ||
-            step->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume()->GetName() == "FiberCore" ||
-            step->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume()->GetName() == "FiberClad")
 
-            */
-<<<<<<< HEAD
-            (step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume()->GetName() != "BNfoil" &&
-             step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume()->GetName() != "AlLayer" &&
-             step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume()->GetName() != "World"))
-        {
+            AnnihilationEvent annihilation;
+            annihilation.position = step->GetPostStepPoint()->GetPosition();
+            annihilation.time = track->GetGlobalTime(); // TODO should this be step->GetPostStepPoint()->GetGlobalTime()???
+            annihilation.volume = step->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetName();
 
-            G4double annihilationTime = track->GetGlobalTime();
-            G4ThreeVector annihilationPosition = step->GetPostStepPoint()->GetPosition();
+            if (generate_histograms) {
+                analysisManager->FillH1(18, annihilation.time / ns);
+            
+                analysisManager->FillH1(19, annihilation.position.x() / mm);
+                analysisManager->FillH1(20, annihilation.position.y() / mm);
+                analysisManager->FillH1(21, annihilation.position.z() / mm);
 
-            G4String volName = step->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetName();
-
-            auto touchable = step->GetPostStepPoint()->GetTouchableHandle();
-            G4VPhysicalVolume *physVol = touchable->GetVolume();
-            G4String name = physVol->GetName();
-            if (debug_steppingaction)
-            {
-                G4cout << "Track " << track->GetTrackID()
-                       << " born in physical volume: " << name << G4endl;
-
-                G4cout << "ANNIHILATION Time: " << annihilationTime / ns << " ns, "
-                       << "Position: " << annihilationPosition / mm << " mm, "
-                       << "Volume: " << volName << G4endl;
+                analysisManager->FillH2(21, annihilation.position.x() / mm, annihilation.position.y() / mm, annihilation.time);
+                analysisManager->FillH2(22, annihilation.position.y() / mm, annihilation.position.z() / mm, annihilation.time);
+                analysisManager->FillH2(23, annihilation.position.x() / mm, annihilation.position.z() / mm, annihilation.time);
             }
 
-            gAnnihilationEvents.push_back({annihilationTime, annihilationPosition, volName});
-        }
+            analysisManager->FillNtupleDColumn(35, annihilation.position.x() / mm);
+            analysisManager->FillNtupleDColumn(36, annihilation.position.y() / mm);
+            analysisManager->FillNtupleDColumn(37, annihilation.position.z() / mm);
+            analysisManager->FillNtupleDColumn(38, annihilation.time / ns);
 
-        if (!track || track->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition())
-            return;
-
-=======
-            //(step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume()->GetName() != "BNfoil" &&
-               //step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume()->GetName() != "AlLayer" &&
-               //step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume()->GetName() != "World")) {
-           
-            annihilationTime = track->GetGlobalTime();
-            G4ThreeVector annihilationPosition = step->GetPostStepPoint()->GetPosition();
-
-            G4String volName = step->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetName();
-
-
-            AnnihilationEvent an_hit;
-            an_hit.position = annihilationPosition;
-            an_hit.time = annihilationTime;
-            an_hit.volume = volName;
-
-
-            auto man = G4AnalysisManager::Instance();
-            //man->FillNtupleIColumn(1, 0, an_hit.sipmID);
-            man->FillH1(18, an_hit.time / ns);
-            
-            man->FillH1(19, an_hit.position.x() / mm);
-            man->FillH1(20, an_hit.position.y() / mm);
-            man->FillH1(21, an_hit.position.z() / mm);
-
-            man->FillH2(21, an_hit.position.x() / mm, an_hit.position.y() / mm, an_hit.time);
-            man->FillH2(22, an_hit.position.y() / mm, an_hit.position.z() / mm, an_hit.time);
-            man->FillH2(23, an_hit.position.x() / mm, an_hit.position.z() / mm, an_hit.time);
-
-
-            man->FillNtupleIColumn(2, 0, eventID);
-            man->FillNtupleIColumn(2, 1, runID);
-            man->FillNtupleIColumn(2, 2, fFileIndex);
-            man->FillNtupleDColumn(2, 3, an_hit.position.x() / mm);
-            man->FillNtupleDColumn(2, 4, an_hit.position.y() / mm);
-            man->FillNtupleDColumn(2, 5, an_hit.position.z() / mm);
-            man->FillNtupleDColumn(2, 6, an_hit.time / ns);
-            man->AddNtupleRow(2);
-
+            gAnnihilationEvents.push_back(annihilation);
             
         }
       
         if (!track || track->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition()) return;
-      //fOpticalphotontrack.push_back({track->GetTrackID(), track->GetGlobalTime()});
-       
->>>>>>> de58850d03e5e20eca7efe1fbccc298b16c13d49
-        G4ThreeVector position = step->GetPreStepPoint()->GetPosition();
-        G4double globalTime = step->GetPreStepPoint()->GetGlobalTime();
-        G4double edep = step->GetTotalEnergyDeposit();
-        G4double energy = track->GetTotalEnergy();
-        G4double wavelength = (1239.84193 * eV) / energy;
 
-<<<<<<< HEAD
         G4VPhysicalVolume *volume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
         if (!volume)
             return;
         G4LogicalVolume *logicalVolume = volume->GetLogicalVolume();
         if (!logicalVolume)
             return;
-=======
-        G4VPhysicalVolume* volume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
-        if (!volume) return;
-        G4LogicalVolume* logicalVolume = volume->GetLogicalVolume();
-        if (!logicalVolume) return;
->>>>>>> de58850d03e5e20eca7efe1fbccc298b16c13d49
         G4String volumeName = logicalVolume->GetName();
 
-        G4String creatorName = "Primary";
-        // const G4VProcess* creatorProcess = track->GetCreatorProcess();
-        if (creatorProcess != nullptr)
-        {
-            creatorName = creatorProcess->GetProcessName();
-        }
 
-        G4String processName = "Unknown";
-        const G4StepPoint *postStepPoint = step->GetPostStepPoint();
-        if (postStepPoint)
-        {
-            const G4VProcess *process = postStepPoint->GetProcessDefinedStep();
-            if (process)
-            {
-                processName = process->GetProcessName();
-            }
-        }
-        if (generate_histograms)
-        {
-            // track WLS events
-            if (creatorName == "OpWLS")
-            {
-                // a re-emitted photon
-                G4double reEmitEnergy = track->GetKineticEnergy();
-                G4double reEmitWavelength = (1239.84193 * eV) / reEmitEnergy;
 
-<<<<<<< HEAD
-                auto analysisManager = G4AnalysisManager::Instance();
-                analysisManager->FillH1(3, reEmitEnergy / eV); // energy after WLS
-                analysisManager->FillH1(5, reEmitWavelength);  // wavelength after WLS
-                analysisManager->FillH1(10, reEmitWavelength);
-            }
-            else if (processName == "OpWLS")
-            {
-                // photon about to be absorbed by WLS
-                G4double absorbEnergy = track->GetKineticEnergy();
-                G4double absorbWavelength = (1239.84193 * eV) / absorbEnergy;
+        if (generate_histograms) {
 
-                auto analysisManager = G4AnalysisManager::Instance();
-                analysisManager->FillH1(2, absorbEnergy / eV); // energy before WLS
-                analysisManager->FillH1(4, absorbWavelength);  // wavelength before WLS
-            }
-        }
-=======
-        auto creator = track->GetCreatorProcess();
-        
-
-        
-        if (creatorProcess && creatorProcess->GetProcessName()=="Scintillation") {
-            G4int scintParent = track->GetParentID();
-            auto it = std::find_if(captureDaughters.begin(), captureDaughters.end(), 
-                                                 [&](auto &p){ return p.first==scintParent; });
-            if (it!=captureDaughters.end()) {
-                captureScintPhotonIDs.push_back(track->GetTrackID());
-                //G4cout<<" scintPhoton PID="<< track->GetTrackID() <<" from "<< it->second << G4endl;
-
-                    
-            }
-        }
-       
-            
-        // track WLS events
-        if (creatorName == "OpWLS") {
-            // a re-emitted photon
-            G4double reEmitEnergy = track->GetKineticEnergy();
-            G4double reEmitWavelength = (1239.84193 * eV) / reEmitEnergy;
-            
-            auto man = G4AnalysisManager::Instance();
-            man->FillH1(3, reEmitEnergy / eV);
-            man->FillH1(5, reEmitWavelength);
-            man->FillH1(10, reEmitWavelength);
-            
-        }
-        else if (processName == "OpWLS") {
-            // photon about to be absorbed by WLS
-            G4double absorbEnergy = track->GetKineticEnergy();
-            G4double absorbWavelength = (1239.84193 * eV) / absorbEnergy;
-
-            auto man = G4AnalysisManager::Instance();
-            man->FillH1(2, absorbEnergy / eV);
-            man->FillH1(4, absorbWavelength);
-           
-        }
-
->>>>>>> de58850d03e5e20eca7efe1fbccc298b16c13d49
-        // update process counts
-        fRunAction->AddProcessCount(volumeName, creatorName, true);
-        fRunAction->AddProcessCount(volumeName, processName, false);
-
-        if (volumeName == "Tile")
-        {
-            fRunAction->IncrementTileCount();
-        }
-        else if (volumeName == "FiberClad")
-        {
-            fRunAction->IncrementCladCount();
-        }
-        else if (volumeName == "FiberCore")
-        {
-            fRunAction->IncrementCoreCount();
-        }
-        else if (volumeName == "Sipm")
-        {
-            fRunAction->IncrementSipmCount();
-        }
-        else
-        {
-            fRunAction->IncrementOtherCount();
-        }
-
-        G4VPhysicalVolume *preVolume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
-        G4VPhysicalVolume *postVolume = step->GetPostStepPoint()->GetTouchableHandle()->GetVolume();
-        G4double stepNum = step->GetTrack()->GetCurrentStepNumber();
-
-        if (preVolume && postVolume)
-        {
-            G4String preVolumeName = preVolume->GetLogicalVolume()->GetName();
-            G4String postVolumeName = postVolume->GetLogicalVolume()->GetName();
-
-            if (preVolumeName != postVolumeName)
-            {
-
-                if ((postVolumeName == "FiberCore" && preVolumeName == "FiberClad") ||
-                    (postVolumeName == "FiberClad" && preVolumeName == "Tile") && creatorName != "OpWLS")
-                {
-                    G4double initial_energy = track->GetKineticEnergy();
-                    G4double initial_vertex_energy = track->GetVertexKineticEnergy();
-                    G4double initial_Wavelength = (1239.84193 * eV) / initial_energy;
-                    G4ThreeVector initial_momentum = track->GetMomentum();
-                    G4ThreeVector initial_direction = track->GetMomentumDirection();
-
-                    fRunAction->IncrementPhotonsEnteredFiber();
-                }
-
-                if ((postVolumeName != "Tile" && postVolumeName != "World") &&
-                    (preVolumeName == "FiberCore" || preVolumeName == "FiberClad") && creatorName == "OpWLS")
-                {
-
-                    G4double final_energy = track->GetKineticEnergy();
-                    G4double final_vertex_energy = track->GetVertexKineticEnergy();
-                    G4double final_Wavelength = (1239.84193 * eV) / final_energy;
-                    G4ThreeVector final_momentum = track->GetMomentum();
-                    G4ThreeVector final_direction = track->GetMomentumDirection();
-
-                    fRunAction->IncrementPhotonsAbsorbedFiber();
-                }
-
-<<<<<<< HEAD
-                if ((postVolumeName == "Sipm") && (preVolumeName == "FiberCore" || preVolumeName == "FiberClad") && creatorName == "OpWLS")
-                {
-=======
-                if ((postVolumeName == "Sipm") && (preVolumeName == "FiberCore" || preVolumeName == "FiberClad")
-                    && creatorName == "OpWLS") {
-                    
-
-                    G4int wlsParent = track->GetParentID();
-                    
-                    if ( std::find(captureScintPhotonIDs.begin(), captureScintPhotonIDs.end(), wlsParent)!=captureScintPhotonIDs.end())
-                    {
-                        auto post = step->GetPostStepPoint();
-                        auto pos = post->GetPosition();
-                        auto t = post->GetGlobalTime();
-                        auto sipm_id = post->GetTouchableHandle()->GetCopyNumber();
-
-                        neutronCaptureSipmHit nhit;
-                        nhit.sipmID = post->GetTouchableHandle()->GetCopyNumber();
-                        nhit.position = pos;
-                        nhit.time = t;
-                        nhit.creatorProcess = "Inelastic";
-
-                    
-                        auto man = G4AnalysisManager::Instance();
-                        //auto man = G4GenericAnalysisManager::Instance();
-                        man->FillH1(13, t / ns);
-                        man->FillH2(15, pos.x() / mm, pos.y() / mm, t / ns);
-                        man->FillH2(16, pos.y() / mm, pos.z() / mm, t / ns);
-                        man->FillH2(17, pos.x() / mm, pos.z() / mm, t / ns);
-                        
-                       man->FillNtupleIColumn(1, 0, eventID);
-                       man->FillNtupleIColumn(1, 1, runID);
-                       man->FillNtupleIColumn(1, 2, fFileIndex);
-                       man->FillNtupleIColumn(1, 3, nhit.sipmID);
-                       man->FillNtupleDColumn(1, 4, nhit.position.x() / mm);
-                       man->FillNtupleDColumn(1, 5, nhit.position.y() / mm);
-                       man->FillNtupleDColumn(1, 6, nhit.position.z() / mm);
-                       man->FillNtupleDColumn(1, 7, nhit.time / ns);
-
-                       man->AddNtupleRow(1);
-
-                       
-                       
-                    }
-                    
-                    
-
-                    G4int wlsParent_from_annihilation = track->GetParentID();
-                    
-                    if ( std::find(fScintPhotonIDsfromannihilation.begin(), fScintPhotonIDsfromannihilation.end(), 
-                                                wlsParent_from_annihilation)!=fScintPhotonIDsfromannihilation.end()){      
-                        G4double ahitTime = step->GetPostStepPoint()->GetGlobalTime();
-                        G4double ahitTimeLocal = step->GetPostStepPoint()->GetLocalTime();
-                        G4ThreeVector ahitPosition = step->GetPreStepPoint()->GetPosition();
-                        G4ThreeVector ahitPositionSipm = step->GetPostStepPoint()->GetPosition();
-
-                        G4double ahitEnergy = track->GetTotalEnergy();
-                        G4double ahitWavelength = (1239.84193 * eV) / ahitEnergy; // wavelength in nm
-
-                        G4VPhysicalVolume* physVolume = step->GetPostStepPoint()->GetTouchableHandle()->GetVolume();
-                        G4String afullSipmName = physVolume->GetName();
-                        G4int asipmID = step->GetPostStepPoint()->GetTouchableHandle()->GetCopyNumber();
-                       
-                        G4cout << "asipmID " << asipmID << G4endl;
-                        AnnihilationSipmHit ahit;
-                        ahit.sipmID = asipmID;
-                        //ahit.sipmName = afullSipmName;
-                    
-                        ahit.position = ahitPositionSipm;
-                        ahit.time = ahitTime;
-                        
-                        auto man = G4AnalysisManager::Instance();
-                        man->FillH1(14, ahitTime / ns);
-                        man->FillH2(18, ahitPositionSipm.x() / mm, ahitPositionSipm.y() / mm, ahitTime);
-                        man->FillH2(19, ahitPositionSipm.y() / mm, ahitPositionSipm.z() / mm, ahitTime);
-                        man->FillH2(20, ahitPositionSipm.x() / mm, ahitPositionSipm.z() / mm, ahitTime);
-
-                        
-                    }
-
->>>>>>> de58850d03e5e20eca7efe1fbccc298b16c13d49
-
-                    G4double hitTime = step->GetPostStepPoint()->GetGlobalTime();
-                    //if (hitTime > 50000){
-                        //G4cout << "Hit time" <<  hitTime <<  G4endl;
-                    //}
-                    G4double hitTimeLocal = step->GetPostStepPoint()->GetLocalTime();
-                    G4ThreeVector hitPosition = step->GetPreStepPoint()->GetPosition();
-                    G4ThreeVector hitPositionSipm = step->GetPostStepPoint()->GetPosition();
-
-                    G4double hitEnergy = track->GetTotalEnergy();
-                    G4double hitWavelength = (1239.84193 * eV) / hitEnergy; // wavelength in nm
-
-                    G4VPhysicalVolume *physVolume = step->GetPostStepPoint()->GetTouchableHandle()->GetVolume();
-                    G4String fullSipmName = physVolume->GetName();
-                    G4int sipmID = step->GetPostStepPoint()->GetTouchableHandle()->GetCopyNumber();
-                    // G4cout << "Hit SiPM with name: " << fullSipmName
-                    //<< ", Copy Number: " << sipmID << G4endl;
-                    // store hit information
-                    SipmHit hit;
-                    hit.sipmID = sipmID;
-                    hit.sipmName = fullSipmName;
-                    hit.time = hitTime;
-                    hit.position = hitPosition;
-                    hit.energy = hitEnergy;
-                    hit.wavelength = hitWavelength;
-                    
-                    auto man = G4AnalysisManager::Instance();
-                    man->FillH1(11, hitTime / ns);
-                    man->FillH1(12, hitWavelength);
-                    man->FillH1(15, hit.position.x() / mm);
-                    man->FillH1(16, hit.position.y() / mm);
-                    man->FillH1(17, hit.position.z() / mm);
-
-<<<<<<< HEAD
-                    // G4cout << fSipmHits[(int)fSipmHits.size()-1].time << G4endl;
-                    sipm_t.push_back(hitTime);
-                    sipm_x.push_back(hitPosition.x());
-                    sipm_y.push_back(hitPosition.y());
-                    sipm_z.push_back(hitPosition.z());
-
-                    G4AutoLock lock(&sipmHitsMutex);
-                    gSipmHits.push_back(hit);
-                    lock.unlock();
-
-                    if (debug_steppingaction)
-                    {
-                        G4cout << "Hit SiPM with name: " << fullSipmName << " " << "Hit Time: " << hitTime << " "
-                               << "Hit Local Time: " << hitTimeLocal << " " << "Hit Position: "
-                               << hitPosition << " " << "Hit Wavelength: " << hitWavelength << " " << "Pre Volume: " << preVolumeName
-                               << " " << "Hit Position Sipm: " << hitPositionSipm
-                               << G4endl;
-
-                    } // debug_steppingaction
-                    if (generate_histograms)
-                    {
-                        auto analysisManager = G4AnalysisManager::Instance();
-                        analysisManager->FillH1(11, hitTime / ns);
-                        analysisManager->FillH1(12, hitWavelength);
-                        analysisManager->FillH2(12, hitPositionSipm.x() / mm, hitPositionSipm.y() / mm, hitTime);
-                        analysisManager->FillH2(13, hitPositionSipm.y() / mm, hitPositionSipm.z() / mm, hitTime);
-                        analysisManager->FillH2(14, hitPositionSipm.x() / mm, hitPositionSipm.z() / mm, hitTime);
-                    }
-                }
-=======
-                    man->FillH2(12, hitPositionSipm.x() / mm, hitPositionSipm.y() / mm, hitTime);
-                    man->FillH2(13, hitPositionSipm.y() / mm, hitPositionSipm.z() / mm, hitTime);
-                    man->FillH2(14, hitPositionSipm.x() / mm, hitPositionSipm.z() / mm, hitTime);
-                    
-                    man->FillNtupleIColumn(0, 0, eventID);
-                    man->FillNtupleIColumn(0, 1, runID);
-                    man->FillNtupleIColumn(0, 2, fFileIndex);
-                    man->FillNtupleDColumn(0, 3, hit.time / ns);
-                    man->FillNtupleDColumn(0, 4, hit.wavelength);
-                    man->FillNtupleDColumn(0, 5, hit.position.x() / mm);
-                    man->FillNtupleDColumn(0, 6, hit.position.y() / mm);
-                    man->FillNtupleDColumn(0, 7, hit.position.z() / mm);
-                    
-
-                    man->AddNtupleRow(0);
-                       
-                    
-                }
-
-                if ((preVolumeName == "BNfoil" || preVolumeName == "AlLayer") && (postVolumeName == "Tile" ||
-                    postVolumeName == "FiberCore" || postVolumeName == "FiberClad" || postVolumeName == "Sipm") &&
-                    creatorName == "nCapture" || creatorName == "nCaptureHP") {
->>>>>>> de58850d03e5e20eca7efe1fbccc298b16c13d49
-
-                if ((preVolumeName == "BNfoil" || preVolumeName == "AlLayer") && (postVolumeName == "Tile" || postVolumeName == "FiberCore" || postVolumeName == "FiberClad" || postVolumeName == "Sipm") &&
-                        creatorName == "nCapture" ||
-                    creatorName == "nCaptureHP")
-                {
-
-                    G4double hitTime = step->GetPostStepPoint()->GetGlobalTime();
-                    G4double hitTimeLocal = step->GetPostStepPoint()->GetLocalTime();
-                    G4ThreeVector hitPosition = step->GetPreStepPoint()->GetPosition();
-                    G4ThreeVector hitPositionSipm = step->GetPostStepPoint()->GetPosition();
-
-                    G4double hitEnergy = track->GetTotalEnergy();
-                    G4double hitWavelength = (1239.84193 * eV) / hitEnergy;
-
-                    G4VPhysicalVolume *physVolume = step->GetPostStepPoint()->GetTouchableHandle()->GetVolume();
-                    G4String fullSipmName = physVolume->GetName();
-                    G4int sipmID = step->GetPostStepPoint()->GetTouchableHandle()->GetCopyNumber();
-
-<<<<<<< HEAD
-                    if (debug_steppingaction)
-                    {
-
-                        G4cout << "Hit Time: " << hitTime << " " << "Hit Position: " << hitPosition << " " << "Hit Energy: "
-                               << hitEnergy << " " << "Hit Wavelength: " << hitWavelength << " " << "Pre Volume: " << preVolumeName
-                               << " Step Number in Sipm: " << stepNum << " SiPM ID: " << sipmID << G4endl;
-                    }
-                }
-            }
-        }
-
-        auto analysisManager = G4AnalysisManager::Instance();
-        if (generate_histograms)
-        {
+            // Save some track info to fill histograms later
+            G4ThreeVector position = step->GetPreStepPoint()->GetPosition();
+            G4double globalTime = step->GetPreStepPoint()->GetGlobalTime();
+            G4double edep = step->GetTotalEnergyDeposit();
+            G4double energy = track->GetTotalEnergy();
+            G4double wavelength = (1239.84193 * eV) / energy;
 
             // fill 1D histograms
             analysisManager->FillH1(0, edep / MeV);
@@ -675,52 +210,245 @@ namespace G4_BREMS {
                 analysisManager->FillH2(11, position.x() / mm, position.z() / mm, edep / MeV);
             }
         }
- //       int n_sipm_hits = fSipmHits.size();
-//        analysisManager->FillNtupleIColumn(15, n_sipm_hits);
-//        analysisManager->AddNtupleRow();
+        
+        // Get the creator process
+        G4String creatorName = "Primary";
+     
+        if (creatorProcess != nullptr)
+        {
+            creatorName = creatorProcess->GetProcessName();
+        }
+
+        G4String processName = "Unknown";
+        const G4StepPoint *postStepPoint = step->GetPostStepPoint();
+        if (postStepPoint)
+        {
+            const G4VProcess *process = postStepPoint->GetProcessDefinedStep();
+            if (process)
+            {
+                processName = process->GetProcessName();
+            }
+        }
+
+        // Save all scintillation photons
+        if (creatorProcess && creatorProcess->GetProcessName()=="Scintillation") {
+            G4int scintParent = track->GetParentID();
+            auto it = std::find_if(captureDaughters.begin(), captureDaughters.end(), 
+                                                 [&](auto &p){ return p.first==scintParent; });
+            if (it!=captureDaughters.end()) {
+                captureScintPhotonIDs.push_back(track->GetTrackID());                  
+            }
+        }
+
+        if (generate_histograms)
+        {
+            // track WLS events
+            if (creatorName == "OpWLS")
+            {
+                // a re-emitted photon
+                G4double reEmitEnergy = track->GetKineticEnergy();
+                G4double reEmitWavelength = (1239.84193 * eV) / reEmitEnergy;
+
+                analysisManager->FillH1(3, reEmitEnergy / eV); // energy after WLS
+                analysisManager->FillH1(5, reEmitWavelength);  // wavelength after WLS
+                analysisManager->FillH1(10, reEmitWavelength);
+            }
+            else if (processName == "OpWLS")
+            {
+                // photon about to be absorbed by WLS
+                G4double absorbEnergy = track->GetKineticEnergy();
+                G4double absorbWavelength = (1239.84193 * eV) / absorbEnergy;
+
+                analysisManager->FillH1(2, absorbEnergy / eV); // energy before WLS
+                analysisManager->FillH1(4, absorbWavelength);  // wavelength before WLS
+            }
+        }
+
+        // update process counts
+        fRunAction->AddProcessCount(volumeName, creatorName, true);
+        fRunAction->AddProcessCount(volumeName, processName, false);
+
+        if (volumeName == "Tile")
+        {
+            fRunAction->IncrementTileCount();
+        }
+        else if (volumeName == "FiberClad")
+        {
+            fRunAction->IncrementCladCount();
+        }
+        else if (volumeName == "FiberCore")
+        {
+            fRunAction->IncrementCoreCount();
+        }
+        else if (volumeName == "Sipm")
+        {
+            fRunAction->IncrementSipmCount();
+        }
+        else
+        {
+            fRunAction->IncrementOtherCount();
+        }
+
+        // Use pre-step and post-step volumes to identify sipm hits
+        G4VPhysicalVolume *preVolume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
+        G4VPhysicalVolume *postVolume = step->GetPostStepPoint()->GetTouchableHandle()->GetVolume();
+        G4double stepNum = step->GetTrack()->GetCurrentStepNumber();
+
+        if (preVolume && postVolume)
+        {
+            G4String preVolumeName = preVolume->GetLogicalVolume()->GetName();
+            G4String postVolumeName = postVolume->GetLogicalVolume()->GetName();
+
+            if (preVolumeName != postVolumeName)
+            {
+                // photons entering the fiber
+                // TODO this could count a photon entering the fiber twice -
+                // once when it enters the fiber from the tile, and once when it enters the core
+                // from the surrounding cladding.
+                if ((postVolumeName == "FiberCore" && preVolumeName == "FiberClad") ||
+                    (postVolumeName == "FiberClad" && preVolumeName == "Tile") && creatorName != "OpWLS")
+                {
+                    //G4double initial_energy = track->GetKineticEnergy();
+                    //G4double initial_vertex_energy = track->GetVertexKineticEnergy();
+                    //G4double initial_Wavelength = (1239.84193 * eV) / initial_energy;
+                    //G4ThreeVector initial_momentum = track->GetMomentum();
+                    //G4ThreeVector initial_direction = track->GetMomentumDirection();
+                    fRunAction->IncrementPhotonsEnteredFiber();
+                }
+
+                // photons trapped in the fiber
+                // TODO could also count photons going from the fiber to the sipm
+                if ((postVolumeName != "Tile" && postVolumeName != "World") &&
+                    (preVolumeName == "FiberCore" || preVolumeName == "FiberClad") && creatorName == "OpWLS")
+                {
+                    //G4double final_energy = track->GetKineticEnergy();
+                    //G4double final_vertex_energy = track->GetVertexKineticEnergy();
+                    //G4double final_Wavelength = (1239.84193 * eV) / final_energy;
+                    //G4ThreeVector final_momentum = track->GetMomentum();
+                    //G4ThreeVector final_direction = track->GetMomentumDirection();
+                    fRunAction->IncrementPhotonsAbsorbedFiber();
+                }
+
+                // Check for Sipm hits coming from the fiber only
+                if ((postVolumeName == "Sipm") && (preVolumeName == "FiberCore" || preVolumeName == "FiberClad") && creatorName == "OpWLS") {
+
+                    // Save all Sipm hits
+                    // store hit information in SipmHit struct
+                    SipmHit hit;
+                    hit.sipmID = step->GetPostStepPoint()->GetTouchableHandle()->GetCopyNumber();
+                    hit.sipmName = physVolume->GetName();
+                    hit.time = step->GetPostStepPoint()->GetGlobalTime();
+                    hit.position = step->GetPostStepPoint()->GetPosition();
+                    hit.energy = track->GetTotalEnergy();
+                    hit.wavelength = (1239.84193 * eV) / hit.energy; // wavelength in nm
+
+                    // Save all of the Sipm hits into a list for saving to ntuple later
+                    sipm_t.push_back(hit.time);
+                    sipm_x.push_back(hit.position.x());
+                    sipm_y.push_back(hit.position.y());
+                    sipm_z.push_back(hit.position.z());
+                    sipm_wl.push_back(hit.wavelength);
+
+                    gSipmHits.push_back(hit);
+
+                    if (debug_steppingaction)
+                    {
+                        G4cout << "Hit SiPM with name: " << fullSipmName << " " << "Hit Time: " << hit.time << " "
+                               << "Hit Position: " << hit.position << " " << "Hit Wavelength: " << hit.wavelength 
+                               << " " << "Hit Position Sipm: " << hit.position
+                               << G4endl;
+
+                    } // debug_steppingaction
+                    if (generate_histograms)
+                    {
+                        analysisManager->FillH1(11, hit.time / ns);
+                        analysisManager->FillH1(12, hit.wavelength);
+                        analysisManager->FillH2(12, hit.position.x() / mm, hit.position.y() / mm, hit.time);
+                        analysisManager->FillH2(13, hit.position.y() / mm, hit.position.z() / mm, hit.time);
+                        analysisManager->FillH2(14, hit.position.x() / mm, hit.position.z() / mm, hit.time);
+                    }
+
+                    // Now save the hits from the annihilation and neutron capture separately
+                    G4int wlsParent = track->GetParentID();
+
+                    // Save the hits from the neutron capture
+                    if ( std::find(captureScintPhotonIDs.begin(), captureScintPhotonIDs.end(), wlsParent)!=captureScintPhotonIDs.end())
+                    {
+                        sipm_t_ncapture.push_back(hit.time);
+                        sipm_x_ncapture.push_back(hit.position.x());
+                        sipm_y_ncapture.push_back(hit.position.y());
+                        sipm_z_ncapture.push_back(hit.position.z());
+                        sipm_wl_ncapture.push_back(hit.wavelength);
+                        gNeutronCaptureSipmHits.push_back(hit);
+
+                        if (generate_histograms) {
+                            analysisManager->FillH1(13, t / ns);
+                            analysisManager->FillH2(15, hit.position.x() / mm, hit.position.y() / mm, t / ns);
+                            analysisManager->FillH2(16, hit.position.y() / mm, hit.position.z() / mm, t / ns);
+                            analysisManager->FillH2(17, hit.position.x() / mm, hit.position.z() / mm, t / ns);
+                        } 
+                        
+
+                    } // scintillation photons from neutron capture
+                    
+                    // Save the hits from the positron annihilation
+                    if ( std::find(fScintPhotonIDsfromannihilation.begin(), fScintPhotonIDsfromannihilation.end(), 
+                                                wlsParent)!=fScintPhotonIDsfromannihilation.end()){      
+                        sipm_t_annihilation.push_back(hit.time);
+                        sipm_x_annihilation.push_back(hit.position.x());
+                        sipm_y_annihilation.push_back(hit.position.y());
+                        sipm_z_annihilation.push_back(hit.position.z());
+                        sipm_wl_annihilation.push_back(hit.wavelength);
+
+                        gAnnihilationSipmHits.push_back(hit);
+
+                        if (generate_histograms){
+                            analysisManager->FillH1(14, hitTime / ns);
+                            analysisManager->FillH2(18, hit.position.x() / mm, hit.position.y() / mm, hit.time);
+                            analysisManager->FillH2(19, hit.position.y() / mm, hit.position.z() / mm, hit.time);
+                            analysisManager->FillH2(20, hit.position.x() / mm, hit.position.z() / mm, hit.time);
+                        }
+
+                    } // scintillation photons from annihilation
+
+                } // sipm hits (coming from fiber only)
+
+                // 
+                if ((preVolumeName == "BNfoil" || preVolumeName == "AlLayer") && (postVolumeName == "Tile" || postVolumeName == "FiberCore" 
+                    || postVolumeName == "FiberClad" || postVolumeName == "Sipm") && creatorName == "nCapture" || creatorName == "nCaptureHP")
+                {
+
+                    G4double stepTime = step->GetPostStepPoint()->GetGlobalTime();
+                    G4double stepTimeLocal = step->GetPostStepPoint()->GetLocalTime();
+                    G4ThreeVector step_start_position = step->GetPreStepPoint()->GetPosition();
+                    G4ThreeVector step_end_position = step->GetPostStepPoint()->GetPosition();
+
+                    G4double stepEnergy = track->GetTotalEnergy();
+                    G4double stepWavelength = (1239.84193 * eV) / hitEnergy;
+
+                    G4VPhysicalVolume *physVolume = step->GetPostStepPoint()->GetTouchableHandle()->GetVolume();
+                    G4String volumeName = physVolume->GetName();
+                    //G4int sipmID = step->GetPostStepPoint()->GetTouchableHandle()->GetCopyNumber(); // not necessarily sipm hit
+
+                    if (debug_steppingaction)
+                    {
+
+                        G4cout << "Step Time: " << stepTime << " " << "Step Position: " << stepPosition << " " << "Step Energy: "
+                               << stepEnergy << " " << "Step Wavelength: " << stepWavelength << " " << "Pre Volume: " << volumeName
+                               << " Step Number in Sipm: " << stepNum << G4endl;
+                    }
+                } // if neutron capture in neutron-detecting foils
+            } // if change of volume
+        } // if pre-step and post-step volume
+
+        int n_sipm_hits = (int)gSipmHits.size();
+        analysisManager->FillNtupleIColumn(17, n_sipm_hits);
+        int n_sipm_hits_ncapture = (int)gneutronCaptureSipmHits.size();
+        analysisManager->FillNtupleIColumn(28, n_sipm_hits_ncapture);
+        int n_sipm_hits_annihilation = (int)gAnnihilationSipmHits.size();
+        analysisManager->FillNtupleIColumn(39, n_sipm_hits);
+        analysisManager->AddNtupleRow();
 
     } // UserSteppingAction
 
 } // namespace G4_BREMS
-=======
-                    //G4cout << "Hit Time: " << hitTime << " " << "Hit Position: " << hitPosition << " " << "Hit Energy: "
-                        //<< hitEnergy << " " << "Hit Wavelength: " << hitWavelength << " " << "Pre Volume: " << preVolumeName
-                        //<< " Step Number in Sipm: " << stepNum << " SiPM ID: " << sipmID << G4endl;
-                }
-
-            }
-        }
-        auto man = G4AnalysisManager::Instance();
-        //auto man = G4GenericAnalysisManager::Instance();
-        man->FillH1(0, edep / MeV);
-        man->FillH1(1, globalTime / ns);
-        
-        man->FillH2(0, position.x()/mm, position.y()/mm, globalTime/ns);
-        man->FillH2(1, position.y()/mm, position.z()/mm, globalTime/ns);
-        man->FillH2(2, position.x()/mm, position.z()/mm, globalTime/ns);
-        man->FillH2(3, position.x()/mm, position.y()/mm, edep / MeV);
-        man->FillH2(4, position.y()/mm, position.z()/mm, edep / MeV);
-        man->FillH2(5, position.x()/mm, position.z()/mm, edep / MeV);
-        
-        // fill volume-specific histograms
-        if (volumeName == "FiberClad") {
-            man->FillH1(6, wavelength);
-            man->FillH1(7, energy / eV);
-            man->FillH2(6, position.x()/mm, position.y()/mm, edep / MeV);
-            man->FillH2(7, position.y()/mm, position.z()/mm, edep / MeV);
-            man->FillH2(8, position.x()/mm, position.z()/mm, edep / MeV);
-            
-        }
-        else if (volumeName == "FiberCore") {
-            man->FillH1(8, wavelength);
-            man->FillH1(9, energy / eV);
-            man->FillH2(9, position.x()/mm, position.y()/mm, edep / MeV);
-            man->FillH2(10, position.y()/mm, position.z()/mm, edep / MeV);
-            man->FillH2(11, position.x()/mm, position.z()/mm, edep / MeV);
-            
-        }
-    }
-       
-} // namespace G4_BREMS
-                           
->>>>>>> de58850d03e5e20eca7efe1fbccc298b16c13d49

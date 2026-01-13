@@ -89,7 +89,6 @@ namespace G4_BREMS
         analysisManager->SetH1XAxisTitle(0, "Energy Deposition [MeV]");
         analysisManager->SetH1YAxisTitle(0, "Counts");
 
-<<<<<<< HEAD
         if (generate_histograms)
         {
             // create histograms
@@ -482,15 +481,8 @@ namespace G4_BREMS
         if (fSteppingAction)
         {
             fSteppingAction->ClearHits();
+            fSteppingAction->ClearEvents();
         }
-
-        if (G4Threading::IsMasterThread())
-        {
-            gSipmHits.clear();
-            gAnnihilationEvents.clear();
-        }
-
-
 
         long s1 = 0, s2 = 0;
 

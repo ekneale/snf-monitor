@@ -28,20 +28,12 @@ namespace G4_BREMS
         G4double time;
         G4ThreeVector position;
         G4double energy;
+        G4double q;
         G4double wavelength;
         G4String creatorProcess;
     };
 
-    struct neutronCaptureSipmHit {
-        G4int sipmID;
-        G4ThreeVector position;
-        G4double time;
-        G4String creatorProcess;
-
-    };
-
     struct AnnihilationEvent {
-        G4double time;
         G4ThreeVector position;
         G4double time;
         G4String volume;
@@ -53,15 +45,6 @@ namespace G4_BREMS
         G4String volume;
     };
 
-    struct AnnihilationSipmHit {
-        G4int sipmID;
-        G4double time;
-        G4ThreeVector position;
-    };
-    
-    extern std::vector<SipmHit> gSipmHits;
-    extern std::vector<AnnihilationEvent> gAnnihilationEvents;
-<<<<<<< HEAD
     class SteppingAction : public G4UserSteppingAction
     {
     public:
@@ -70,73 +53,64 @@ namespace G4_BREMS
         virtual void UserSteppingAction(const G4Step *);
 
         void SetRunAction(RunAction *runAction) { fRunAction = runAction; }
-        void ClearHits() { fSipmHits.clear(); }
-        const std::vector<SipmHit> &GetSipmHits() const { return fSipmHits; }
+        void ClearHits() { 
+            gSipmHits.clear(); 
+            gneutronCaptureSipmHits.clear();
+            gAnnihilationSipmHits.clear();
+        }
+        void ClearEvents(){
+            gAnnihilationEvents.clear();
+            gNeutronCaptureEvents.clear();
+        }
+        const std::vector<SipmHit> &GetSipmHits() const { return gSipmHits; }
+        std::vector<G4int> fScintPhotonIDsfromannihilation;
+        std::vector<G4double> fScintPhotontime;
+        // TODO are these going to be needed?
+        // Use these and fill ntuple from event action instead?
+        std::vector<SipmHit> gSipmHits;
+        std::vector<SipmHit> gneutronCaptureSipmHits;
+        std::vector<SipmHit> gAnnihilationSipmHits;
+        std::vector<AnnihilationEvent> gAnnihilationEvents;
+        std::vector<NeutronCaptureEvent> gNeutronCaptureEvents;
 
     private:
         RunAction *fRunAction;
         G4LogicalVolume *fSensitiveVolume;
-        std::vector<SipmHit> fSipmHits;
         G4int debug_steppingaction = 0;
+
+        // all sipm hits
         std::vector<double> sipm_t;
         std::vector<double> sipm_x;
         std::vector<double> sipm_y;
         std::vector<double> sipm_z;
-        std::vector<double> sipm_q;
-        int generate_histograms = 0;
-=======
-    extern std::vector<neutronCaptureSipmHit> gneutronCaptureSipmHits;
-    extern std::vector<AnnihilationSipmHit> gAnnihilationSipmHits;
-    //extern std::vector<neutronCaptureEvent> captureDaughterIDs;
-    extern std::vector<NeutronCaptureEvent> gNeutronCaptureEvents;
-    //extern G4Mutex sipmHitsMutex;
-    class SteppingAction : public G4UserSteppingAction {
-    public:
-        SteppingAction(RunAction* runAction, int fileIndex);
-        virtual ~SteppingAction();
-        virtual void UserSteppingAction(const G4Step*);
+        std::vector<double> sipm_q; // Not currently used, placeholder for later addition
+        std::vector<double> sipm_wl;
+        // sipm hits from ncapture
+        std::vector<double> sipm_t_ncapture;
+        std::vector<double> sipm_x_ncapture;
+        std::vector<double> sipm_y_ncapture;
+        std::vector<double> sipm_z_ncapture;
+        std::vector<double> sipm_q_ncapture; // Not currently used, placeholder for later addition
+        std::vector<double> sipm_wl_ncapture;
+        // sipm hits from annihilation
+        std::vector<double> sipm_t_annihilation;
+        std::vector<double> sipm_x_annihilation;
+        std::vector<double> sipm_y_annihilation;
+        std::vector<double> sipm_z_annihilation;
+        std::vector<double> sipm_q_annihilation; // Not currently used, placeholder for later addition
+        std::vector<double> sipm_wl_annihilation;
         
-        std::vector<G4int> fScintPhotonIDsfromannihilation;
-        std::vector<G4double> fScintPhotontime;
-        
-        //static void ClearAnnihilationScintList() {
-              //fScintPhotonIDsfromannihilation.clear();
-        //}
-        void SetRunAction(RunAction* runAction) { fRunAction = runAction; }
-        
-        
-        void ClearHits() { fSipmHits.clear(); }
-        const std::vector<SipmHit>& GetSipmHits() const { return fSipmHits; }
-        void SetFileIndex(int idx) { fFileIndex = idx; }
-
-        //static std::set<G4int> captureDaughterIDs;
-        G4double annihilationTime;
-
-    private:
-        RunAction* fRunAction;
-        //static G4ThreadLocal std::vector<G4int> fScintPhotonIDsfromannihilation;
-        G4LogicalVolume* fSensitiveVolume;
-        
-        std::vector<SipmHit> fSipmHits;
-
-        std::vector<G4int> captureDaughterIDs;
+	    std::vector<G4int> captureDaughterIDs;
         std::vector<std::pair<G4int,G4String>> captureDaughters;
         std::vector<G4int> captureScintPhotonIDs;
         std::vector<neutronCaptureSipmHit> fneutroncaptureSipmHits;
         std::vector<AnnihilationSipmHit> fannihilationSipmHits;
-        //std::vector<std::pair<G4double,G4String>> fAnnihilationGammas;
-        //std::vector<std::pair<G4int, G4double>> fOpticalphotontrack;
         std::vector<GammaInfo> fAnnihilationGammas;
-        //G4VProcess* fAnni = nullptr;
-        int fFileIndex = 0;
         
->>>>>>> de58850d03e5e20eca7efe1fbccc298b16c13d49
+	int generate_histograms = 0;
+        
     };
 
 } // namespace G4_BREMS
 
-<<<<<<< HEAD
 #endif
-=======
-#endif
->>>>>>> de58850d03e5e20eca7efe1fbccc298b16c13d49
