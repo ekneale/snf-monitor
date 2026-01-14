@@ -83,7 +83,8 @@ namespace G4_BREMS
         analysisManager->CreateH1("edep", "Energy Deposition Distribution", 100, 0., 2.0E-5 * CLHEP::MeV);
         analysisManager->SetH1XAxisTitle(0, "Energy Deposition [MeV]");
         analysisManager->SetH1YAxisTitle(0, "Counts");
-
+       
+	// TODO move this to a separate function
         if (generate_histograms)
         {
             // create histograms
@@ -467,11 +468,9 @@ namespace G4_BREMS
         }
     }
 
-    void G4_BREMS::RunAction::BeginOfRunAction(const G4Run *)
+    void G4_BREMS::RunAction::BeginOfRunAction(const G4Run *run)
     {
         G4AccumulableManager::Instance()->Reset();
-        //G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
-        //accumulableManager->Reset();
 
         if (fSteppingAction)
         {
@@ -481,7 +480,7 @@ namespace G4_BREMS
 
         long s1 = 0, s2 = 0;
 
-	/*
+	
         if (const char* e1 = std::getenv("G4_SEED1")) s1 = std::strtol(e1, nullptr, 10);
         if (const char* e2 = std::getenv("G4_SEED2")) s2 = std::strtol(e2, nullptr, 10);
         if (s1 == 0 || s2 == 0) {
@@ -496,7 +495,7 @@ namespace G4_BREMS
              G4Random::setTheSeeds(seeds, 2);
              G4cout << "Run " << run->GetRunID()
                << " using RNG seeds: " << s1 << " , " << s2 << G4endl;
-        }*/
+        }
 
         auto analysisManager = G4AnalysisManager::Instance();
         analysisManager->Reset();
@@ -541,7 +540,6 @@ namespace G4_BREMS
     void G4_BREMS::RunAction::EndOfRunAction(const G4Run *run)
     {
         G4AccumulableManager::Instance()->Merge();
-        auto analysisManager = G4AnalysisManager::Instance();
         if (write_to_csv)
         {
             if (G4Threading::IsMasterThread())
@@ -580,6 +578,7 @@ namespace G4_BREMS
             
         }
         
+        auto analysisManager = G4AnalysisManager::Instance();
         analysisManager->Write();
         analysisManager->CloseFile();   
 

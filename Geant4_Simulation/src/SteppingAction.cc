@@ -111,6 +111,7 @@ namespace G4_BREMS {
                 }
 
                 // Fill ntuple assuming only one neutron capture
+	    	G4cout << "Found neutron capture" << G4endl;
                 analysisManager->FillNtupleDColumn(24, nCapture.position.x() / mm);
                 analysisManager->FillNtupleDColumn(25, nCapture.position.y() / mm);
                 analysisManager->FillNtupleDColumn(26, nCapture.position.z() / mm);
@@ -146,7 +147,7 @@ namespace G4_BREMS {
                 analysisManager->FillH2(22, annihilation.position.y() / mm, annihilation.position.z() / mm, annihilation.time);
                 analysisManager->FillH2(23, annihilation.position.x() / mm, annihilation.position.z() / mm, annihilation.time);
             }
-
+	    G4cout << "Found annihilation event" << G4endl;
             analysisManager->FillNtupleDColumn(35, annihilation.position.x() / mm);
             analysisManager->FillNtupleDColumn(36, annihilation.position.y() / mm);
             analysisManager->FillNtupleDColumn(37, annihilation.position.z() / mm);
@@ -449,7 +450,6 @@ namespace G4_BREMS {
         analysisManager->FillNtupleIColumn(28, n_sipm_hits_ncapture);
         int n_sipm_hits_annihilation = (int)gAnnihilationSipmHits.size();
         analysisManager->FillNtupleIColumn(39, n_sipm_hits);
-        analysisManager->AddNtupleRow();
 
     } // UserSteppingAction
 

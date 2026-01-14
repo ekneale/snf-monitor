@@ -87,22 +87,22 @@ namespace G4_BREMS
 			auto analysisManager = G4AnalysisManager::Instance();
 
 			// fill ntuple
-			analysisManager->FillNtupleDColumn(0, fNuEnergy);
-			analysisManager->FillNtupleDColumn(1, fNuDir[0]);
-			analysisManager->FillNtupleDColumn(2, fNuDir[1]);
-			analysisManager->FillNtupleDColumn(3, fNuDir[2]);
-			analysisManager->FillNtupleDColumn(4, fVertex[0]);
-			analysisManager->FillNtupleDColumn(5, fVertex[1]);
-			analysisManager->FillNtupleDColumn(6, fVertex[2]);
-			analysisManager->FillNtupleDColumn(7, fPositronEnergy);
-			analysisManager->FillNtupleDColumn(8, fPositronDir[0]);
-			analysisManager->FillNtupleDColumn(9, fPositronDir[1]);
-			analysisManager->FillNtupleDColumn(10, fPositronDir[2]);
-			analysisManager->FillNtupleDColumn(11, fNeutronEnergy);
-			analysisManager->FillNtupleDColumn(12, fNeutronDir[0]);
-			analysisManager->FillNtupleDColumn(13, fNeutronDir[1]);
-			analysisManager->FillNtupleDColumn(14, fNeutronDir[2]);
-			analysisManager->AddNtupleRow();
+			G4cout << "PrimaryGenratorAction: [INFO] Filling the ntuple with IBD event" << G4endl;
+			analysisManager->FillNtupleDColumn( 2, fNuEnergy);
+			analysisManager->FillNtupleDColumn( 3, fNuDir[0]);
+			analysisManager->FillNtupleDColumn( 4, fNuDir[1]);
+			analysisManager->FillNtupleDColumn( 5, fNuDir[2]);
+			analysisManager->FillNtupleDColumn( 6, fVertex[0]);
+			analysisManager->FillNtupleDColumn( 7, fVertex[1]);
+			analysisManager->FillNtupleDColumn( 8, fVertex[2]);
+			analysisManager->FillNtupleDColumn( 9, fPositronEnergy);
+			analysisManager->FillNtupleDColumn( 10, fPositronDir[0]);
+			analysisManager->FillNtupleDColumn( 11, fPositronDir[1]);
+			analysisManager->FillNtupleDColumn( 12, fPositronDir[2]);
+			analysisManager->FillNtupleDColumn( 13, fNeutronEnergy);
+			analysisManager->FillNtupleDColumn( 14, fNeutronDir[0]);
+			analysisManager->FillNtupleDColumn( 15, fNeutronDir[1]);
+			analysisManager->FillNtupleDColumn( 16, fNeutronDir[2]);
 
 
 	} else {

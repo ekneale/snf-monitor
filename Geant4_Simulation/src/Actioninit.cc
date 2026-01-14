@@ -3,7 +3,7 @@
 #include "SteppingAction.hh"
 #include "RunAction.hh"
 #include "Annihilation.hh"
-//#include "EventAction.hh"  
+#include "EventAction.hh"  
 
 namespace G4_BREMS {
 
@@ -19,6 +19,7 @@ void ActionInit::Build() const {
 
 	SetUserAction(runAction);
 	SetUserAction(steppingAction);
+	SetUserAction(new EventAction);
 
 }
 

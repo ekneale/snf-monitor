@@ -33,8 +33,7 @@ int main(int argc, char** argv)
 
 	// random seed
 	// TODO get the seed from the mac file
-	long seed = 12345;
-	
+	long seed = 12345;	
 	CLHEP::HepRandom::setTheSeed(seed);
 	G4Random::setTheSeed(seed);
 
@@ -61,7 +60,7 @@ int main(int argc, char** argv)
 
 	// clean up
 	delete visManager;
-	delete runManager;
+//	delete runManager;
 	
 	return 0;
 }
