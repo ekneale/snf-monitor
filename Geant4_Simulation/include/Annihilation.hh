@@ -21,7 +21,7 @@ struct GammaInfo {
 namespace G4_BREMS {
   
   class Annihilation : public G4VEmProcess {
-  //class Annihilation : public G4VProcess {
+
   public:
     Annihilation(const G4String& name = "annihil");
     ~Annihilation() override;
@@ -36,11 +36,9 @@ namespace G4_BREMS {
     std::vector<GammaInfo> annihilationOutput();
 
     std::vector<GammaInfo> fAnnihilationGammas;
-    //SteppingAction* 
     
   private:
     G4ParticleChange  fParticleChange;
-    //G4eplusAnnihilation* fBaseAnnihilation;
     G4eplusAnnihilation* fPositronAnnProc; 
   };
 }

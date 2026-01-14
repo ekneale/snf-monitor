@@ -13,7 +13,11 @@ project(G4_Brems)
 
 # Install nlohmann_json as a dependency at configure time
 include(FetchContent)
-FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz DOWNLOAD_EXTRACT_TIMESTAMP true)
+FetchContent_Declare(
+	json 
+	DOWNLOAD_EXTRACT_TIMESTAMP true 
+	URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz
+)
 FetchContent_MakeAvailable(json)
 #add_library(json)
 #target_include_directories(json PUBLIC "${CMAKE_CURRENT_LIST_DIR}/include")
@@ -25,11 +29,11 @@ FetchContent_MakeAvailable(json)
 # to build a batch mode only executable
 #
 option(WITH_GEANT4_UIVIS "Build example with Geant4 UI and Vis drivers" ON)
-#if(WITH_GEANT4_UIVIS)
+if(WITH_GEANT4_UIVIS)
   find_package(Geant4 REQUIRED ui_all vis_all)
-#else()
-  #find_package(Geant4 REQUIRED)
-#endif()
+else()
+  find_package(Geant4 REQUIRED)
+endif()
 
 #----------------------------------------------------------------------------
 # Setup Geant4 include directories and compile definitions

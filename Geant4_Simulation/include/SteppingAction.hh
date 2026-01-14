@@ -100,11 +100,9 @@ namespace G4_BREMS
         std::vector<double> sipm_q_annihilation; // Not currently used, placeholder for later addition
         std::vector<double> sipm_wl_annihilation;
         
-	    std::vector<G4int> captureDaughterIDs;
+        std::vector<G4int> captureDaughterIDs;
         std::vector<std::pair<G4int,G4String>> captureDaughters;
         std::vector<G4int> captureScintPhotonIDs;
-        std::vector<neutronCaptureSipmHit> fneutroncaptureSipmHits;
-        std::vector<AnnihilationSipmHit> fannihilationSipmHits;
         std::vector<GammaInfo> fAnnihilationGammas;
         
 	int generate_histograms = 0;

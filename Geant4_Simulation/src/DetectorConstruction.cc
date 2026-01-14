@@ -58,7 +58,7 @@ namespace G4_BREMS
         fFiberCoreVolume(nullptr),
         fFiberCladVolume(nullptr), fSipmVolume(nullptr),
         fTileSD(nullptr), fFiberCoreSD(nullptr), fFiberCladSD(nullptr), fSipmSD(nullptr) {
-	data_dir = G4String(getenv("SNF_MONITOR_DATADIR"));
+	    data_dir = G4String(getenv("SNF_MONITOR_DATADIR"));
     }
 
     DetectorConstruction::~DetectorConstruction() {}

@@ -11,23 +11,19 @@
 namespace G4_BREMS {
 
   Annihilation::Annihilation(const G4String& name)
-   : //G4VRestProcess(name),
+
      G4VEmProcess(name)
-     //G4VEmProcess(fPositronAnnProc)
-     //fPositronAnnProc(new G4eplusAnnihilation("annihil"))
+
   {}
 
   Annihilation::~Annihilation() {
-    //delete fBaseAnnihilation;
     delete fPositronAnnProc;
   }
 
   G4VParticleChange* Annihilation::AtRestDoIt(const G4Track& track, const G4Step& step) {
-    
-    //fPositronAnnProc = new G4eplusAnnihilation("annihil");
+
     fParticleChange.Initialize(track);
 
-    //G4VParticleChange* change = fPositronAnnProc->AtRestDoIt(track, step);
     auto change = fPositronAnnProc->AtRestDoIt(track, step);
     
     G4int nsec = change->GetNumberOfSecondaries();
@@ -50,8 +46,7 @@ namespace G4_BREMS {
 
       }
     }
-    //return fAnnihilationGammas;
-   // return change;
+
     return &fParticleChange;
       
   }
