@@ -59,7 +59,6 @@ namespace G4_BREMS {
 
         const G4VProcess *creatorProcess = track->GetCreatorProcess();
 
-        G4String name = track->GetDefinition()->GetParticleName();
         if (name == "neutron")
         {
             auto proc = step->GetPostStepPoint()->GetProcessDefinedStep();
@@ -336,6 +335,7 @@ namespace G4_BREMS {
                     // store hit information in SipmHit struct
                     SipmHit hit;
                     hit.sipmID = step->GetPostStepPoint()->GetTouchableHandle()->GetCopyNumber();
+                    G4VPhysicalVolume *physVolume = step->GetPostStepPoint()->GetTouchableHandle()->GetVolume();
                     hit.sipmName = physVolume->GetName();
                     hit.time = step->GetPostStepPoint()->GetGlobalTime();
                     hit.position = step->GetPostStepPoint()->GetPosition();
@@ -353,9 +353,10 @@ namespace G4_BREMS {
 
                     if (debug_steppingaction)
                     {
-                        G4cout << "Hit SiPM with name: " << fullSipmName << " " << "Hit Time: " << hit.time << " "
-                               << "Hit Position: " << hit.position << " " << "Hit Wavelength: " << hit.wavelength 
-                               << " " << "Hit Position Sipm: " << hit.position
+                        G4cout << "Hit Time: " << hit.time << " "
+                               << "Hit Position: " << hit.position << " " 
+			       << "Hit Wavelength: " << hit.wavelength << " " 
+			       << "Hit Position Sipm: " << hit.position
                                << G4endl;
 
                     } // debug_steppingaction
@@ -382,10 +383,10 @@ namespace G4_BREMS {
                         gNeutronCaptureSipmHits.push_back(hit);
 
                         if (generate_histograms) {
-                            analysisManager->FillH1(13, t / ns);
-                            analysisManager->FillH2(15, hit.position.x() / mm, hit.position.y() / mm, t / ns);
-                            analysisManager->FillH2(16, hit.position.y() / mm, hit.position.z() / mm, t / ns);
-                            analysisManager->FillH2(17, hit.position.x() / mm, hit.position.z() / mm, t / ns);
+                            analysisManager->FillH1(13, hit.time / ns);
+                            analysisManager->FillH2(15, hit.position.x() / mm, hit.position.y() / mm, hit.time / ns);
+                            analysisManager->FillH2(16, hit.position.y() / mm, hit.position.z() / mm, hit.time / ns);
+                            analysisManager->FillH2(17, hit.position.x() / mm, hit.position.z() / mm, hit.time / ns);
                         } 
                         
 
@@ -403,7 +404,7 @@ namespace G4_BREMS {
                         gAnnihilationSipmHits.push_back(hit);
 
                         if (generate_histograms){
-                            analysisManager->FillH1(14, hitTime / ns);
+                            analysisManager->FillH1(14, hit.time / ns);
                             analysisManager->FillH2(18, hit.position.x() / mm, hit.position.y() / mm, hit.time);
                             analysisManager->FillH2(19, hit.position.y() / mm, hit.position.z() / mm, hit.time);
                             analysisManager->FillH2(20, hit.position.x() / mm, hit.position.z() / mm, hit.time);
@@ -424,7 +425,7 @@ namespace G4_BREMS {
                     G4ThreeVector step_end_position = step->GetPostStepPoint()->GetPosition();
 
                     G4double stepEnergy = track->GetTotalEnergy();
-                    G4double stepWavelength = (1239.84193 * eV) / hitEnergy;
+                    G4double stepWavelength = (1239.84193 * eV) / stepEnergy;
 
                     G4VPhysicalVolume *physVolume = step->GetPostStepPoint()->GetTouchableHandle()->GetVolume();
                     G4String volumeName = physVolume->GetName();
@@ -433,9 +434,10 @@ namespace G4_BREMS {
                     if (debug_steppingaction)
                     {
 
-                        G4cout << "Step Time: " << stepTime << " " << "Step Position: " << stepPosition << " " << "Step Energy: "
-                               << stepEnergy << " " << "Step Wavelength: " << stepWavelength << " " << "Pre Volume: " << volumeName
-                               << " Step Number in Sipm: " << stepNum << G4endl;
+                        G4cout << "Step Time: " << stepTime << " " << "Step Start Position: " << step_start_position << " " 
+				<< "Step End Position: " << step_end_position << " "
+				<< "Step Energy: " << stepEnergy << " " << "Step Wavelength: " << stepWavelength << " " << "Pre Volume: " << volumeName
+                                << " Step Number in Sipm: " << stepNum << G4endl;
                     }
                 } // if neutron capture in neutron-detecting foils
             } // if change of volume
@@ -443,7 +445,7 @@ namespace G4_BREMS {
 
         int n_sipm_hits = (int)gSipmHits.size();
         analysisManager->FillNtupleIColumn(17, n_sipm_hits);
-        int n_sipm_hits_ncapture = (int)gneutronCaptureSipmHits.size();
+        int n_sipm_hits_ncapture = (int)gNeutronCaptureSipmHits.size();
         analysisManager->FillNtupleIColumn(28, n_sipm_hits_ncapture);
         int n_sipm_hits_annihilation = (int)gAnnihilationSipmHits.size();
         analysisManager->FillNtupleIColumn(39, n_sipm_hits);

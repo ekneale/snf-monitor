@@ -55,7 +55,7 @@ namespace G4_BREMS
         void SetRunAction(RunAction *runAction) { fRunAction = runAction; }
         void ClearHits() { 
             gSipmHits.clear(); 
-            gneutronCaptureSipmHits.clear();
+            gNeutronCaptureSipmHits.clear();
             gAnnihilationSipmHits.clear();
         }
         void ClearEvents(){
@@ -68,7 +68,7 @@ namespace G4_BREMS
         // TODO are these going to be needed?
         // Use these and fill ntuple from event action instead?
         std::vector<SipmHit> gSipmHits;
-        std::vector<SipmHit> gneutronCaptureSipmHits;
+        std::vector<SipmHit> gNeutronCaptureSipmHits;
         std::vector<SipmHit> gAnnihilationSipmHits;
         std::vector<AnnihilationEvent> gAnnihilationEvents;
         std::vector<NeutronCaptureEvent> gNeutronCaptureEvents;

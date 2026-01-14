@@ -10,11 +10,10 @@
 
 namespace G4_BREMS {
 
-  Annihilation::Annihilation(const G4String& name)
-
-     G4VEmProcess(name)
-
-  {}
+  Annihilation::Annihilation(const G4String& name):G4VEmProcess(name)
+  {
+  	// initialise
+  }
 
   Annihilation::~Annihilation() {
     delete fPositronAnnProc;

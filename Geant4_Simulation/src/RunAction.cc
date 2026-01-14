@@ -57,31 +57,26 @@ namespace G4_BREMS
         }
 
         G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
-        accumulableManager->RegisterAccumulable(fAccTileCount);
-        accumulableManager->RegisterAccumulable(fAccCladCount);
-        accumulableManager->RegisterAccumulable(fAccCoreCount);
-        accumulableManager->RegisterAccumulable(fAccSipmCount);
-        accumulableManager->RegisterAccumulable(fAccOtherCount);
-        accumulableManager->RegisterAccumulable(fAccPhotonsEnteredFiber);
-        accumulableManager->RegisterAccumulable(fAccPhotonsExitedFiber);
-        accumulableManager->RegisterAccumulable(fAccPhotonsAbsorbedFiber);
+        accumulableManager->Register(fAccTileCount);
+        accumulableManager->Register(fAccCladCount);
+        accumulableManager->Register(fAccCoreCount);
+        accumulableManager->Register(fAccSipmCount);
+        accumulableManager->Register(fAccOtherCount);
+        accumulableManager->Register(fAccPhotonsEnteredFiber);
+        accumulableManager->Register(fAccPhotonsExitedFiber);
+        accumulableManager->Register(fAccPhotonsAbsorbedFiber);
 
         for (auto &pair : fAccCreationCounts)
         {
-            accumulableManager->RegisterAccumulable(*pair.second);
+            accumulableManager->Register(*pair.second);
         }
         for (auto &pair : fAccInteractionCounts)
         {
-            accumulableManager->RegisterAccumulable(*pair.second);
+            accumulableManager->Register(*pair.second);
         }
         
-        //auto man = G4GenericAnalysisManager::Instance();
-        auto man = G4AnalysisManager::Instance();
+        auto analysisManager = G4AnalysisManager::Instance();
         analysisManager->SetVerboseLevel(1);
-        //analysisManager->SetFileName("H1:Sipm_Hits1, H2:Sipm_Hits2, NT:NeutronCaptureSipmHits");
-        //analysisManager->SetFileName("SipmHits");
-        //analysisManager->SetFileName();
-        //analysisManager->SetFileName("Sipm_Hits1");
         analysisManager->SetDefaultFileType("root");
         analysisManager->SetNtupleMerging(true);
 
@@ -486,6 +481,7 @@ namespace G4_BREMS
 
         long s1 = 0, s2 = 0;
 
+	/*
         if (const char* e1 = std::getenv("G4_SEED1")) s1 = std::strtol(e1, nullptr, 10);
         if (const char* e2 = std::getenv("G4_SEED2")) s2 = std::strtol(e2, nullptr, 10);
         if (s1 == 0 || s2 == 0) {
@@ -500,7 +496,7 @@ namespace G4_BREMS
              G4Random::setTheSeeds(seeds, 2);
              G4cout << "Run " << run->GetRunID()
                << " using RNG seeds: " << s1 << " , " << s2 << G4endl;
-        }
+        }*/
 
         auto analysisManager = G4AnalysisManager::Instance();
         analysisManager->Reset();
