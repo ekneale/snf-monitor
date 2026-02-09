@@ -9,32 +9,66 @@
 
 class G4Run;
 
-namespace G4_BREMS {
+namespace G4_BREMS
+{
 
-    class SteppingAction;
+//    class SteppingAction;
+    class EventAction;
 
     class RunAction : public G4UserRunAction
     {
     public:
-        RunAction(SteppingAction* steppingAction);
+        RunAction(EventAction *eventAction);
         virtual ~RunAction();
 
-        virtual void BeginOfRunAction(const G4Run*);
-        virtual void EndOfRunAction(const G4Run*);
+        virtual void BeginOfRunAction(const G4Run *);
+        virtual void EndOfRunAction(const G4Run *);
 
-        void IncrementTileCount() { fTileCount++; fAccTileCount += 1; }
-        void IncrementCladCount() { fCladCount++; fAccCladCount += 1; }
-        void IncrementCoreCount() { fCoreCount++; fAccCoreCount += 1; }
-        void IncrementSipmCount() { fSipmCount++; fAccSipmCount += 1; }
-        void IncrementOtherCount() { fOtherCount++; fAccOtherCount += 1; }
+        void IncrementTileCount()
+        {
+            fTileCount++;
+            fAccTileCount += 1;
+        }
+        void IncrementCladCount()
+        {
+            fCladCount++;
+            fAccCladCount += 1;
+        }
+        void IncrementCoreCount()
+        {
+            fCoreCount++;
+            fAccCoreCount += 1;
+        }
+        void IncrementSipmCount()
+        {
+            fSipmCount++;
+            fAccSipmCount += 1;
+        }
+        void IncrementOtherCount()
+        {
+            fOtherCount++;
+            fAccOtherCount += 1;
+        }
 
-        void IncrementPhotonsEnteredFiber() { fPhotonsEnteredFiber++; fAccPhotonsEnteredFiber += 1; }
-        void IncrementPhotonsExitedFiber() { fPhotonsExitedFiber++; fAccPhotonsExitedFiber += 1; }
-        void IncrementPhotonsAbsorbedFiber() { fPhotonsAbsorbedFiber++; fAccPhotonsAbsorbedFiber += 1; }
+        void IncrementPhotonsEnteredFiber()
+        {
+            fPhotonsEnteredFiber++;
+            fAccPhotonsEnteredFiber += 1;
+        }
+        void IncrementPhotonsExitedFiber()
+        {
+            fPhotonsExitedFiber++;
+            fAccPhotonsExitedFiber += 1;
+        }
+        void IncrementPhotonsAbsorbedFiber()
+        {
+            fPhotonsAbsorbedFiber++;
+            fAccPhotonsAbsorbedFiber += 1;
+        }
 
-        void AddProcessCount(const G4String& volume, const G4String& processName, bool isCreationProcess);
+        void AddProcessCount(const G4String &volume, const G4String &processName, bool isCreationProcess);
         G4double CalculateTrappingEfficiency() const;
-	G4int debug_runaction = 0;
+        G4int debug_runaction = 0;
 
     private:
         G4int fTileCount;
@@ -57,14 +91,14 @@ namespace G4_BREMS {
         G4Accumulable<G4int> fAccPhotonsExitedFiber;
         G4Accumulable<G4int> fAccPhotonsAbsorbedFiber;
 
-        std::map<G4String, G4Accumulable<G4int>*> fAccCreationCounts;
-        std::map<G4String, G4Accumulable<G4int>*> fAccInteractionCounts;
+        std::map<G4String, G4Accumulable<G4int> *> fAccCreationCounts;
+        std::map<G4String, G4Accumulable<G4int> *> fAccInteractionCounts;
 
-        SteppingAction* fSteppingAction;
+//        SteppingAction *fSteppingAction;
+        EventAction *fEventAction = nullptr;
 
-	int write_to_csv = 0;
-	int generate_histograms = 0;
-
+        int write_to_csv = 0;
+        int generate_histograms = 0;
     };
 
 }
