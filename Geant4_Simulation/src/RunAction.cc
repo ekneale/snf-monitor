@@ -431,25 +431,25 @@ namespace G4_BREMS
             analysisManager->CreateNtupleDColumn("vtx_y_ncapture");                   // column ID = 25
             analysisManager->CreateNtupleDColumn("vtx_z_ncapture");                   // column ID = 26
             analysisManager->CreateNtupleDColumn("t_ncapture");                       // column ID = 27
-            analysisManager->CreateNtupleIColumn("n_sipm_hits_ncapture");             // column ID = 28
-            analysisManager->CreateNtupleDColumn("sipm_x_ncapture");                  // column ID = 29
-            analysisManager->CreateNtupleDColumn("sipm_y_ncapture");                  // column ID = 30
-            analysisManager->CreateNtupleDColumn("sipm_z_ncapture");                  // column ID = 31
-            analysisManager->CreateNtupleDColumn("sipm_t_ncapture");                  // column ID = 32
-            analysisManager->CreateNtupleDColumn("sipm_q_ncapture");                  // column ID = 33
-            analysisManager->CreateNtupleDColumn("sipm_wl_ncapture");                 // column ID = 34
+            //analysisManager->CreateNtupleIColumn("n_sipm_hits_ncapture");             // column ID = 28
+            //analysisManager->CreateNtupleDColumn("sipm_x_ncapture");                  // column ID = 29
+            //analysisManager->CreateNtupleDColumn("sipm_y_ncapture");                  // column ID = 30
+            //analysisManager->CreateNtupleDColumn("sipm_z_ncapture");                  // column ID = 31
+            //analysisManager->CreateNtupleDColumn("sipm_t_ncapture");                  // column ID = 32
+            //analysisManager->CreateNtupleDColumn("sipm_q_ncapture");                  // column ID = 33
+            //analysisManager->CreateNtupleDColumn("sipm_wl_ncapture");                 // column ID = 34
                                                                                       // Annihilation
-            analysisManager->CreateNtupleDColumn("vtx_x_annihilation");               // column ID = 35
-            analysisManager->CreateNtupleDColumn("vtx_y_annihilation");               // column ID = 36
-            analysisManager->CreateNtupleDColumn("vtx_z_annihilation");               // column ID = 37
-            analysisManager->CreateNtupleDColumn("t_annihilation");                   // column ID = 38
-            analysisManager->CreateNtupleIColumn("n_sipm_hits_annihilation");         // column ID = 39
-            analysisManager->CreateNtupleDColumn("sipm_x_annihilation");              // column ID = 40
-            analysisManager->CreateNtupleDColumn("sipm_y_annihilation");              // column ID = 41
-            analysisManager->CreateNtupleDColumn("sipm_z_annihilation");              // column ID = 42
-            analysisManager->CreateNtupleDColumn("sipm_t_annihilation");              // column ID = 43
-            analysisManager->CreateNtupleDColumn("sipm_q_annihilation");              // column ID = 44
-            analysisManager->CreateNtupleDColumn("sipm_wl_annihilation");             // column ID = 45
+            analysisManager->CreateNtupleDColumn("vtx_x_annihilation");               // column ID = 28//35
+            analysisManager->CreateNtupleDColumn("vtx_y_annihilation");               // column ID = 29//36
+            analysisManager->CreateNtupleDColumn("vtx_z_annihilation");               // column ID = 30//37
+            analysisManager->CreateNtupleDColumn("t_annihilation");                   // column ID = 31//38
+            //analysisManager->CreateNtupleIColumn("n_sipm_hits_annihilation");         // column ID = 39
+            //analysisManager->CreateNtupleDColumn("sipm_x_annihilation");              // column ID = 40
+            //analysisManager->CreateNtupleDColumn("sipm_y_annihilation");              // column ID = 41
+            //analysisManager->CreateNtupleDColumn("sipm_z_annihilation");              // column ID = 42
+            //analysisManager->CreateNtupleDColumn("sipm_t_annihilation");              // column ID = 43
+            //analysisManager->CreateNtupleDColumn("sipm_q_annihilation");              // column ID = 44
+            //analysisManager->CreateNtupleDColumn("sipm_wl_annihilation");             // column ID = 45
 
             analysisManager->FinishNtuple();
         }
@@ -498,7 +498,7 @@ namespace G4_BREMS
         auto analysisManager = G4AnalysisManager::Instance();
         analysisManager->Reset();
         // TODO set file name in macro
-        analysisManager->OpenFile("nuwim_output.root");
+        analysisManager->OpenFile("naiads_output.root");
     }
 
     void G4_BREMS::RunAction::AddProcessCount(const G4String &volume,
@@ -559,16 +559,16 @@ namespace G4_BREMS
                     G4cout << "Trapping Efficiency: " << CalculateTrappingEfficiency() * 100.0 << " %" << G4endl;
                 }
 
-                std::vector<G4String> volumes = {"Tile", "FiberCore", "FiberClad", "Sipm"};
+                if (debug_runaction){
+                    std::vector<G4String> volumes = {"Tile", "FiberCore", "FiberClad", "Sipm"};
 
-                for (const auto &volume : volumes)
-                {
-                    if (debug_runaction)
+                    for (const auto &volume : volumes)
                     {
                         G4cout << "\nVolume: " << volume << G4endl;
 
                         // creation processes
                         G4cout << "Creation Processes:" << G4endl;
+                    
                     }
                 }
             }

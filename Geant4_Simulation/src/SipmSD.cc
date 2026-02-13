@@ -53,19 +53,19 @@ namespace G4_BREMS
     }
     hce->AddHitsCollection(fHCID, fSipmHitsCollection);
 
-    fNeutronCaptureSipmHitsCollection = new SipmHitsCollection("SipmSD", collectionName[1]);
-    if (fNeutronCaptureHCID < 0)
-    {
-      fNeutronCaptureHCID = G4SDManager::GetSDMpointer()->GetCollectionID(fNeutronCaptureSipmHitsCollection);
-    }
-    hce->AddHitsCollection(fNeutronCaptureHCID, fNeutronCaptureSipmHitsCollection);
+//    fNeutronCaptureSipmHitsCollection = new SipmHitsCollection("SipmSD", collectionName[1]);
+//    if (fNeutronCaptureHCID < 0)
+//    {
+//      fNeutronCaptureHCID = G4SDManager::GetSDMpointer()->GetCollectionID(fNeutronCaptureSipmHitsCollection);
+//    }
+//    hce->AddHitsCollection(fNeutronCaptureHCID, fNeutronCaptureSipmHitsCollection);
 
-    fAnnihilationSipmHitsCollection = new SipmHitsCollection("SipmSD", collectionName[2]);
-    if (fAnnihilationHCID < 0)
-    {
-      fAnnihilationHCID = G4SDManager::GetSDMpointer()->GetCollectionID(fAnnihilationSipmHitsCollection);
-    }
-    hce->AddHitsCollection(fAnnihilationHCID, fAnnihilationSipmHitsCollection);
+//    fAnnihilationSipmHitsCollection = new SipmHitsCollection("SipmSD", collectionName[2]);
+//    if (fAnnihilationHCID < 0)
+//    {
+//      fAnnihilationHCID = G4SDManager::GetSDMpointer()->GetCollectionID(fAnnihilationSipmHitsCollection);
+//    }
+//    hce->AddHitsCollection(fAnnihilationHCID, fAnnihilationSipmHitsCollection);
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -146,13 +146,10 @@ namespace G4_BREMS
 
     G4String preVolumeName = preVolume->GetLogicalVolume()->GetName();
     G4String postVolumeName = postVolume->GetLogicalVolume()->GetName();
-    if (step->IsFirstStepInVolume())
+    if (!step->IsFirstStepInVolume())
+      return false;
+    else
     {
-      if (debug_process_hits)
-      {
-
-        G4cout << "SipmSD [INFO]: prevolume name: " << preVolumeName << ", postvolume name: " << postVolumeName << ", creator-process name: " << creatorName << G4endl;
-      }
 
       // Save all Sipm hits
       auto *hit = new SipmHit();
@@ -188,11 +185,12 @@ namespace G4_BREMS
         analysisManager->FillH2(14, hit->GetSipmPos().x() / mm, hit->GetSipmPos().z() / mm, hit->GetSipmTime());
       } // histograms
 
+      /*
       // Now save the hits from the annihilation and neutron capture separately
       // First the neutron capture
       G4int wlsParent = track->GetParentID();
-      std::vector<G4int> captureScintPhotonIDs = fSteppingAction->GetCaptureScintPhotonIDs();
-      std::vector<G4int> captureDaughterIDs = fSteppingAction->GetCaptureDaughterIDs();
+      std::vector<G4int> captureScintPhotonIDs = {0,1};//fSteppingAction->GetCaptureScintPhotonIDs();
+      std::vector<G4int> captureDaughterIDs = {0,1};//fSteppingAction->GetCaptureDaughterIDs();
       // Save the hits from the neutron capture
       if (std::find(captureDaughterIDs.begin(), captureDaughterIDs.end(), wlsParent) != captureDaughterIDs.end())
       {
@@ -225,17 +223,22 @@ namespace G4_BREMS
         }
 
       } // scintillation photons from annihilation
+      */
 
     } // IsFirstStepInVolume()
 
+    // Kill the particle immediately
+    track->SetTrackStatus(fStopAndKill);
+
     int n_sipm_hits = (int)fSipmHitsCollection->GetSize();
     analysisManager->FillNtupleIColumn(17, n_sipm_hits);
-    int n_sipm_hits_ncapture = (int)fNeutronCaptureSipmHitsCollection->GetSize();
-    analysisManager->FillNtupleIColumn(28, n_sipm_hits_ncapture);
-    int n_sipm_hits_annihilation = (int)fAnnihilationSipmHitsCollection->GetSize();
-    analysisManager->FillNtupleIColumn(39, n_sipm_hits_annihilation);
+//    int n_sipm_hits_ncapture = (int)fNeutronCaptureSipmHitsCollection->GetSize();
+//    analysisManager->FillNtupleIColumn(28, n_sipm_hits_ncapture);
+//    int n_sipm_hits_annihilation = (int)fAnnihilationSipmHitsCollection->GetSize();
+//    analysisManager->FillNtupleIColumn(39, n_sipm_hits_annihilation);
 
     return true;
+
   } // ProcessHits
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -28,17 +28,17 @@ class SipmSD : public G4VSensitiveDetector
 
   private:
     SipmHitsCollection* fSipmHitsCollection = nullptr;
-    SipmHitsCollection* fNeutronCaptureSipmHitsCollection = nullptr;
-    SipmHitsCollection* fAnnihilationSipmHitsCollection = nullptr;    
+//    SipmHitsCollection* fNeutronCaptureSipmHitsCollection = nullptr;
+//    SipmHitsCollection* fAnnihilationSipmHitsCollection = nullptr;    
     G4int fHCID = -1;
-    G4int fNeutronCaptureHCID = -1;
-    G4int fAnnihilationHCID = -1;
+//    G4int fNeutronCaptureHCID = -1;
+//    G4int fAnnihilationHCID = -1;
 
-    std::vector<G4int> captureDaughterIDs;
-    std::vector<std::pair<G4int, G4String>> captureDaughters;
+//    std::vector<G4int> captureDaughterIDs;
+//    std::vector<std::pair<G4int, G4String>> captureDaughters;
 
     int generate_histograms = 0;
-    int debug_process_hits = 1;
+    int debug_process_hits = 0;
 };
 
 }  // namespace G4_BREMS

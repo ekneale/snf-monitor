@@ -65,8 +65,8 @@ namespace G4_BREMS
     {
       auto sdManager = G4SDManager::GetSDMpointer();
       fHCID = G4SDManager::GetSDMpointer()->GetCollectionID("sipmHitsColl");
-      fNeutronCaptureHCID = G4SDManager::GetSDMpointer()->GetCollectionID("neutronCaptureSipmHitsColl");
-      fAnnihilationHCID = G4SDManager::GetSDMpointer()->GetCollectionID("annihilationSipmHitsColl");
+      //fNeutronCaptureHCID = G4SDManager::GetSDMpointer()->GetCollectionID("neutronCaptureSipmHitsColl");
+      //fAnnihilationHCID = G4SDManager::GetSDMpointer()->GetCollectionID("annihilationSipmHitsColl");
     }
   }
 
@@ -111,35 +111,35 @@ namespace G4_BREMS
     G4cout << "       " << hc->GetSize() << " hits stored in this event" << G4endl;
 
     // SiPM hits from neutron capture
-    auto hc_ncapture = GetHC(anEvent, fNeutronCaptureHCID);
-    auto nhit_ncapture = hc_ncapture->GetSize();
-    analysisManager->FillNtupleIColumn(28, nhit_ncapture);
-    for (unsigned long i = 0; i < nhit_ncapture; ++i)
-    {
-      auto hit = static_cast<SipmHit *>(hc_ncapture->GetHit(i));
-      analysisManager->FillNtupleDColumn(29,  hit->GetSipmPos().x());
-      analysisManager->FillNtupleDColumn(30, hit->GetSipmPos().y());
-      analysisManager->FillNtupleDColumn(31, hit->GetSipmPos().z());
-      analysisManager->FillNtupleDColumn(32, hit->GetSipmTime());
-      analysisManager->FillNtupleDColumn(33, hit->GetSipmCharge());
-      analysisManager->FillNtupleDColumn(34, hit->GetWavelength());
-    }
+    //auto hc_ncapture = GetHC(anEvent, fNeutronCaptureHCID);
+    //auto nhit_ncapture = hc_ncapture->GetSize();
+    //analysisManager->FillNtupleIColumn(28, nhit_ncapture);
+    //for (unsigned long i = 0; i < nhit_ncapture; ++i)
+    //{
+    //  auto hit = static_cast<SipmHit *>(hc_ncapture->GetHit(i));
+    //  analysisManager->FillNtupleDColumn(29,  hit->GetSipmPos().x());
+    //  analysisManager->FillNtupleDColumn(30, hit->GetSipmPos().y());
+    //  analysisManager->FillNtupleDColumn(31, hit->GetSipmPos().z());
+    //  analysisManager->FillNtupleDColumn(32, hit->GetSipmTime());
+    //  analysisManager->FillNtupleDColumn(33, hit->GetSipmCharge());
+    //  analysisManager->FillNtupleDColumn(34, hit->GetWavelength());
+    //}
     // G4cout << "       " << hc_ncapture->GetSize() << " neutron capture hits stored in this event" << G4endl;
 
     // SiPM hits from positron annihilation
-    auto hc_annihilation = GetHC(anEvent, fAnnihilationHCID);
-    auto nhit_annihilation = hc_ncapture->GetSize();
-    analysisManager->FillNtupleIColumn(39, nhit_annihilation);
-    for (unsigned long i = 0; i < nhit_annihilation; ++i)
-    {
-      auto hit = static_cast<SipmHit *>(hc_annihilation->GetHit(i));
-      analysisManager->FillNtupleDColumn(40, hit->GetSipmPos().x());
-      analysisManager->FillNtupleDColumn(41, hit->GetSipmPos().y());
-      analysisManager->FillNtupleDColumn(42, hit->GetSipmPos().z());
-      analysisManager->FillNtupleDColumn(43, hit->GetSipmTime());
-      analysisManager->FillNtupleDColumn(44, hit->GetSipmCharge());
-      analysisManager->FillNtupleDColumn(45, hit->GetWavelength());
-    }
+    //auto hc_annihilation = GetHC(anEvent, fAnnihilationHCID);
+    //auto nhit_annihilation = hc_ncapture->GetSize();
+    //analysisManager->FillNtupleIColumn(39, nhit_annihilation);
+    //for (unsigned long i = 0; i < nhit_annihilation; ++i)
+    //{
+    //  auto hit = static_cast<SipmHit *>(hc_annihilation->GetHit(i));
+    //  analysisManager->FillNtupleDColumn(40, hit->GetSipmPos().x());
+    //  analysisManager->FillNtupleDColumn(41, hit->GetSipmPos().y());
+    //  analysisManager->FillNtupleDColumn(42, hit->GetSipmPos().z());
+    //  analysisManager->FillNtupleDColumn(43, hit->GetSipmTime());
+    //  analysisManager->FillNtupleDColumn(44, hit->GetSipmCharge());
+    //  analysisManager->FillNtupleDColumn(45, hit->GetWavelength());
+    //}
     // G4cout << "       " << hc_annihilation->GetSize() << " annihilation hits stored in this event" << G4endl;
 
     // Fill all the branches in the tree

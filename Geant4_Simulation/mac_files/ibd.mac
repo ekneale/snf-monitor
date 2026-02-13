@@ -3,7 +3,7 @@
 
 
 # Start up
-/run/numberOfThreads 1
+/run/numberOfThreads 10
 /run/initialize
 
 # Uncomment to use IBD generator.
@@ -16,5 +16,5 @@
 #
 
 # Run the simulation
-/run/beamOn 10
+/run/beamOn 1000
 

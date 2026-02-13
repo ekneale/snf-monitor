@@ -49,16 +49,16 @@ namespace G4_BREMS
 
         const G4VProcess *creatorProcess = track->GetCreatorProcess();
 
-        if (name == "neutron")
-        {
-            auto proc = step->GetPostStepPoint()->GetProcessDefinedStep();
-            if (proc && debug_steppingaction)
-            {
-                G4cout << "particle name" << name << G4endl;
-                G4cout << "[DEBUG] Neutron post-step process: "
-                       << proc->GetProcessName() << G4endl;
-            }
-        }
+        //if (name == "neutron")
+        //{
+        //    auto proc = step->GetPostStepPoint()->GetProcessDefinedStep();
+        //    if (proc && debug_steppingaction)
+        //    {
+        //        G4cout << "particle name" << name << G4endl;
+        //        G4cout << "[DEBUG] Neutron post-step process: "
+        //               << proc->GetProcessName() << G4endl;
+        //    }
+        //}
 
         const G4StepPoint *post = step->GetPostStepPoint();
         if (!post)
@@ -70,6 +70,7 @@ namespace G4_BREMS
         {
 
             G4cout << "Particle Name: " << name << " " << "TrackID: " << trackID << G4endl;
+            G4cout << "Creator Process: " << creatorProcess << G4endl;
 
             captureDaughterIDs.push_back(trackID);
             captureDaughters.emplace_back(trackID, name);
@@ -138,10 +139,10 @@ namespace G4_BREMS
                 analysisManager->FillH2(23, annihilation.position.x() / mm, annihilation.position.z() / mm, annihilation.time);
             }
             G4cout << "Found annihilation event" << G4endl;
-            analysisManager->FillNtupleDColumn(35, annihilation.position.x() / mm);
-            analysisManager->FillNtupleDColumn(36, annihilation.position.y() / mm);
-            analysisManager->FillNtupleDColumn(37, annihilation.position.z() / mm);
-            analysisManager->FillNtupleDColumn(38, annihilation.time / ns);
+            analysisManager->FillNtupleDColumn(28, annihilation.position.x() / mm);
+            analysisManager->FillNtupleDColumn(29, annihilation.position.y() / mm);
+            analysisManager->FillNtupleDColumn(30, annihilation.position.z() / mm);
+            analysisManager->FillNtupleDColumn(31, annihilation.time / ns);
 
             gAnnihilationEvents.push_back(annihilation);
         }
@@ -220,18 +221,18 @@ namespace G4_BREMS
         }
 
         // Save all scintillation photons
-        if (creatorProcess && creatorProcess->GetProcessName() == "Scintillation")
-        {
-            G4int scintParent = track->GetParentID();
-            auto it = std::find_if(captureDaughters.begin(), captureDaughters.end(),
-                                   [&](auto &p)
-                                   { return p.first == scintParent; });
-            if (it != captureDaughters.end())
-            {
-                fCaptureScintPhotonIDs.push_back(track->GetTrackID());
-            }
-        }
-        SetCaptureScintPhotonIDs(fCaptureScintPhotonIDs);
+        //if (creatorProcess && creatorProcess->GetProcessName() == "Scintillation")
+        //{
+        //    G4int scintParent = track->GetParentID();
+        //    auto it = std::find_if(captureDaughters.begin(), captureDaughters.end(),
+        //                           [&](auto &p)
+        //                           { return p.first == scintParent; });
+        //    if (it != captureDaughters.end())
+        //    {
+        //        fCaptureScintPhotonIDs.push_back(track->GetTrackID());
+        //    }
+        //}
+        //SetCaptureScintPhotonIDs(fCaptureScintPhotonIDs);
 
         if (generate_histograms)
         {
