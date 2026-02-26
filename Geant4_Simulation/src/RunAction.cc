@@ -1,5 +1,6 @@
 
 #include "RunAction.hh"
+#include "RunActionMessenger.hh"
 #include "EventAction.hh"
 #include "G4Run.hh"
 #include "G4RunManager.hh"
@@ -38,6 +39,8 @@ namespace G4_BREMS
           fAccPhotonsExitedFiber("PhotonsExitedFiber", 0),
           fAccPhotonsAbsorbedFiber("PhotonsAbsorbedFiber", 0)
     {
+
+        fRunMessenger = new RunActionMessenger(this);
         std::vector<G4String> volumes = {"Tile", "FiberCore", "FiberClad", "Sipm"};
         for (const auto &volume : volumes)
         {
@@ -465,13 +468,17 @@ namespace G4_BREMS
         {
             delete pair.second;
         }
+        if (fRunMessenger) delete fRunMessenger;
     }
 
     void G4_BREMS::RunAction::BeginOfRunAction(const G4Run *run)
     {
         G4AccumulableManager::Instance()->Reset();
 
+        float seed = GetSeed();
         long s1 = 0, s2 = 0;
+        
+        if (seed==0){
 
         if (const char *e1 = std::getenv("G4_SEED1"))
             s1 = std::strtol(e1, nullptr, 10);
@@ -486,6 +493,11 @@ namespace G4_BREMS
             if (s2 == 0)
                 s2 = std::llabs(base * 1812433253L + 12345L) + 17;
         }
+        }
+        else{
+            s1 = (long)seed;
+            s2 = (long)seed*10;
+        }
 
         long seeds[2] = {s1, s2};
         if (G4Threading::IsMasterThread())
@@ -497,8 +509,11 @@ namespace G4_BREMS
 
         auto analysisManager = G4AnalysisManager::Instance();
         analysisManager->Reset();
-        // TODO set file name in macro
-        analysisManager->OpenFile("naiads_output.root");
+
+        // Get file name from macro
+        G4String outfile = GetOutfileName();
+        G4cout << "Initialising output file " << outfile << G4endl;
+        analysisManager->OpenFile(outfile);
     }
 
     void G4_BREMS::RunAction::AddProcessCount(const G4String &volume,

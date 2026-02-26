@@ -6,6 +6,7 @@
 #include "globals.hh"
 #include <map>
 #include "G4GenericAnalysisManager.hh"
+#include "RunActionMessenger.hh"
 
 class G4Run;
 
@@ -70,7 +71,16 @@ namespace G4_BREMS
         G4double CalculateTrappingEfficiency() const;
         G4int debug_runaction = 0;
 
+        // Functions used by the messenger
+        inline void SetOutfileName(G4String choice) { outfile_name = choice; }
+		inline G4String GetOutfileName()  { return outfile_name; }
+        inline void SetSeed(G4int choice) { seed_value = choice; }
+		inline G4int GetSeed()  { return seed_value; }
+
     private:
+
+        RunActionMessenger *fRunMessenger;
+
         G4int fTileCount;
         G4int fCladCount;
         G4int fCoreCount;
@@ -94,8 +104,12 @@ namespace G4_BREMS
         std::map<G4String, G4Accumulable<G4int> *> fAccCreationCounts;
         std::map<G4String, G4Accumulable<G4int> *> fAccInteractionCounts;
 
-//        SteppingAction *fSteppingAction;
+        // SteppingAction *fSteppingAction;
         EventAction *fEventAction = nullptr;
+
+        // Variables set by the messenger
+		G4int seed_value;
+        G4String outfile_name;
 
         int write_to_csv = 0;
         int generate_histograms = 0;

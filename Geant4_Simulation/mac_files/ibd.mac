@@ -3,8 +3,10 @@
 
 
 # Start up
-/run/numberOfThreads 10
+/run/numberOfThreads 1
 /run/initialize
+/set/outfile raw_naids_outputfile.root
+/set/seed 1234
 
 # Uncomment to use IBD generator.
 # Defaults to positron gun if ibd
@@ -16,5 +18,5 @@
 #
 
 # Run the simulation
-/run/beamOn 1000
+/run/beamOn 1
 
