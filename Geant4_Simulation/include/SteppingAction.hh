@@ -1,4 +1,3 @@
-
 #ifndef SteppingAction_h
 #define SteppingAction_h 1
 
@@ -7,34 +6,38 @@
 #include "G4ThreeVector.hh"
 #include <vector>
 #include "G4LogicalVolume.hh"
+#include <set>
+#include "G4VProcess.hh"
 
 class G4Step;
 class G4Event;
+
 namespace G4_BREMS
 {
 
     class RunAction;
 
-    struct SipmHit
+    struct GammaInfo
     {
-        G4int sipmID;
-        G4String sipmName;
         G4double time;
-        G4ThreeVector position;
-        G4double energy;
-        G4double wavelength;
+        G4String name;
+        G4int tid;
     };
 
     struct AnnihilationEvent
     {
-        G4double time;
         G4ThreeVector position;
+        G4double time;
         G4String volume;
     };
 
-    extern std::vector<SipmHit> gSipmHits;
-    extern std::vector<AnnihilationEvent> gAnnihilationEvents;
-    // extern G4Mutex sipmHitsMutex;
+    struct NeutronCaptureEvent
+    {
+        G4ThreeVector position;
+        G4double time;
+        G4String volume;
+    };
+
     class SteppingAction : public G4UserSteppingAction
     {
     public:
@@ -43,19 +46,31 @@ namespace G4_BREMS
         virtual void UserSteppingAction(const G4Step *);
 
         void SetRunAction(RunAction *runAction) { fRunAction = runAction; }
-        void ClearHits() { fSipmHits.clear(); }
-        const std::vector<SipmHit> &GetSipmHits() const { return fSipmHits; }
+
+        void ClearEvents()
+        {
+            gAnnihilationEvents.clear();
+            gNeutronCaptureEvents.clear();
+        }
+        void SetCaptureScintPhotonIDs(std::vector<G4int> captureScintPhotonIDs) { fCaptureScintPhotonIDs = captureScintPhotonIDs; };
+        std::vector<G4int> GetCaptureScintPhotonIDs() { return fCaptureScintPhotonIDs; };
+
+        std::vector<G4int> fScintPhotonIDsfromannihilation;
+        std::vector<G4double> fScintPhotontime;
+        std::vector<G4int> fCaptureScintPhotonIDs;
 
     private:
         RunAction *fRunAction;
         G4LogicalVolume *fSensitiveVolume;
-        std::vector<SipmHit> fSipmHits;
         G4int debug_steppingaction = 0;
-        std::vector<double> sipm_t;
-        std::vector<double> sipm_x;
-        std::vector<double> sipm_y;
-        std::vector<double> sipm_z;
-        std::vector<double> sipm_q;
+
+        std::vector<G4int> captureDaughterIDs;
+        std::vector<std::pair<G4int, G4String>> captureDaughters;
+        std::vector<GammaInfo> fAnnihilationGammas;
+
+        std::vector<AnnihilationEvent> gAnnihilationEvents;
+        std::vector<NeutronCaptureEvent> gNeutronCaptureEvents;
+
         int generate_histograms = 0;
     };
 

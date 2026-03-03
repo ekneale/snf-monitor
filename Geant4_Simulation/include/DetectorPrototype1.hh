@@ -1,5 +1,5 @@
-#ifndef G4_BREMS_DETECTOR_CONSTRUCTION_H
-#define G4_BREMS_DETECTOR_CONSTRUCTION_H 1
+#ifndef G4_BREMS_DETECTOR__PROTOTYPE1_H
+#define G4_BREMS_DETECTOR_PROTOTYPE1_H 1
 
 #include "G4VUserDetectorConstruction.hh"
 #include "G4LogicalVolume.hh"
@@ -7,11 +7,11 @@
 #include "SteppingAction.hh"
 
 namespace G4_BREMS {
-    class DetectorConstruction : public G4VUserDetectorConstruction {
+    class DetectorPrototype1 : public G4VUserDetectorConstruction {
     public:
 
-        DetectorConstruction();
-        ~DetectorConstruction() override;
+        DetectorPrototype1();
+        ~DetectorPrototype1() override;
 
         G4VPhysicalVolume* Construct() override;
         void ConstructSDandField() override;
@@ -39,9 +39,10 @@ namespace G4_BREMS {
         G4VSensitiveDetector* fSipmSD;
         G4VSensitiveDetector* fBNSD;
         G4VSensitiveDetector* fAlSD;
-	
+
         G4String data_dir="";
         G4int debug_detector = 0;
+
     };
 }
 

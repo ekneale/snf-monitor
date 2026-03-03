@@ -31,12 +31,9 @@ int main(int argc, char** argv)
 	G4VisManager* visManager = new G4VisExecutive;
 	visManager->Initialize();
 
-	//G4TrajectoryDrawByAttribute* model = new G4TrajectoryDrawByAttribute;
-	//model->Set("CPN")
-
 	// random seed
-	long seed = 12345;
-	
+	// TODO get the seed from the mac file
+	long seed = 12345;	
 	CLHEP::HepRandom::setTheSeed(seed);
 	G4Random::setTheSeed(seed);
 
@@ -63,7 +60,8 @@ int main(int argc, char** argv)
 
 	// clean up
 	delete visManager;
-	//delete runManager;
+//	delete runManager;
+	
 	return 0;
 }
 

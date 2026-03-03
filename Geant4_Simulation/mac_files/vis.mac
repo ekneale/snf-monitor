@@ -1,4 +1,3 @@
-
 #/tracking/storeTrajectory 0
 
 
@@ -12,56 +11,76 @@
 #/mygen/ibd_database IBDSpectra.json
 #/mygen/ibd_spectrum Flat
 
+#help /vis/open
 # Open an OpenGL viewer
-/vis/open OGL
+#/vis/open OGL
 #/vis/open OGL
 #/vis/open OGLSX
 
 # Draw geometry
-/vis/drawVolume
+#/vis/drawVolume
+#/vis/open
+#/vis/open Qt
+
+
+#/vis/open OGLIQt
+#/vis/viewer/set/viewpointThetaPhi  80  20
+#/vis/drawVolume
+#/vis/scene/add/trajectories  
+#/vis/sceneHandler/attach
+#/vis/scene/create  
+
+
+
+#/vis/open OGLIX
+#/vis/scene/create
+#/vis/scene/add/trajectories
+#/vis/sceneHandler/attach
+#/vis/viewer/set/viewpointThetaPhi 80 20
+#/vis/drawVolume
+#/vis/sceneHandler/transfer all
+#/vis/viewer/flush
+
 
 
 #/vis/viewer/set/style cloud
 # Specify view angle
-/vis/viewer/set/viewpointVector -1 0 0
+#/vis/viewer/set/viewpointVector -1 0 0
 
 #/vis/viewer/set/viewpointVector 1 1 1
-/vis/viewer/zoomTo 4
+#/vis/viewer/zoomTo 4
 
 # Draw smooth trajectories at end of event
-/vis/scene/add/trajectories rich smooth
+#/vis/scene/add/trajectories rich smooth
 
 # Set time window for visualization
-/vis/viewer/set/timeWindow/startTime 0.5 ns
-/vis/viewer/set/timeWindow/endTime 0.8 ns
+#/vis/viewer/set/timeWindow/startTime 0.5 ns
+#/vis/viewer/set/timeWindow/endTime 0.8 ns
 
 #/vis/scene/add/trajectories rich smooth
 
-/vis/modeling/trajectories/create/drawByParticleID
-/vis/modeling/trajectories/drawByParticleID-0/default/setDrawStepPts true
-/vis/modeling/trajectories/drawByParticleID-0/default/setStepPtsSize 2
+#/vis/modeling/trajectories/create/drawByParticleID
+#/vis/modeling/trajectories/drawByParticleID-0/default/setDrawStepPts true
+#/vis/modeling/trajectories/drawByParticleID-0/default/setStepPtsSize 2
 
-/vis/modeling/trajectories/drawByParticleID-0/set e- orange
-/vis/modeling/trajectories/drawByParticleID-0/set e+ red
-/vis/modeling/trajectories/drawByParticleID-0/set gamma magenta
-/vis/modeling/trajectories/drawByParticleID-0/set alpha cyan
-/vis/modeling/trajectories/drawByParticleID-0/set neutron red
-
+#/vis/modeling/trajectories/drawByParticleID-0/set e- orange
+#/vis/modeling/trajectories/drawByParticleID-0/set e+ red
+#/vis/modeling/trajectories/drawByParticleID-0/set gamma magenta
 
 
 # Differentiate trajectories by creation process name (CPN)
-/vis/modeling/trajectories/create/drawByAttribute
-/vis/modeling/trajectories/drawByAttribute-0/setAttribute CPN
+#/vis/modeling/trajectories/create/drawByAttribute
+#/vis/modeling/trajectories/drawByAttribute-0/setAttribute CPN
 
 # Add values for different processes
-/vis/modeling/trajectories/drawByAttribute-0/addValue scintillation_key Scintillation
-/vis/modeling/trajectories/drawByAttribute-0/addValue cerenkov_key Cerenkov
-/vis/modeling/trajectories/drawByAttribute-0/addValue opwls_key OpWLS
+#/vis/modeling/trajectories/drawByAttribute-0/addValue scintillation_key Scintillation
+#/vis/modeling/trajectories/drawByAttribute-0/addValue cerenkov_key Cerenkov
+#/vis/modeling/trajectories/drawByAttribute-0/addValue opwls_key OpWLS
 
 # Set colors for different processes
-/vis/modeling/trajectories/drawByAttribute-0/scintillation_key/setLineColour blue
-/vis/modeling/trajectories/drawByAttribute-0/cerenkov_key/setLineColour yellow
-/vis/modeling/trajectories/drawByAttribute-0/opwls_key/setLineColour magenta
+#/vis/modeling/trajectories/drawByAttribute-0/scintillation_key/setLineColour blue
+#/vis/modeling/trajectories/drawByAttribute-0/cerenkov_key/setLineColour yellow
+#/vis/modeling/trajectories/drawByAttribute-0/opwls_key/setLineColour magenta
 
 
 
@@ -71,7 +90,7 @@
 
 
 # Make the "World" box invisible
-/vis/geometry/set/visibility World 0 false
+#/vis/geometry/set/visibility World 0 false
 
 # Make all volumes visible
 #/vis/geometry/set/visibility World 0 false
@@ -97,11 +116,37 @@
 #/vis/viewer/set/hiddenEdge true
 
 # Superimpose all of the events from a given run
-/vis/scene/endOfEventAction accumulate
+#/vis/scene/endOfEventAction accumulate
 
-# Run the simulation
-/run/beamOn 1
+#/vis/open OGL
+#/vis/open Qt
+#/vis/open DAWNFILE
+#/vis/open HepRepFile
+#/vis/open VRML2FILE
+#/vis/viewer/set/autoRefresh false
+#/vis/verbose errors
+#/vis/drawVolume
+#/vis/viewer/set/viewpointThetaPhi 90. 0.
+#/vis/viewer/zoom 2
+#/vis/viewer/set/style wireframe
+#/vis/scene/add/axes 0 0 0 1 m
+#/vis/scene/add/trajectories smooth
+#/vis/modeling/trajectories/create/drawByCharge
+#/vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
+#/vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 2
+#/vis/scene/add/hits
+#/vis/filtering/trajectories/create/particleFilter
+#/vis/filtering/trajectories/particleFilter-0/add gamma
+#/vis/filtering/trajectories/particleFilter-0/invert true
+#/vis/modeling/trajectories/create/drawByParticleID
+#/vis/modeling/trajectories/drawByParticleID-0/set e- blue
+#/vis/scene/endOfEventAction accumulate
+#/vis/viewer/set/autoRefresh true
 
-# Refresh the viewer
-#/vis/viewer/refresh
+
+#/run/numberOfThreads 1
+#/run/beamOn 20000
+/run/beamOn 1000
+
+#/vis/verbose warnings
 #/vis/viewer/flush

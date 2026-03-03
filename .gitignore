@@ -1,2 +1,6 @@
 build/
 install/
+*.png
+*.C
+*.out
+*.root

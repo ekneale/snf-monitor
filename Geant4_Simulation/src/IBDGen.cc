@@ -330,7 +330,7 @@ G4ThreeVector IBDGen::GenerateRandomPosition() {
 	// Pick random position in the detector
 	double x_nu = -20*CLHEP::cm + (40*CLHEP::cm * G4UniformRand());
 	double y_nu = -20*CLHEP::cm + (40*CLHEP::cm * G4UniformRand());
-	double z_nu = -1*CLHEP::cm + (2*CLHEP::cm * G4UniformRand());
+	double z_nu = 0*CLHEP::cm + (2.5*CLHEP::cm * G4UniformRand());
 
 	G4ThreeVector nu_pos;
 
