@@ -229,14 +229,7 @@ namespace G4_BREMS
 
     // Kill the particle immediately
     track->SetTrackStatus(fStopAndKill);
-
-    int n_sipm_hits = (int)fSipmHitsCollection->GetSize();
-    analysisManager->FillNtupleIColumn(17, n_sipm_hits);
-//    int n_sipm_hits_ncapture = (int)fNeutronCaptureSipmHitsCollection->GetSize();
-//    analysisManager->FillNtupleIColumn(28, n_sipm_hits_ncapture);
-//    int n_sipm_hits_annihilation = (int)fAnnihilationSipmHitsCollection->GetSize();
-//    analysisManager->FillNtupleIColumn(39, n_sipm_hits_annihilation);
-
+    
     return true;
 
   } // ProcessHits
