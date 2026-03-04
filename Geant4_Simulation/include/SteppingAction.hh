@@ -1,7 +1,11 @@
 #ifndef SteppingAction_h
 #define SteppingAction_h 1
 
+//#include "AnnihilationHit.hh"
+//#include "NeutronCaptureHit.hh"
+
 #include "G4UserSteppingAction.hh"
+#include "G4THitsCollection.hh"
 #include "globals.hh"
 #include "G4ThreeVector.hh"
 #include <vector>
@@ -11,6 +15,7 @@
 
 class G4Step;
 class G4Event;
+class G4HCofThisEvent;
 
 namespace G4_BREMS
 {
@@ -27,15 +32,19 @@ namespace G4_BREMS
     struct AnnihilationEvent
     {
         G4ThreeVector position;
-        G4double time;
-        G4String volume;
+        G4double time = -1;
+        G4String volume = "";
+        G4int parentID = -1;
+        G4double edep = 0;
     };
 
     struct NeutronCaptureEvent
     {
         G4ThreeVector position;
-        G4double time;
-        G4String volume;
+        G4double time = -1;
+        G4String volume = "";
+        G4int parentID = -1;
+        G4double edep = 0;
     };
 
     class SteppingAction : public G4UserSteppingAction
@@ -44,6 +53,8 @@ namespace G4_BREMS
         SteppingAction(RunAction *runAction);
         virtual ~SteppingAction();
         virtual void UserSteppingAction(const G4Step *);
+
+        void Initialize(G4HCofThisEvent* HCE);
 
         void SetRunAction(RunAction *runAction) { fRunAction = runAction; }
 
@@ -61,12 +72,13 @@ namespace G4_BREMS
 
     private:
         RunAction *fRunAction;
-        G4LogicalVolume *fSensitiveVolume;
-        G4int debug_steppingaction = 0;
 
-        std::vector<G4int> captureDaughterIDs;
-        std::vector<std::pair<G4int, G4String>> captureDaughters;
-        std::vector<GammaInfo> fAnnihilationGammas;
+        G4LogicalVolume *fSensitiveVolume;
+        G4int debug_steppingaction = 1;
+
+        //std::vector<G4int> captureDaughterIDs;
+        //std::vector<std::pair<G4int, G4String>> captureDaughters;
+        //std::vector<GammaInfo> fAnnihilationGammas;
 
         std::vector<AnnihilationEvent> gAnnihilationEvents;
         std::vector<NeutronCaptureEvent> gNeutronCaptureEvents;

@@ -1,6 +1,8 @@
 #include "SipmHit.hh"
 #include "SteppingAction.hh"
 #include "RunAction.hh"
+#include "Annihilation.hh"
+
 #include "G4SDManager.hh"
 #include "G4HCofThisEvent.hh"
 #include "G4Step.hh"
@@ -10,16 +12,17 @@
 #include "G4AnalysisManager.hh"
 #include "G4Threading.hh"
 #include "G4SystemOfUnits.hh"
-#include <fstream>
-#include <sstream>
+
 #include "G4Neutron.hh"
 #include "G4Gamma.hh"
 #include "G4VParticleChange.hh"
-// #include "TrackingAction.hh"
-#include "Annihilation.hh"
 #include "G4GenericAnalysisManager.hh"
 #include "G4Event.hh"
 #include "G4Run.hh"
+#include "G4UserTrackingAction.hh"
+
+#include <fstream>
+#include <sstream>
 
 namespace G4_BREMS
 {
@@ -42,77 +45,84 @@ namespace G4_BREMS
         if (!track)
             return;
 
+        const G4StepPoint *post = step->GetPostStepPoint();
+        if (!post)
+            return;
+
+        G4StepStatus stepStatus = post->GetStepStatus();
+        G4bool transmit = (stepStatus == fGeomBoundary || stepStatus == fWorldBoundary);
+        if (transmit)
+            return;
+
         auto analysisManager = G4AnalysisManager::Instance();
 
         G4String name = track->GetDefinition()->GetParticleName();
         G4int trackID = track->GetTrackID();
 
+        // Get the creator process
         const G4VProcess *creatorProcess = track->GetCreatorProcess();
-
-        //if (name == "neutron")
-        //{
-        //    auto proc = step->GetPostStepPoint()->GetProcessDefinedStep();
-        //    if (proc && debug_steppingaction)
-        //    {
-        //        G4cout << "particle name" << name << G4endl;
-        //        G4cout << "[DEBUG] Neutron post-step process: "
-        //               << proc->GetProcessName() << G4endl;
-        //    }
-        //}
-
-        const G4StepPoint *post = step->GetPostStepPoint();
-        if (!post)
-            return;
+        G4String creatorName = "Primary";
+        if (creatorProcess != nullptr)
+        {
+            creatorName = creatorProcess->GetProcessName();
+        }
 
         G4String procName = post->GetProcessDefinedStep()->GetProcessName();
 
-        if ((name == "Li7" || name == "alpha") && track->GetCurrentStepNumber() == 1)
+
+
+         // Find and save the neutron capture
+        // TODO Currently includes two-alpha production with no Li7
+        NeutronCaptureEvent nCapture;
+        if (track->GetDefinition() == G4Neutron::Definition())
         {
-
-            G4cout << "Particle Name: " << name << " " << "TrackID: " << trackID << G4endl;
-            G4cout << "Creator Process: " << creatorProcess << G4endl;
-
-            captureDaughterIDs.push_back(trackID);
-            captureDaughters.emplace_back(trackID, name);
-
-            if ((name == "Li7"))
+            auto secondaries = step->GetSecondaryInCurrentStep();
+            if (secondaries && !secondaries->empty())
             {
-
-                NeutronCaptureEvent nCapture;
-                nCapture.time = step->GetPreStepPoint()->GetGlobalTime();
-                nCapture.position = track->GetVertexPosition();
-                nCapture.volume = step->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetName();
-
-                if (debug_steppingaction)
+                for (auto sec : *secondaries)
                 {
-                    G4cout << "Name: " << name << " " << "Creator Process: " << creatorProcess->GetProcessName() << " " << "neutronCapturePos_X = " << nCapture.position.x() / mm << " " << "neutronCapturePos_Y = " << nCapture.position.y() / mm << " " << "neutronCapturePos_Z = " << nCapture.position.z() / mm << " mm,  t=" << nCapture.time / ns
-                           << "TrackID: " << trackID << G4endl;
-                }
+                    G4String secname = sec->GetDefinition()->GetParticleName();
+                    if ((secname == "Li7" || secname == "alpha" || secname == "gamma"))
+                    {
+                        nCapture.time = post->GetGlobalTime();
+                        nCapture.position = post->GetPosition();
+                        nCapture.volume = post->GetTouchableHandle()->GetVolume()->GetName();
+                        nCapture.parentID = trackID;
 
-                if (generate_histograms)
-                {
-                    analysisManager->FillH1(22, nCapture.time / ns);
+                        if (debug_steppingaction)
+                        {
+                            G4cout << "ncapture neutron track ID " << trackID << G4endl;
+                            G4cout << "Name: " << secname << ", " << procName << ", " << creatorName
+                                   << "neutronCapturePos_X = " << nCapture.position.x() / mm << ", " << "neutronCapturePos_Y = " << nCapture.position.y() / mm << ", "
+                                   << "neutronCapturePos_Z = " << nCapture.position.z() / mm << " mm,  t=" << nCapture.time / ns << G4endl;
+                        }
 
-                    analysisManager->FillH1(23, nCapture.position.x() / mm);
-                    analysisManager->FillH1(24, nCapture.position.y() / mm);
-                    analysisManager->FillH1(25, nCapture.position.z() / mm);
+                        if (generate_histograms)
+                        {
+                            analysisManager->FillH1(22, nCapture.time / ns);
 
-                    analysisManager->FillH2(24, nCapture.position.x() / mm, nCapture.position.y() / mm, nCapture.time);
-                    analysisManager->FillH2(25, nCapture.position.y() / mm, nCapture.position.z() / mm, nCapture.time);
-                    analysisManager->FillH2(26, nCapture.position.x() / mm, nCapture.position.z() / mm, nCapture.time);
-                }
+                            analysisManager->FillH1(23, nCapture.position.x() / mm);
+                            analysisManager->FillH1(24, nCapture.position.y() / mm);
+                            analysisManager->FillH1(25, nCapture.position.z() / mm);
 
-                // Fill ntuple assuming only one neutron capture
-                G4cout << "Found neutron capture" << G4endl;
-                analysisManager->FillNtupleDColumn(24, nCapture.position.x() / mm);
-                analysisManager->FillNtupleDColumn(25, nCapture.position.y() / mm);
-                analysisManager->FillNtupleDColumn(26, nCapture.position.z() / mm);
-                analysisManager->FillNtupleDColumn(27, nCapture.time / ns);
+                            analysisManager->FillH2(24, nCapture.position.x() / mm, nCapture.position.y() / mm, nCapture.time);
+                            analysisManager->FillH2(25, nCapture.position.y() / mm, nCapture.position.z() / mm, nCapture.time);
+                            analysisManager->FillH2(26, nCapture.position.x() / mm, nCapture.position.z() / mm, nCapture.time);
+                        }
 
-                // TODO consider saving to ntuple later, in case of multiple neutrons from muons
-                //gNeutronCaptureEvents.push_back(nCapture);
+                        // Fill ntuple assuming only one neutron capture
+                        analysisManager->FillNtupleDColumn(26, nCapture.position.x() / mm);
+                        analysisManager->FillNtupleDColumn(27, nCapture.position.y() / mm);
+                        analysisManager->FillNtupleDColumn(28, nCapture.position.z() / mm);
+                        analysisManager->FillNtupleDColumn(29, nCapture.time / ns);
+
+                        // TODO consider saving to ntuple later, in case of multiple neutrons from muons
+                        // gNeutronCaptureEvents.push_back(nCapture);
+                    } // Li, alpha or gamma
+                } // Loop over secondaries
             }
-        }
+            // analysisManager->FillNtupleDColumn(30, nCapture.edep / MeV);
+        } // Neutron track
 
         if (track->GetDefinition()->GetParticleName() == "e+" &&
             track->GetTrackStatus() == fStopAndKill &&
@@ -201,14 +211,6 @@ namespace G4_BREMS
             }
         }
 
-        // Get the creator process
-        G4String creatorName = "Primary";
-
-        if (creatorProcess != nullptr)
-        {
-            creatorName = creatorProcess->GetProcessName();
-        }
-
         G4String processName = "Unknown";
         const G4StepPoint *postStepPoint = step->GetPostStepPoint();
         if (postStepPoint)
@@ -221,7 +223,7 @@ namespace G4_BREMS
         }
 
         // Save all scintillation photons
-        //if (creatorProcess && creatorProcess->GetProcessName() == "Scintillation")
+        // if (creatorProcess && creatorProcess->GetProcessName() == "Scintillation")
         //{
         //    G4int scintParent = track->GetParentID();
         //    auto it = std::find_if(captureDaughters.begin(), captureDaughters.end(),
@@ -232,7 +234,7 @@ namespace G4_BREMS
         //        fCaptureScintPhotonIDs.push_back(track->GetTrackID());
         //    }
         //}
-        //SetCaptureScintPhotonIDs(fCaptureScintPhotonIDs);
+        // SetCaptureScintPhotonIDs(fCaptureScintPhotonIDs);
 
         if (generate_histograms)
         {
