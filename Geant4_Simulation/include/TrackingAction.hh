@@ -25,6 +25,7 @@ public:
 private:
 
     TrackInformation *info;
+    G4int debug_trackingAction = 0;
 };
 
 #endif

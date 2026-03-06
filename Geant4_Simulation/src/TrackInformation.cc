@@ -6,14 +6,14 @@
 TrackInformation::TrackInformation(const G4Track *aTrack)
     : G4VUserTrackInformation()
 {
-    //fOriginalTrackID = aTrack->GetTrackID();
-    //fOriginalParticleName = aTrack->GetDefinition()->GetParticleName();
+    fOriginalTrackID = aTrack->GetTrackID();
+    fOriginalParticleName = aTrack->GetDefinition()->GetParticleName();
 }
 
 TrackInformation::TrackInformation(TrackInformation *aTrackInfo)
 {
-    //fParentTrackID = aTrackInfo->fOriginalTrackID;
-   // fParentParticleName = aTrackInfo->fOriginalParticleName;
+    fParentTrackID = aTrackInfo->fOriginalTrackID;
+    fParentParticleName = aTrackInfo->fOriginalParticleName;
 }
 
 // Print method: Highly recommended for debugging complex tracking

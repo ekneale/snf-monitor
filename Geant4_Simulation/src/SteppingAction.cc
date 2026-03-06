@@ -174,23 +174,22 @@ namespace G4_BREMS
             {
                 G4String parentParticleName = info->GetParentParticleName();
                 G4int parentTrackID = info->GetParentTrackID();
-
                 if (parentParticleName == "neutron" && (creatorName == "neutronInelastic" || creatorName == "nCapture"))
                 {
-
-                    G4cout << name << " from " << parentParticleName << ", track ID " << parentTrackID << ", energy deposit = " << step->GetTotalEnergyDeposit() << G4endl;
+                    if (debug_steppingaction)
+                        G4cout << name << " from " << parentParticleName << ", track ID " << parentTrackID << ", energy deposit = " << step->GetTotalEnergyDeposit()* MeV << G4endl;
 
                     if (name == "alpha")
-                        fEventAction->AddNCaptureAlphaEdep(step->GetTotalEnergyDeposit());
+                        fEventAction->AddNCaptureAlphaEdep(step->GetTotalEnergyDeposit() * MeV);
                     else if (name == "Li7")
-                        fEventAction->AddNCaptureLi7Edep(step->GetTotalEnergyDeposit());
+                        fEventAction->AddNCaptureLi7Edep(step->GetTotalEnergyDeposit() * MeV);
                     else if (name == "gamma")
-                        fEventAction->AddNCaptureGammaEdep(step->GetTotalEnergyDeposit());
+                        fEventAction->AddNCaptureGammaEdep(step->GetTotalEnergyDeposit() * MeV);
                 } // if neutron capture
                 if (parentParticleName == "e+" && creatorName == "annihil")
                 {
                     if (name == "gamma")
-                        fEventAction->AddAnnihilGammaEdep(step->GetTotalEnergyDeposit());
+                        fEventAction->AddAnnihilGammaEdep(step->GetTotalEnergyDeposit() * MeV);
                 }
             } // if track user info
         } // Li, alpha or gamma

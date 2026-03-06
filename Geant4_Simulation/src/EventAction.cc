@@ -68,26 +68,34 @@ namespace G4_BREMS
       // fNeutronCaptureHCID = G4SDManager::GetSDMpointer()->GetCollectionID("neutronCaptureSipmHitsColl");
       // fAnnihilationHCID = G4SDManager::GetSDMpointer()->GetCollectionID("annihilationSipmHitsColl");
     }
+    fTotalNCapLi7Edep = 0;
+    fTotalNCapAlphaEdep = 0;
+    fTotalNCapGammaEdep = 0;
+    fTotalAnnihilGammaEdep = 0;
   }
 
   void G4_BREMS::EventAction::AddNCaptureAlphaEdep(G4double edep)
   {
     fTotalNCapAlphaEdep += edep;
+    G4cout << "Ncap alpa edep running total " << fTotalNCapAlphaEdep << G4endl;
   }
 
   void G4_BREMS::EventAction::AddNCaptureLi7Edep(G4double edep)
   {
     fTotalNCapLi7Edep += edep;
+    G4cout << "Ncap Li7 edep running total " << fTotalNCapLi7Edep << G4endl;
   }
 
   void G4_BREMS::EventAction::AddNCaptureGammaEdep(G4double edep)
   {
     fTotalNCapGammaEdep += edep;
+    G4cout << "Ncap gamma edep running total " << fTotalNCapGammaEdep << G4endl;
   }
 
   void G4_BREMS::EventAction::AddAnnihilGammaEdep(G4double edep)
   {
     fTotalAnnihilGammaEdep += edep;
+    G4cout << "Annihil gamma running total " << fTotalAnnihilGammaEdep << G4endl;
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -103,11 +111,9 @@ namespace G4_BREMS
 
     const G4Run *run = G4RunManager::GetRunManager()->GetCurrentRun();
     G4int runID = run ? run->GetRunID() : -1;
-    G4cout << fRunAction->GetIdxRunID() << G4endl; 
     analysisManager->FillNtupleIColumn(fRunAction->GetIdxRunID(), runID);
 
     G4int eventID = anEvent ? anEvent->GetEventID() : -1;
-    G4cout << fRunAction->GetIdxEventID() << G4endl;
     analysisManager->FillNtupleIColumn(fRunAction->GetIdxEventID(), eventID);
 
     if (eventID < 100 || eventID % 100 == 0)

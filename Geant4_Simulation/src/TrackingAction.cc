@@ -55,7 +55,8 @@ void TrackingAction::PostUserTrackingAction(const G4Track *aTrack)
                             G4String secName = (*secondaries)[i]->GetDefinition()->GetParticleName();
                             if ( secName == "Li7" || secName == "alpha" || secName == "gamma" )
                             {
-                                G4cout << "TrackingAction::PostUserTrackingAction [INFO] Parent particle: " << aTrack->GetDefinition()->GetParticleName() << ", daughter particle " << (*secondaries)[i]->GetDefinition()->GetParticleName() << G4endl;
+                                if (debug_trackingAction)
+                                    G4cout << "TrackingAction::PostUserTrackingAction [INFO] Parent particle: " << aTrack->GetDefinition()->GetParticleName() << ", daughter particle " << (*secondaries)[i]->GetDefinition()->GetParticleName() << G4endl;
                                 (*secondaries)[i]->SetUserInformation(newParentInfo);
                             }
                         }
