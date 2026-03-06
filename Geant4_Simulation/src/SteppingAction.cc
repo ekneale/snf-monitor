@@ -2,6 +2,7 @@
 #include "SteppingAction.hh"
 #include "RunAction.hh"
 #include "Annihilation.hh"
+#include "TrackInformation.hh"
 
 #include "G4SDManager.hh"
 #include "G4HCofThisEvent.hh"
@@ -27,8 +28,8 @@
 namespace G4_BREMS
 {
 
-    SteppingAction::SteppingAction(RunAction *runAction)
-        : G4UserSteppingAction(), fRunAction(runAction), fSensitiveVolume(nullptr)
+    SteppingAction::SteppingAction(RunAction *runAction, EventAction *eventAction)
+        : G4UserSteppingAction(), fRunAction(runAction), fEventAction(eventAction), fSensitiveVolume(nullptr)
     {
     }
 
@@ -41,10 +42,8 @@ namespace G4_BREMS
         if (G4Threading::IsMasterThread())
             return;
 
-        G4Track *track = step->GetTrack();
-        if (!track)
-            return;
-
+        // check that an real interaction occured (eg. not a transportation)
+        // TODO this will affect the info collected later in this action
         const G4StepPoint *post = step->GetPostStepPoint();
         if (!post)
             return;
@@ -52,6 +51,10 @@ namespace G4_BREMS
         G4StepStatus stepStatus = post->GetStepStatus();
         G4bool transmit = (stepStatus == fGeomBoundary || stepStatus == fWorldBoundary);
         if (transmit)
+            return;
+
+        G4Track *track = step->GetTrack();
+        if (!track)
             return;
 
         auto analysisManager = G4AnalysisManager::Instance();
@@ -67,11 +70,9 @@ namespace G4_BREMS
             creatorName = creatorProcess->GetProcessName();
         }
 
-        G4String procName = post->GetProcessDefinedStep()->GetProcessName();
+        const G4String &procName = post->GetProcessDefinedStep()->GetProcessName();
 
-
-
-         // Find and save the neutron capture
+        // Find and save the neutron capture
         // TODO Currently includes two-alpha production with no Li7
         NeutronCaptureEvent nCapture;
         if (track->GetDefinition() == G4Neutron::Definition())
@@ -111,30 +112,34 @@ namespace G4_BREMS
                         }
 
                         // Fill ntuple assuming only one neutron capture
-                        analysisManager->FillNtupleDColumn(26, nCapture.position.x() / mm);
-                        analysisManager->FillNtupleDColumn(27, nCapture.position.y() / mm);
-                        analysisManager->FillNtupleDColumn(28, nCapture.position.z() / mm);
-                        analysisManager->FillNtupleDColumn(29, nCapture.time / ns);
-
+                        //analysisManager->FillNtupleDColumn(fRunAction->idxNcapVtxX, nCapture.position.x() / mm);
+                        //analysisManager->FillNtupleDColumn(fRunAction->idxNcapVtxY, nCapture.position.y() / mm);
+                        //analysisManager->FillNtupleDColumn(fRunAction->idxNcapVtxZ, nCapture.position.z() / mm);
+                        //analysisManager->FillNtupleDColumn(fRunAction->idxNcapVtxT, nCapture.time / ns);
+                        analysisManager->FillNtupleDColumn(24, nCapture.position.x() / mm);
+                        analysisManager->FillNtupleDColumn(25, nCapture.position.y() / mm);
+                        analysisManager->FillNtupleDColumn(26, nCapture.position.z() / mm);
+                        analysisManager->FillNtupleDColumn(27, nCapture.time / ns);
                         // TODO consider saving to ntuple later, in case of multiple neutrons from muons
                         // gNeutronCaptureEvents.push_back(nCapture);
                     } // Li, alpha or gamma
                 } // Loop over secondaries
             }
-            // analysisManager->FillNtupleDColumn(30, nCapture.edep / MeV);
         } // Neutron track
 
-        if (track->GetDefinition()->GetParticleName() == "e+" &&
+        // Find and save the positron annihilation
+        AnnihilationEvent annihilation;
+        if (name == "e+" &&
             track->GetTrackStatus() == fStopAndKill &&
-            step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() == "annihil" &&
-            step->GetPostStepPoint()->GetKineticEnergy() < 1 * keV &&
-            step->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetName() != "World")
+            procName == "annihil" &&
+            post->GetKineticEnergy() < 1 * keV &&
+            post->GetTouchableHandle()->GetVolume()->GetName() != "World")
         {
-
-            AnnihilationEvent annihilation;
-            annihilation.position = step->GetPostStepPoint()->GetPosition();
-            annihilation.time = track->GetGlobalTime(); // TODO should this be step->GetPostStepPoint()->GetGlobalTime()???
-            annihilation.volume = step->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetName();
+            G4cout << "Stepping Action - annihilation event" << G4endl;
+            annihilation.position = post->GetPosition();
+            annihilation.time = post->GetGlobalTime();
+            annihilation.volume = post->GetTouchableHandle()->GetVolume()->GetName();
+            annihilation.parentID = trackID;
 
             if (generate_histograms)
             {
@@ -148,16 +153,49 @@ namespace G4_BREMS
                 analysisManager->FillH2(22, annihilation.position.y() / mm, annihilation.position.z() / mm, annihilation.time);
                 analysisManager->FillH2(23, annihilation.position.x() / mm, annihilation.position.z() / mm, annihilation.time);
             }
-            G4cout << "Found annihilation event" << G4endl;
-            analysisManager->FillNtupleDColumn(28, annihilation.position.x() / mm);
-            analysisManager->FillNtupleDColumn(29, annihilation.position.y() / mm);
-            analysisManager->FillNtupleDColumn(30, annihilation.position.z() / mm);
-            analysisManager->FillNtupleDColumn(31, annihilation.time / ns);
 
+            //analysisManager->FillNtupleDColumn(fRunAction->idxAnnihilVtxX, annihilation.position.x() / mm);
+            //analysisManager->FillNtupleDColumn(fRunAction->idxAnnihilVtxY, annihilation.position.y() / mm);
+            //analysisManager->FillNtupleDColumn(fRunAction->idxAnnihilVtxZ, annihilation.position.z() / mm);
+            //analysisManager->FillNtupleDColumn(fRunAction->idxAnnihilVtxT, annihilation.time / ns);
+            analysisManager->FillNtupleDColumn(31, annihilation.position.x() / mm);
+            analysisManager->FillNtupleDColumn(32, annihilation.position.y() / mm);
+            analysisManager->FillNtupleDColumn(33, annihilation.position.z() / mm);
+            analysisManager->FillNtupleDColumn(34, annihilation.time / ns);
             gAnnihilationEvents.push_back(annihilation);
         }
 
-        if (!track || track->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition())
+        // Find and save the energy depostion from a neutron capture or annihilation
+        if ((name == "Li7" || name == "alpha" || name == "gamma"))
+        {
+
+            TrackInformation *info = (TrackInformation *)track->GetUserInformation();
+            if (info)
+            {
+                G4String parentParticleName = info->GetParentParticleName();
+                G4int parentTrackID = info->GetParentTrackID();
+                if (parentParticleName == "neutron" && (creatorName == "neutronInelastic" || creatorName == "nCapture"))
+                {
+                    if (debug_steppingaction)
+                        G4cout << name << " from " << parentParticleName << ", track ID " << parentTrackID << ", energy deposit = " << step->GetTotalEnergyDeposit()* MeV << G4endl;
+
+                    if (name == "alpha")
+                        fEventAction->AddNCaptureAlphaEdep(step->GetTotalEnergyDeposit() * MeV);
+                    else if (name == "Li7")
+                        fEventAction->AddNCaptureLi7Edep(step->GetTotalEnergyDeposit() * MeV);
+                    else if (name == "gamma")
+                        fEventAction->AddNCaptureGammaEdep(step->GetTotalEnergyDeposit() * MeV);
+                } // if neutron capture
+                if (parentParticleName == "e+" && creatorName == "annihil")
+                {
+                    if (name == "gamma")
+                        fEventAction->AddAnnihilGammaEdep(step->GetTotalEnergyDeposit() * MeV);
+                }
+            } // if track user info
+        } // Li, alpha or gamma
+
+        // Find and save optical photon information
+        if (track->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition())
             return;
 
         G4VPhysicalVolume *volume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
@@ -212,7 +250,7 @@ namespace G4_BREMS
         }
 
         G4String processName = "Unknown";
-        const G4StepPoint *postStepPoint = step->GetPostStepPoint();
+        const G4StepPoint *postStepPoint = post;
         if (postStepPoint)
         {
             const G4VProcess *process = postStepPoint->GetProcessDefinedStep();
@@ -221,20 +259,6 @@ namespace G4_BREMS
                 processName = process->GetProcessName();
             }
         }
-
-        // Save all scintillation photons
-        // if (creatorProcess && creatorProcess->GetProcessName() == "Scintillation")
-        //{
-        //    G4int scintParent = track->GetParentID();
-        //    auto it = std::find_if(captureDaughters.begin(), captureDaughters.end(),
-        //                           [&](auto &p)
-        //                           { return p.first == scintParent; });
-        //    if (it != captureDaughters.end())
-        //    {
-        //        fCaptureScintPhotonIDs.push_back(track->GetTrackID());
-        //    }
-        //}
-        // SetCaptureScintPhotonIDs(fCaptureScintPhotonIDs);
 
         if (generate_histograms)
         {
@@ -287,7 +311,7 @@ namespace G4_BREMS
 
         // Use pre-step and post-step volumes to identify sipm hits
         G4VPhysicalVolume *preVolume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
-        G4VPhysicalVolume *postVolume = step->GetPostStepPoint()->GetTouchableHandle()->GetVolume();
+        G4VPhysicalVolume *postVolume = post->GetTouchableHandle()->GetVolume();
         G4double stepNum = step->GetTrack()->GetCurrentStepNumber();
 
         if (preVolume && postVolume)
@@ -329,17 +353,17 @@ namespace G4_BREMS
                 if ((preVolumeName == "BNfoil" || preVolumeName == "AlLayer") && (postVolumeName == "Tile" || postVolumeName == "FiberCore" || postVolumeName == "FiberClad" || postVolumeName == "Sipm") && creatorName == "nCapture" || creatorName == "nCaptureHP")
                 {
 
-                    G4double stepTime = step->GetPostStepPoint()->GetGlobalTime();
-                    G4double stepTimeLocal = step->GetPostStepPoint()->GetLocalTime();
+                    G4double stepTime = post->GetGlobalTime();
+                    G4double stepTimeLocal = post->GetLocalTime();
                     G4ThreeVector step_start_position = step->GetPreStepPoint()->GetPosition();
-                    G4ThreeVector step_end_position = step->GetPostStepPoint()->GetPosition();
+                    G4ThreeVector step_end_position = post->GetPosition();
 
                     G4double stepEnergy = track->GetTotalEnergy();
                     G4double stepWavelength = (1239.84193 * eV) / stepEnergy;
 
-                    G4VPhysicalVolume *physVolume = step->GetPostStepPoint()->GetTouchableHandle()->GetVolume();
+                    G4VPhysicalVolume *physVolume = post->GetTouchableHandle()->GetVolume();
                     G4String volumeName = physVolume->GetName();
-                    // G4int sipmID = step->GetPostStepPoint()->GetTouchableHandle()->GetCopyNumber(); // not necessarily sipm hit
+                    // G4int sipmID = post->GetTouchableHandle()->GetCopyNumber(); // not necessarily sipm hit
 
                     if (debug_steppingaction)
                     {

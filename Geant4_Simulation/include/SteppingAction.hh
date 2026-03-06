@@ -4,6 +4,8 @@
 //#include "AnnihilationHit.hh"
 //#include "NeutronCaptureHit.hh"
 
+#include "EventAction.hh"
+
 #include "G4UserSteppingAction.hh"
 #include "G4THitsCollection.hh"
 #include "globals.hh"
@@ -21,6 +23,7 @@ namespace G4_BREMS
 {
 
     class RunAction;
+    class EventAction;
 
     struct GammaInfo
     {
@@ -50,7 +53,7 @@ namespace G4_BREMS
     class SteppingAction : public G4UserSteppingAction
     {
     public:
-        SteppingAction(RunAction *runAction);
+        SteppingAction(RunAction *runAction, EventAction *eventAction);
         virtual ~SteppingAction();
         virtual void UserSteppingAction(const G4Step *);
 
@@ -72,6 +75,7 @@ namespace G4_BREMS
 
     private:
         RunAction *fRunAction;
+        EventAction *fEventAction;
 
         G4LogicalVolume *fSensitiveVolume;
         G4int debug_steppingaction = 1;

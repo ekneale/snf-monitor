@@ -25,9 +25,9 @@
 namespace G4_BREMS
 {
 
-    G4_BREMS::RunAction::RunAction(EventAction* eventAction)
-        : fEventAction(eventAction),
-          G4UserRunAction(),
+    G4_BREMS::RunAction::RunAction(EventAction *eventAction)
+        : G4UserRunAction(),
+          fEventAction(eventAction),
           fTileCount(0), fCladCount(0), fCoreCount(0), fSipmCount(0), fOtherCount(0),
           fPhotonsEnteredFiber(0), fPhotonsExitedFiber(0), fPhotonsAbsorbedFiber(0),
           fAccTileCount("TileCount", 0),
@@ -403,56 +403,66 @@ namespace G4_BREMS
         if (fEventAction)
         {
             analysisManager->CreateNtuple("simdata", "MC truth and simulation data");
-            analysisManager->CreateNtupleIColumn("runID");                            // column ID = 0
-            analysisManager->CreateNtupleIColumn("eventID");                          // column ID = 1
-                                                                                      // IBD event
-            analysisManager->CreateNtupleDColumn("nu_energy");                        // column ID = 2
-            analysisManager->CreateNtupleDColumn("nu_dir_x");                         // column ID = 3
-            analysisManager->CreateNtupleDColumn("nu_dir_y");                         // column ID = 4
-            analysisManager->CreateNtupleDColumn("nu_dir_z");                         // column ID = 5
-            analysisManager->CreateNtupleDColumn("vtx_x");                            // column ID = 6
-            analysisManager->CreateNtupleDColumn("vtx_y");                            // column ID = 7
-            analysisManager->CreateNtupleDColumn("vtx_z");                            // column ID = 8
-            analysisManager->CreateNtupleDColumn("positron_energy");                  // column ID = 9
-            analysisManager->CreateNtupleDColumn("positron_dir_x");                   // column ID = 10
-            analysisManager->CreateNtupleDColumn("positron_dir_y");                   // column ID = 11
-            analysisManager->CreateNtupleDColumn("positron_dir_z");                   // column ID = 12
-            analysisManager->CreateNtupleDColumn("neutron_energy");                   // column ID = 13
-            analysisManager->CreateNtupleDColumn("neutron_dir_x");                    // column ID = 14
-            analysisManager->CreateNtupleDColumn("neutron_dir_y");                    // column ID = 15
-            analysisManager->CreateNtupleDColumn("neutron_dir_z");                    // column ID = 16
-                                                                                      // All hits
-            analysisManager->CreateNtupleIColumn("n_sipm_hits");                      // column ID = 17
-            analysisManager->CreateNtupleDColumn("sipm_x", fEventAction->GetSipmX()); // column ID = 18
-            analysisManager->CreateNtupleDColumn("sipm_y", fEventAction->GetSipmY()); // column ID = 19
-            analysisManager->CreateNtupleDColumn("sipm_z", fEventAction->GetSipmZ()); // column ID = 20
-            analysisManager->CreateNtupleDColumn("sipm_t", fEventAction->GetSipmT()); // column ID = 21
-            analysisManager->CreateNtupleDColumn("sipm_q", fEventAction->GetSipmQ()); // column ID = 22
-            analysisManager->CreateNtupleDColumn("sipm_wl",fEventAction->GetWL());   // column ID = 23
-                                                                                      // Neutron capture
-            analysisManager->CreateNtupleDColumn("vtx_x_ncapture");                   // column ID = 24
-            analysisManager->CreateNtupleDColumn("vtx_y_ncapture");                   // column ID = 25
-            analysisManager->CreateNtupleDColumn("vtx_z_ncapture");                   // column ID = 26
-            analysisManager->CreateNtupleDColumn("t_ncapture");                       // column ID = 27
-            //analysisManager->CreateNtupleIColumn("n_sipm_hits_ncapture");             // column ID = 28
-            //analysisManager->CreateNtupleDColumn("sipm_x_ncapture");                  // column ID = 29
-            //analysisManager->CreateNtupleDColumn("sipm_y_ncapture");                  // column ID = 30
-            //analysisManager->CreateNtupleDColumn("sipm_z_ncapture");                  // column ID = 31
-            //analysisManager->CreateNtupleDColumn("sipm_t_ncapture");                  // column ID = 32
-            //analysisManager->CreateNtupleDColumn("sipm_q_ncapture");                  // column ID = 33
-            //analysisManager->CreateNtupleDColumn("sipm_wl_ncapture");                 // column ID = 34
-                                                                                      // Annihilation
-            analysisManager->CreateNtupleDColumn("vtx_x_annihilation");               // column ID = 28//35
-            analysisManager->CreateNtupleDColumn("vtx_y_annihilation");               // column ID = 29//36
-            analysisManager->CreateNtupleDColumn("vtx_z_annihilation");               // column ID = 30//37
-            analysisManager->CreateNtupleDColumn("t_annihilation");                   // column ID = 31//38
-            //analysisManager->CreateNtupleIColumn("n_sipm_hits_annihilation");         // column ID = 39
-            //analysisManager->CreateNtupleDColumn("sipm_x_annihilation");              // column ID = 40
-            //analysisManager->CreateNtupleDColumn("sipm_y_annihilation");              // column ID = 41
-            //analysisManager->CreateNtupleDColumn("sipm_z_annihilation");              // column ID = 42
-            //analysisManager->CreateNtupleDColumn("sipm_t_annihilation");              // column ID = 43
-            //analysisManager->CreateNtupleDColumn("sipm_q_annihilation");              // column ID = 44
-            //analysisManager->CreateNtupleDColumn("sipm_wl_annihilation");             // column ID = 45
+            //analysisManager->SetFirstNtupleColumnID(0);
+            idxRunID = analysisManager->CreateNtupleIColumn("runID");               // column ID = 0
+            idxEventID = analysisManager->CreateNtupleIColumn("eventID");           // column ID = 1
+            // IBD
+            idxNuE = analysisManager->CreateNtupleDColumn("nu_energy");             // column ID = 2
+            idxNuDirX = analysisManager->CreateNtupleDColumn("nu_dir_x");           // column ID = 3
+            idxNuDirY = analysisManager->CreateNtupleDColumn("nu_dir_y");           // column ID = 4
+            idxNuDirZ = analysisManager->CreateNtupleDColumn("nu_dir_z");           // column ID = 5
+            idxNuVtxX = analysisManager->CreateNtupleDColumn("vtx_x");              // column ID = 6
+            idxNuVtxY = analysisManager->CreateNtupleDColumn("vtx_y");              // column ID = 7
+            idxNuVtxZ = analysisManager->CreateNtupleDColumn("vtx_z");              // column ID = 8
+            idxPosE = analysisManager->CreateNtupleDColumn("positron_energy");      // column ID = 9
+            idxPosDirX = analysisManager->CreateNtupleDColumn("positron_dir_x");    // column ID = 10
+            idxPosDirY = analysisManager->CreateNtupleDColumn("positron_dir_y");    // column ID = 11
+            idxPosDirZ = analysisManager->CreateNtupleDColumn("positron_dir_z");    // column ID = 12
+            idxNeutronE = analysisManager->CreateNtupleDColumn("neutron_energy");   // column ID = 13
+            idxNeutronDirX = analysisManager->CreateNtupleDColumn("neutron_dir_x"); // column ID = 14
+            idxNeutronDirY = analysisManager->CreateNtupleDColumn("neutron_dir_y"); // column ID = 15
+            idxNeutronDirZ = analysisManager->CreateNtupleDColumn("neutron_dir_z"); // column ID = 16
+            // All SiPM hits
+            idxNSipmHits = analysisManager->CreateNtupleIColumn("n_sipm_hits");
+            idxSipmX = analysisManager->CreateNtupleDColumn("sipm_x", fEventAction->GetSipmX());
+            idxSipmY = analysisManager->CreateNtupleDColumn("sipm_y", fEventAction->GetSipmY());
+            idxSipmZ = analysisManager->CreateNtupleDColumn("sipm_z", fEventAction->GetSipmZ());
+            idxSipmT = analysisManager->CreateNtupleDColumn("sipm_t", fEventAction->GetSipmT());
+            idxSipmQ = analysisManager->CreateNtupleDColumn("sipm_q", fEventAction->GetSipmQ());
+            idxSipmWL = analysisManager->CreateNtupleDColumn("sipm_wl", fEventAction->GetWL());
+            // analysisManager->CreateNtupleIColumn("sipm_hit_parentID", fEventAction->GetParentIDs()); // column ID = 24
+            // analysisManager->CreateNtupleSColumn("sipm_hit_creator_process", fEventAction->GetProcessNames()); // column ID = 25
+            //  Neutron capture
+            idxNcapVtxX = analysisManager->CreateNtupleDColumn("vtx_x_ncapture");
+            idxNcapVtxY = analysisManager->CreateNtupleDColumn("vtx_y_ncapture");
+            idxNcapVtxZ = analysisManager->CreateNtupleDColumn("vtx_z_ncapture");
+            idxNcapVtxT = analysisManager->CreateNtupleDColumn("t_ncapture");
+            idxNcapEdepLi7 = analysisManager->CreateNtupleDColumn("edep_ncapture_li7");
+            idxNcapEdepAlpha = analysisManager->CreateNtupleDColumn("edep_ncapture_alpha");
+            idxNcapEdepGamma = analysisManager->CreateNtupleDColumn("edep_ncapture_gamma");
+            // analysisManager->CreateNtupleDColumn("nLi7_ncapture");
+            // analysisManager->CreateNtupleDColumn("nAlpha_ncapture");
+            // analysisManager->CreateNtupleDColumn("nGamma_ncapture");
+            // analysisManager->CreateNtupleDColumn("sipm_x_ncapture");
+            // analysisManager->CreateNtupleDColumn("sipm_y_ncapture");
+            // analysisManager->CreateNtupleDColumn("sipm_z_ncapture");
+            // analysisManager->CreateNtupleDColumn("sipm_t_ncapture");
+            // analysisManager->CreateNtupleDColumn("sipm_q_ncapture");
+            // analysisManager->CreateNtupleDColumn("sipm_wl_ncapture");
+            //  Annihilation
+            idxAnnihilVtxX = analysisManager->CreateNtupleDColumn("vtx_x_annihilation");
+            idxAnnihilVtxY = analysisManager->CreateNtupleDColumn("vtx_y_annihilation");
+            idxAnnihilVtxZ = analysisManager->CreateNtupleDColumn("vtx_z_annihilation");
+            idxAnnihilVtxT = analysisManager->CreateNtupleDColumn("t_annihilation");
+            idxAnnihilEdepGamma = analysisManager->CreateNtupleDColumn("edep_annihil_gamma");
+            // analysisManager->CreateNtupleDColumn("nGamma_annihil");
+            // analysisManager->CreateNtupleIColumn("n_sipm_hits_annihilation");
+            // analysisManager->CreateNtupleDColumn("sipm_x_annihilation");
+            // analysisManager->CreateNtupleDColumn("sipm_y_annihilation");
+            // analysisManager->CreateNtupleDColumn("sipm_z_annihilation");
+            // analysisManager->CreateNtupleDColumn("sipm_t_annihilation");
+            // analysisManager->CreateNtupleDColumn("sipm_q_annihilation");
+            // analysisManager->CreateNtupleDColumn("sipm_wl_annihilation");
 
             analysisManager->FinishNtuple();
         }
@@ -468,7 +478,8 @@ namespace G4_BREMS
         {
             delete pair.second;
         }
-        if (fRunMessenger) delete fRunMessenger;
+        if (fRunMessenger)
+            delete fRunMessenger;
     }
 
     void G4_BREMS::RunAction::BeginOfRunAction(const G4Run *run)
@@ -477,26 +488,28 @@ namespace G4_BREMS
 
         float seed = GetSeed();
         long s1 = 0, s2 = 0;
-        
-        if (seed==0){
 
-        if (const char *e1 = std::getenv("G4_SEED1"))
-            s1 = std::strtol(e1, nullptr, 10);
-        if (const char *e2 = std::getenv("G4_SEED2"))
-            s2 = std::strtol(e2, nullptr, 10);
-        if (s1 == 0 || s2 == 0)
+        if (seed == 0)
         {
-            auto now = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-            long base = static_cast<long>(now) ^ (static_cast<long>(run->GetRunID()) << 24);
-            if (s1 == 0)
-                s1 = std::llabs(base) + 11;
-            if (s2 == 0)
-                s2 = std::llabs(base * 1812433253L + 12345L) + 17;
+
+            if (const char *e1 = std::getenv("G4_SEED1"))
+                s1 = std::strtol(e1, nullptr, 10);
+            if (const char *e2 = std::getenv("G4_SEED2"))
+                s2 = std::strtol(e2, nullptr, 10);
+            if (s1 == 0 || s2 == 0)
+            {
+                auto now = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+                long base = static_cast<long>(now) ^ (static_cast<long>(run->GetRunID()) << 24);
+                if (s1 == 0)
+                    s1 = std::llabs(base) + 11;
+                if (s2 == 0)
+                    s2 = std::llabs(base * 1812433253L + 12345L) + 17;
+            }
         }
-        }
-        else{
+        else
+        {
             s1 = (long)seed;
-            s2 = (long)seed*10;
+            s2 = (long)seed * 10; // need to set seed to long in messenger
         }
 
         long seeds[2] = {s1, s2};
@@ -574,7 +587,8 @@ namespace G4_BREMS
                     G4cout << "Trapping Efficiency: " << CalculateTrappingEfficiency() * 100.0 << " %" << G4endl;
                 }
 
-                if (debug_runaction){
+                if (debug_runaction)
+                {
                     std::vector<G4String> volumes = {"Tile", "FiberCore", "FiberClad", "Sipm"};
 
                     for (const auto &volume : volumes)
@@ -583,7 +597,6 @@ namespace G4_BREMS
 
                         // creation processes
                         G4cout << "Creation Processes:" << G4endl;
-                    
                     }
                 }
             }

@@ -44,7 +44,7 @@ namespace G4_BREMS
 {
 
   // Constructor
-  G4_BREMS::EventAction::EventAction() : G4UserEventAction()
+  G4_BREMS::EventAction::EventAction(): G4UserEventAction()
   {
     // set printing per each event
     // G4RunManager::GetRunManager()->SetPrintProgress(1);
@@ -65,9 +65,37 @@ namespace G4_BREMS
     {
       auto sdManager = G4SDManager::GetSDMpointer();
       fHCID = G4SDManager::GetSDMpointer()->GetCollectionID("sipmHitsColl");
-      //fNeutronCaptureHCID = G4SDManager::GetSDMpointer()->GetCollectionID("neutronCaptureSipmHitsColl");
-      //fAnnihilationHCID = G4SDManager::GetSDMpointer()->GetCollectionID("annihilationSipmHitsColl");
+      // fNeutronCaptureHCID = G4SDManager::GetSDMpointer()->GetCollectionID("neutronCaptureSipmHitsColl");
+      // fAnnihilationHCID = G4SDManager::GetSDMpointer()->GetCollectionID("annihilationSipmHitsColl");
     }
+    fTotalNCapLi7Edep = 0;
+    fTotalNCapAlphaEdep = 0;
+    fTotalNCapGammaEdep = 0;
+    fTotalAnnihilGammaEdep = 0;
+  }
+
+  void G4_BREMS::EventAction::AddNCaptureAlphaEdep(G4double edep)
+  {
+    fTotalNCapAlphaEdep += edep;
+    G4cout << "Ncap alpa edep running total " << fTotalNCapAlphaEdep << G4endl;
+  }
+
+  void G4_BREMS::EventAction::AddNCaptureLi7Edep(G4double edep)
+  {
+    fTotalNCapLi7Edep += edep;
+    G4cout << "Ncap Li7 edep running total " << fTotalNCapLi7Edep << G4endl;
+  }
+
+  void G4_BREMS::EventAction::AddNCaptureGammaEdep(G4double edep)
+  {
+    fTotalNCapGammaEdep += edep;
+    G4cout << "Ncap gamma edep running total " << fTotalNCapGammaEdep << G4endl;
+  }
+
+  void G4_BREMS::EventAction::AddAnnihilGammaEdep(G4double edep)
+  {
+    fTotalAnnihilGammaEdep += edep;
+    G4cout << "Annihil gamma running total " << fTotalAnnihilGammaEdep << G4endl;
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -76,27 +104,31 @@ namespace G4_BREMS
   void G4_BREMS::EventAction::EndOfEventAction(const G4Event *anEvent)
   {
 
+    if (G4Threading::IsMasterThread())
+      return;
+
     auto analysisManager = G4AnalysisManager::Instance();
 
     const G4Run *run = G4RunManager::GetRunManager()->GetCurrentRun();
     G4int runID = run ? run->GetRunID() : -1;
-    analysisManager->FillNtupleIColumn(0, runID);
+    analysisManager->FillNtupleIColumn(fRunAction->GetIdxRunID(), runID);
 
     G4int eventID = anEvent ? anEvent->GetEventID() : -1;
-    analysisManager->FillNtupleIColumn(1, eventID);
+    analysisManager->FillNtupleIColumn(fRunAction->GetIdxEventID(), eventID);
 
     if (eventID < 100 || eventID % 100 == 0)
     {
       G4cout << "EventAction [INFO]: Event: " << eventID << G4endl;
     }
 
-    // All SiPM hits
+    // Save all SiPM hits
     auto hc = GetHC(anEvent, fHCID);
-    // G4VHitsCollection* hc = anEvent->GetHCofThisEvent()->GetHC(0);    
+    // G4VHitsCollection* hc = anEvent->GetHCofThisEvent()->GetHC(0);
     if (!hc)
       return;
     auto nhit = hc->GetSize();
-    analysisManager->FillNtupleIColumn(17, nhit);
+    // analysisManager->FillNtupleIColumn(runAction->idxNSipmHits, nhit);
+    analysisManager->FillNtupleIColumn(fRunAction->GetIdxNSipmHits(), nhit);
     for (unsigned long i = 0; i < nhit; ++i)
     {
       auto hit = static_cast<SipmHit *>(hc->GetHit(i));
@@ -110,11 +142,21 @@ namespace G4_BREMS
     // G4VHitsCollection* hc = anEvent->GetHCofThisEvent()->GetHC(0);
     G4cout << "       " << hc->GetSize() << " hits stored in this event" << G4endl;
 
+    // Save edep from ncapture and annihilation secondaries
+    // analysisManager->FillNtupleDColumn(runAction->idxNcapEdepLi7,fTotalNCapLi7Edep);
+    // analysisManager->FillNtupleDColumn(runAction->idxNcapEdepAlpha,fTotalNCapAlphaEdep);
+    // analysisManager->FillNtupleDColumn(runAction->idxNcapEdepGamma,fTotalNCapGammaEdep);
+    // analysisManager->FillNtupleDColumn(runAction->idxAnnihilEdepGamma,fTotalAnnihilGammaEdep);
+    analysisManager->FillNtupleDColumn(fRunAction->GetIdxNcapEdepLi7(), fTotalNCapLi7Edep);
+    analysisManager->FillNtupleDColumn(fRunAction->GetIdxNcapEdepAlpha(), fTotalNCapAlphaEdep);
+    analysisManager->FillNtupleDColumn(fRunAction->GetIdxNcapEdepGamma(), fTotalNCapGammaEdep);
+    analysisManager->FillNtupleDColumn(fRunAction->GetIdxAnnihilEdepGamma(), fTotalAnnihilGammaEdep);
+
     // SiPM hits from neutron capture
-    //auto hc_ncapture = GetHC(anEvent, fNeutronCaptureHCID);
-    //auto nhit_ncapture = hc_ncapture->GetSize();
-    //analysisManager->FillNtupleIColumn(28, nhit_ncapture);
-    //for (unsigned long i = 0; i < nhit_ncapture; ++i)
+    // auto hc_ncapture = GetHC(anEvent, fNeutronCaptureHCID);
+    // auto nhit_ncapture = hc_ncapture->GetSize();
+    // analysisManager->FillNtupleIColumn(28, nhit_ncapture);
+    // for (unsigned long i = 0; i < nhit_ncapture; ++i)
     //{
     //  auto hit = static_cast<SipmHit *>(hc_ncapture->GetHit(i));
     //  analysisManager->FillNtupleDColumn(29,  hit->GetSipmPos().x());
@@ -127,10 +169,10 @@ namespace G4_BREMS
     // G4cout << "       " << hc_ncapture->GetSize() << " neutron capture hits stored in this event" << G4endl;
 
     // SiPM hits from positron annihilation
-    //auto hc_annihilation = GetHC(anEvent, fAnnihilationHCID);
-    //auto nhit_annihilation = hc_ncapture->GetSize();
-    //analysisManager->FillNtupleIColumn(39, nhit_annihilation);
-    //for (unsigned long i = 0; i < nhit_annihilation; ++i)
+    // auto hc_annihilation = GetHC(anEvent, fAnnihilationHCID);
+    // auto nhit_annihilation = hc_ncapture->GetSize();
+    // analysisManager->FillNtupleIColumn(39, nhit_annihilation);
+    // for (unsigned long i = 0; i < nhit_annihilation; ++i)
     //{
     //  auto hit = static_cast<SipmHit *>(hc_annihilation->GetHit(i));
     //  analysisManager->FillNtupleDColumn(40, hit->GetSipmPos().x());
